@@ -35,7 +35,12 @@ export const ChatPanel = ({ threadId, setThreadId }: ChatPanelProps) => {
     })
   );
 
-  const { handleMessage, isLoading } = useSendMessage({
+  const {
+    handleMessage,
+    isLoading,
+    isSendingUserMessage,
+    isGettingAssistantResponse,
+  } = useSendMessage({
     parentThreadId: threadId,
   });
 
@@ -66,6 +71,8 @@ export const ChatPanel = ({ threadId, setThreadId }: ChatPanelProps) => {
               threadId={threadId}
               setThreadId={setThreadId}
               messages={messageListResult.data.messages}
+              isGettingAssistantResponse={isGettingAssistantResponse}
+              isSendingUserMessage={isSendingUserMessage}
             />
           )}
           <Box h={200} />

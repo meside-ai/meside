@@ -83,5 +83,7 @@ export const useSendMessage = ({
   return {
     handleMessage,
     isLoading,
+    isSendingUserMessage,
+    isGettingAssistantResponse,
   };
 };
