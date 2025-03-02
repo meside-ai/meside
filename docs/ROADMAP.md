@@ -2,5 +2,10 @@
 
 ## 0.1
 
-- [ ] support Big Query
-- [ ] scheduled data transformation
+- [ ] Support for BigQuery
+- [ ] Scheduled data transformations
+- [ ] Streaming answers with loading indicators
+- [ ] Table optimization
+- [ ] Data export functionality
+- [ ] SQL editor integration
+- [ ] Warehouse model labeling
