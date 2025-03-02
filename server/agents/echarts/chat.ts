@@ -3,7 +3,7 @@ import { BadRequestError } from "@/utils/error";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import type { GetAssistantStructure } from "../types/chat.interface";
 import {
-  getChatOpenAI,
+  getChatModel,
   getMessagesPrompt,
   getSystemMessage,
 } from "../utils/utils";
@@ -24,7 +24,7 @@ export const getAssistantEchartsStructure: GetAssistantStructure =
       );
     }
 
-    const llm = getChatOpenAI();
+    const llm = getChatModel();
 
     const messagesPrompt = await getMessagesPrompt(body.messages);
 
