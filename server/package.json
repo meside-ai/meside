@@ -1,0 +1,46 @@
+{
+  "name": "aidw-server",
+  "module": "server/server.ts",
+  "type": "module",
+  "version": "0.3.0",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+    "seed": "bun run seed.ts",
+    "reset": "bun run reset.ts",
+    "studio": "drizzle-kit studio --port=5183",
+    "dev": "bun run --watch server.ts",
+    "build": "bunx --bun vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "check": "bunx biome check --write ../"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "^0.18.4",
+    "@hono/zod-validator": "^0.4.3",
+    "@langchain/core": "^0.3.40",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "@prisma/client": "^6.3.1",
+    "drizzle-orm": "^0.39.3",
+    "drizzle-seed": "^0.3.1",
+    "drizzle-zod": "^0.7.0",
+    "es-toolkit": "^1.32.0",
+    "hono": "^4.7.1",
+    "langchain": "^0.3.18",
+    "pg": "^8.13.3",
+    "postgres": "^3.4.5",
+    "prisma-json-types-generator": "^3.2.2",
+    "redis": "^4.7.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/bun": "latest",
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.30.4",
+    "prisma": "^6.3.1"
+  }
+}

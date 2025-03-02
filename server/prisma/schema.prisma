@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId    String    @id
+  name      String
+  email     String
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model Org {
+  orgId     String    @id
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+  Thread    Thread[]
+}
+
+model Thread {
+  threadId        String    @id
+  ownerId         String
+  orgId           String
+  name            String?
+  warehouseId     String?
+  parentMessageId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  deletedAt       DateTime?
+  org             Org       @relation(fields: [orgId], references: [orgId])
+  Message         Message[]
+}
+
+enum MessageRole {
+  SYSTEM
+  USER
+  ASSISTANT
+}
+
+enum MessageType {
+  TEXT
+  SQL
+}
+
+model Message {
+  messageId   String      @id
+  threadId    String
+  ownerId     String
+  messageRole MessageRole
+  messageType MessageType
+  content     String
+  /// [MessageStructure]
+  structure   Json?
+  skippedAI   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
+  deletedAt   DateTime?
+  thread      Thread      @relation(fields: [threadId], references: [threadId])
+}
+
+model Column {
+  columnId    String    @id
+  warehouseId String
+  tableName   String
+  columnName  String
+  columnType  String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  deletedAt   DateTime?
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [warehouseId])
+}
+
+enum WarehouseType {
+  postgresql
+}
+
+model Warehouse {
+  warehouseId String        @id
+  name        String
+  type        WarehouseType
+  host        String
+  port        Int
+  database    String
+  username    String
+  password    String
+  schema      String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  deletedAt   DateTime?
+  column      Column[]
+}

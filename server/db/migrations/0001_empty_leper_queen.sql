@@ -1,0 +1,1 @@
+ALTER TABLE "thread" ADD COLUMN "has_questions" boolean DEFAULT false NOT NULL;
