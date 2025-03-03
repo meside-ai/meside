@@ -1,3 +1,4 @@
+import { getLogger } from "@/logger";
 import { cuid } from "@/utils/cuid";
 import pg from "pg";
 import { z } from "zod";
@@ -5,6 +6,8 @@ import type { WarehouseQueryColumn, WarehouseQueryRow } from "./type";
 import type { ConnectionConfig, Warehouse } from "./warehouse.interface";
 
 export class PostgresWarehouse implements Warehouse {
+  private logger = getLogger();
+
   async getColumns(connection: ConnectionConfig): Promise<
     {
       tableName: string;
@@ -20,35 +23,42 @@ export class PostgresWarehouse implements Warehouse {
       user: connection.username,
       password: connection.password,
     });
-    await client.connect();
 
-    const res = await client.query(`
-      SELECT
-          c.table_name AS "tableName",
-          c.column_name AS "columnName",
-          c.data_type AS "columnType",
-          COALESCE(pd.description, '') AS "comment"
-      FROM
-          information_schema.columns c
-      LEFT JOIN
-          pg_catalog.pg_statio_all_tables st
-          ON c.table_schema = st.schemaname AND c.table_name = st.relname
-      LEFT JOIN
-          pg_catalog.pg_description pd
-          ON pd.objoid = st.relid AND pd.objsubid = c.ordinal_position
-      WHERE
-          c.table_catalog = current_database()  -- 当前数据库
-          AND c.table_schema NOT IN ('pg_catalog', 'information_schema')  -- 排除系统表
-      ORDER BY
-          c.table_name, c.ordinal_position;
-    `);
-    await client.end();
+    try {
+      await client.connect();
 
-    return res.rows.map((row) => ({
-      tableName: row.tableName,
-      columnName: row.columnName,
-      columnType: row.columnType,
-    }));
+      const res = await client.query(`
+        SELECT
+            c.table_name AS "tableName",
+            c.column_name AS "columnName",
+            c.data_type AS "columnType",
+            COALESCE(pd.description, '') AS "comment"
+        FROM
+            information_schema.columns c
+        LEFT JOIN
+            pg_catalog.pg_statio_all_tables st
+            ON c.table_schema = st.schemaname AND c.table_name = st.relname
+        LEFT JOIN
+            pg_catalog.pg_description pd
+            ON pd.objoid = st.relid AND pd.objsubid = c.ordinal_position
+        WHERE
+            c.table_catalog = current_database()  -- 当前数据库
+            AND c.table_schema NOT IN ('pg_catalog', 'information_schema')  -- 排除系统表
+        ORDER BY
+            c.table_name, c.ordinal_position;
+      `);
+
+      return res.rows.map((row) => ({
+        tableName: row.tableName,
+        columnName: row.columnName,
+        columnType: row.columnType,
+      }));
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await client.end();
+    }
   }
 
   async query(
@@ -66,11 +76,18 @@ export class PostgresWarehouse implements Warehouse {
       user: connection.username,
       password: connection.password,
     });
-    await client.connect();
 
-    const res = await client.query(sql);
+    let res: pg.QueryResult<any>;
 
-    await client.end();
+    try {
+      await client.connect();
+      res = await client.query(sql);
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await client.end();
+    }
 
     const resSchema = z.object({
       rowCount: z.number(),
@@ -133,6 +150,7 @@ export class PostgresWarehouse implements Warehouse {
       await client.end();
       return true;
     } catch (error) {
+      this.logger.error(error);
       return false;
     } finally {
       await client.end();

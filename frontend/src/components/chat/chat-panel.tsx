@@ -9,13 +9,12 @@ import {
   Box,
   Button,
   Divider,
-  Group,
   Paper,
   ScrollArea,
   Skeleton,
   Text,
 } from "@mantine/core";
-import { IconArrowDown, IconChevronLeft, IconSql } from "@tabler/icons-react";
+import { IconArrowDown, IconChevronLeft } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { MessageInput } from "../message-input/message-input";
@@ -81,7 +80,7 @@ export const ChatPanel = ({ threadId, setThreadId }: ChatPanelProps) => {
       <Box style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}>
         <Box px="md" pb="md">
           <Paper withBorder p="md" shadow="lg" radius="lg">
-            <Group mb="sm" gap="xs">
+            {/* <Group mb="sm" gap="xs">
               <Button
                 variant="light"
                 size="xs"
@@ -89,14 +88,14 @@ export const ChatPanel = ({ threadId, setThreadId }: ChatPanelProps) => {
               >
                 SQL query
               </Button>
-              {/* <Button
+              <Button
                 variant="transparent"
                 size="xs"
                 leftSection={<IconZoomQuestion size={14} />}
               >
                 column suggestions
-              </Button> */}
-            </Group>
+              </Button>
+            </Group> */}
             <MessageInput
               submit={handleMessage}
               loading={isLoading}
