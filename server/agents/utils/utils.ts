@@ -1,9 +1,13 @@
 import { environment } from "@/configs/environment";
 import type { MessageEntity } from "@/db/schema/message";
 import { BadRequestError } from "@/utils/error";
+import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { BaseMessage } from "@langchain/core/messages";
+import type { ChatPromptTemplate } from "@langchain/core/prompts";
+import { tool } from "@langchain/core/tools";
 import { ChatDeepSeek } from "@langchain/deepseek";
 import { ChatOpenAI } from "@langchain/openai";
+import type { ZodSchema } from "zod";
 import { getStructureContent } from "../agents";
 import type { LLMRaw } from "../types/chat.interface";
 
@@ -89,4 +93,68 @@ export const extractLLMRaw = (raw: BaseMessage): LLMRaw => {
     model,
     finishReason,
   };
+};
+
+export const getAIResult = async <T>(
+  props: {
+    llm: BaseChatModel;
+    prompt: ChatPromptTemplate<any, any>;
+    name: string;
+    description: string;
+    structureSchema: ZodSchema<T>;
+  },
+  options: {
+    mode: "tool" | "structuredOutput";
+  },
+): Promise<{
+  parsed: T;
+  llmRaw: LLMRaw;
+}> => {
+  const { llm, prompt, name, description, structureSchema } = props;
+  const { mode } = options;
+
+  if (mode === "structuredOutput") {
+    const chain = prompt.pipe(
+      llm.withStructuredOutput(structureSchema, {
+        includeRaw: true,
+      }),
+    );
+
+    const result = await chain.invoke({});
+
+    return {
+      parsed: result.parsed as T,
+      llmRaw: extractLLMRaw(result.raw),
+    };
+  }
+
+  if (mode === "tool") {
+    const structureTool = tool(
+      async (data) => {
+        return data;
+      },
+      {
+        name,
+        description,
+        schema: structureSchema,
+      },
+    );
+
+    if (!llm.bindTools) {
+      throw new BadRequestError("LLM does not support tool calling");
+    }
+
+    const chain = prompt.pipe(llm.bindTools([structureTool]));
+    const raw = await chain.invoke({});
+
+    const rawStructure = raw?.tool_calls?.[0].args;
+    const parsed = structureSchema.parse(rawStructure);
+
+    return {
+      parsed,
+      llmRaw: extractLLMRaw(raw),
+    };
+  }
+
+  throw new BadRequestError("Invalid mode");
 };

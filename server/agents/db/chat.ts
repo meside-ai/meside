@@ -1,9 +1,10 @@
+import { environment } from "@/configs/environment";
 import type { MessageEntity } from "@/db/schema/message";
 import { BadRequestError } from "@/utils/error";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import type { GetAssistantStructure } from "../types/chat.interface";
 import {
-  extractLLMRaw,
+  getAIResult,
   getChatModel,
   getMessagesPrompt,
   getSystemMessage,
@@ -32,15 +33,20 @@ export const getAssistantDbStructure: GetAssistantStructure = async (body: {
 
   const structureSchema = assistantDbMessageStructure.pick({
     sql: true,
-    fields: true,
   });
 
-  const chain = prompt.pipe(
-    llm.withStructuredOutput(structureSchema, {
-      includeRaw: true,
-    }),
+  const result = await getAIResult(
+    {
+      llm,
+      prompt,
+      name: "sql",
+      description: "get SQL query",
+      structureSchema,
+    },
+    {
+      mode: environment.AI_MODE,
+    },
   );
-  const result = await chain.invoke({});
 
   // TODO: retrieve the data structure from the database
   // to override the default data structure
@@ -48,14 +54,13 @@ export const getAssistantDbStructure: GetAssistantStructure = async (body: {
 
   const structure: AssistantDbMessageStructure = {
     ...result.parsed,
+    fields: [],
     type: "assistantDb",
     warehouseId: systemMessage.structure.warehouseId,
   };
 
-  const llmRaw = extractLLMRaw(result.raw);
-
   return {
     structure,
-    llmRaw,
+    llmRaw: result.llmRaw,
   };
 };

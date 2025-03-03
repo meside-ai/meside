@@ -14,6 +14,10 @@ export const environmentSchema = z.object({
   AI_API_KEY: z.string(),
   AI_BASE_URL: z.string().optional(),
   AI_MODEL: z.string().optional(),
+  AI_MODE: z
+    .enum(["tool", "structuredOutput"])
+    .optional()
+    .default("structuredOutput"),
   // SEEDING
   SEED_WAREHOUSE_HOST: z.string().optional(),
   SEED_WAREHOUSE_PORT: z

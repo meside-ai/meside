@@ -1,9 +1,10 @@
+import { environment } from "@/configs/environment";
 import type { MessageEntity } from "@/db/schema/message";
 import { BadRequestError } from "@/utils/error";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import type { GetAssistantStructure } from "../types/chat.interface";
 import {
-  extractLLMRaw,
+  getAIResult,
   getChatModel,
   getMessagesPrompt,
   getSystemMessage,
@@ -34,12 +35,18 @@ export const getAssistantNameStructure: GetAssistantStructure = async (body: {
     name: true,
   });
 
-  const chain = prompt.pipe(
-    llm.withStructuredOutput(structureSchema, {
-      includeRaw: true,
-    }),
+  const result = await getAIResult(
+    {
+      llm,
+      prompt,
+      name: "name",
+      description: "get name",
+      structureSchema,
+    },
+    {
+      mode: environment.AI_MODE,
+    },
   );
-  const result = await chain.invoke({});
 
   const structure: AssistantNameMessageStructure = {
     ...result.parsed,
@@ -47,10 +54,8 @@ export const getAssistantNameStructure: GetAssistantStructure = async (body: {
     threadId: systemMessage.structure.threadId,
   };
 
-  const llmRaw = extractLLMRaw(result.raw);
-
   return {
     structure,
-    llmRaw,
+    llmRaw: result.llmRaw,
   };
 };
