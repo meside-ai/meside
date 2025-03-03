@@ -2,6 +2,7 @@ import { getAgent } from "@/agents/agents";
 import { getDrizzle } from "@/db/db";
 import { type MessageEntity, messageTable } from "@/db/schema/message";
 import { threadTable } from "@/db/schema/thread";
+import { usageTable } from "@/db/schema/usage";
 import { getAuth } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import {
@@ -132,7 +133,7 @@ export const chatApi = new OpenAPIHono()
       throw new BadRequestError("No system message found");
     }
 
-    const { structure } = await getAgent(systemMessage)({
+    const { structure, llmRaw } = await getAgent(systemMessage)({
       messages,
     });
 
@@ -155,6 +156,16 @@ export const chatApi = new OpenAPIHono()
             hasQuestions: true,
           })
           .where(eq(threadTable.threadId, parentThread.threadId));
+        await tx.insert(usageTable).values({
+          usageId: cuid(),
+          messageId: messages[0].messageId,
+          ownerId: authUser.userId,
+          orgId: authUser.orgId,
+          modelName: llmRaw.model,
+          inputToken: llmRaw.input,
+          outputToken: llmRaw.output,
+          finishReason: llmRaw.finishReason,
+        });
         return messages;
       }),
       "Failed to create assistant message",

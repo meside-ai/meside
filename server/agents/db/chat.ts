@@ -3,6 +3,7 @@ import { BadRequestError } from "@/utils/error";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import type { GetAssistantStructure } from "../types/chat.interface";
 import {
+  extractLLMRaw,
   getChatModel,
   getMessagesPrompt,
   getSystemMessage,
@@ -43,6 +44,7 @@ export const getAssistantDbStructure: GetAssistantStructure = async (body: {
 
   // TODO: retrieve the data structure from the database
   // to override the default data structure
+  // implement in service layer, not in agent layer
 
   const structure: AssistantDbMessageStructure = {
     ...result.parsed,
@@ -50,7 +52,10 @@ export const getAssistantDbStructure: GetAssistantStructure = async (body: {
     warehouseId: systemMessage.structure.warehouseId,
   };
 
+  const llmRaw = extractLLMRaw(result.raw);
+
   return {
     structure,
+    llmRaw,
   };
 };

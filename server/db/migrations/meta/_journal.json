@@ -15,6 +15,13 @@
       "when": 1740787601417,
       "tag": "0001_empty_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1740993165089,
+      "tag": "0002_safe_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

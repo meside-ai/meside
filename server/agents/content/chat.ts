@@ -3,6 +3,7 @@ import { BadRequestError } from "@/utils/error";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import type { GetAssistantStructure } from "../types/chat.interface";
 import {
+  extractLLMRaw,
   getChatModel,
   getMessagesPrompt,
   getSystemMessage,
@@ -48,7 +49,10 @@ export const getAssistantContentStructure: GetAssistantStructure =
       type: "assistantContent",
     };
 
+    const llmRaw = extractLLMRaw(result.raw);
+
     return {
       structure,
+      llmRaw,
     };
   };

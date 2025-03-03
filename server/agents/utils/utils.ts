@@ -1,9 +1,11 @@
 import { environment } from "@/configs/environment";
 import type { MessageEntity } from "@/db/schema/message";
 import { BadRequestError } from "@/utils/error";
+import type { BaseMessage } from "@langchain/core/messages";
 import { ChatDeepSeek } from "@langchain/deepseek";
 import { ChatOpenAI } from "@langchain/openai";
 import { getStructureContent } from "../agents";
+import type { LLMRaw } from "../types/chat.interface";
 
 export const convertMessageRole = (
   role: MessageEntity["messageRole"],
@@ -73,4 +75,18 @@ export const getChatModel = () => {
       apiKey: environment.AI_API_KEY,
     },
   });
+};
+
+export const extractLLMRaw = (raw: BaseMessage): LLMRaw => {
+  const input = raw.response_metadata.tokenUsage.promptTokens;
+  const output = raw.response_metadata.tokenUsage.completionTokens;
+  const model = raw.response_metadata.model_name;
+  const finishReason = raw.response_metadata.finish_reason;
+
+  return {
+    input,
+    output,
+    model,
+    finishReason,
+  };
 };
