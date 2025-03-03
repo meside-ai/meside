@@ -1,6 +1,8 @@
 import type { MessageDto } from "@/api/message.schema";
 import { MESSAGE_CONTENT_WIDTH } from "@/utils/message-width";
 import { Box, Button, Code, Text } from "@mantine/core";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { TableView } from "../db/table-view";
 import { Echarts } from "../echarts/echarts";
 import { usePreviewContext } from "../preview/preview-context";
@@ -79,7 +81,11 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
     return <Text>{message.structure.content}</Text>;
   }
   if (message.structure.type === "userContent") {
-    return <Text>{message.structure.content}</Text>;
+    return (
+      <Markdown remarkPlugins={[remarkGfm]}>
+        {message.structure.content}
+      </Markdown>
+    );
   }
   if (message.structure.type === "systemDb") {
     return (

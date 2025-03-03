@@ -1,7 +1,7 @@
 import { environment } from "@/configs/environment";
-import { pino } from "pino";
+import { type Logger, pino } from "pino";
 
-export const getLogger = () => {
+export const getLogger = (): Logger => {
   const loggerType = "server";
 
   if (environment.NODE_ENV === "production") {
