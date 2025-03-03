@@ -3,11 +3,13 @@ import type { MessageEntity } from "@/db/schema/message";
 import { BadRequestError } from "@/utils/error";
 import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import type { BaseMessage } from "@langchain/core/messages";
-import type { ChatPromptTemplate } from "@langchain/core/prompts";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { tool } from "@langchain/core/tools";
 import { ChatDeepSeek } from "@langchain/deepseek";
 import { ChatOpenAI } from "@langchain/openai";
 import type { ZodSchema } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 import { getStructureContent } from "../agents";
 import type { LLMRaw } from "../types/chat.interface";
 
@@ -98,22 +100,29 @@ export const extractLLMRaw = (raw: BaseMessage): LLMRaw => {
 export const getAIResult = async <T>(
   props: {
     llm: BaseChatModel;
-    prompt: ChatPromptTemplate<any, any>;
+    messages: {
+      role: "system" | "user" | "assistant";
+      content: string;
+    }[];
     name: string;
     description: string;
     structureSchema: ZodSchema<T>;
   },
   options: {
-    mode: "tool" | "structuredOutput";
+    mode: "tool" | "structuredOutput" | "text";
   },
 ): Promise<{
   parsed: T;
   llmRaw: LLMRaw;
 }> => {
-  const { llm, prompt, name, description, structureSchema } = props;
+  const { llm, messages, name, description, structureSchema } = props;
   const { mode } = options;
 
   if (mode === "structuredOutput") {
+    const prompt = ChatPromptTemplate.fromMessages(messages, {
+      templateFormat: "mustache",
+    });
+
     const chain = prompt.pipe(
       llm.withStructuredOutput(structureSchema, {
         includeRaw: true,
@@ -129,6 +138,10 @@ export const getAIResult = async <T>(
   }
 
   if (mode === "tool") {
+    const prompt = ChatPromptTemplate.fromMessages(messages, {
+      templateFormat: "mustache",
+    });
+
     const structureTool = tool(
       async (data) => {
         return data;
@@ -153,6 +166,70 @@ export const getAIResult = async <T>(
     return {
       parsed,
       llmRaw: extractLLMRaw(raw),
+    };
+  }
+
+  if (mode === "text") {
+    const jsonSchema = zodToJsonSchema(structureSchema, name);
+
+    const formatInstructions = [
+      "#Instructions: Respond only in valid JSON. The JSON object you return should match the following JSON Schema:",
+      JSON.stringify(jsonSchema, null, 2),
+    ].join("\n");
+
+    const systemMessage = messages.find((message) => message.role === "system");
+
+    if (!systemMessage) {
+      throw new BadRequestError("System message not found");
+    }
+
+    const newMessages = [
+      {
+        role: "user",
+        content: `${systemMessage.content}\n${formatInstructions}`,
+      },
+      ...messages.filter((message) => message.role !== "system"),
+    ];
+
+    const new2Messages: {
+      role: "user" | "assistant";
+      content: string;
+    }[] = [
+      {
+        role: "user",
+        content: newMessages.reduce((acc, message) => {
+          return `${acc}\n${message.content}`;
+        }, ""),
+      },
+    ];
+
+    const prompt = ChatPromptTemplate.fromMessages(new2Messages, {
+      templateFormat: "mustache",
+    });
+
+    const parser = new JsonOutputParser<any>();
+
+    const chain = prompt
+      .pipe(llm)
+      .pipe((result) => {
+        console.log("ai chuck", result);
+        return result;
+      })
+      .pipe(parser);
+
+    const raw = await chain.invoke({});
+    console.log("ai raw", raw);
+
+    const parsed = structureSchema.parse(raw);
+
+    return {
+      parsed,
+      llmRaw: {
+        input: 0,
+        output: 0,
+        model: "",
+        finishReason: "",
+      },
     };
   }
 

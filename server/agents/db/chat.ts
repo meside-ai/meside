@@ -1,7 +1,6 @@
 import { environment } from "@/configs/environment";
 import type { MessageEntity } from "@/db/schema/message";
 import { BadRequestError } from "@/utils/error";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
 import type { GetAssistantStructure } from "../types/chat.interface";
 import {
   getAIResult,
@@ -23,25 +22,15 @@ export const getAssistantDbStructure: GetAssistantStructure = async (body: {
     throw new BadRequestError("System message is not a systemDb message");
   }
 
-  const llm = getChatModel();
-
-  const messagesPrompt = await getMessagesPrompt(body.messages);
-
-  const prompt = ChatPromptTemplate.fromMessages(messagesPrompt, {
-    templateFormat: "mustache",
-  });
-
-  const structureSchema = assistantDbMessageStructure.pick({
-    sql: true,
-  });
-
   const result = await getAIResult(
     {
-      llm,
-      prompt,
+      llm: getChatModel(),
+      messages: await getMessagesPrompt(body.messages),
       name: "sql",
       description: "get SQL query",
-      structureSchema,
+      structureSchema: assistantDbMessageStructure.pick({
+        sql: true,
+      }),
     },
     {
       mode: environment.AI_MODE,

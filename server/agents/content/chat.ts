@@ -1,7 +1,6 @@
 import { environment } from "@/configs/environment";
 import type { MessageEntity } from "@/db/schema/message";
 import { BadRequestError } from "@/utils/error";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
 import type { GetAssistantStructure } from "../types/chat.interface";
 import {
   getAIResult,
@@ -26,25 +25,15 @@ export const getAssistantContentStructure: GetAssistantStructure =
       );
     }
 
-    const llm = getChatModel();
-
-    const messagesPrompt = await getMessagesPrompt(body.messages);
-
-    const prompt = ChatPromptTemplate.fromMessages(messagesPrompt, {
-      templateFormat: "mustache",
-    });
-
-    const structureSchema = assistantContentMessageStructure.pick({
-      content: true,
-    });
-
     const result = await getAIResult(
       {
-        llm,
-        prompt,
+        llm: getChatModel(),
+        messages: await getMessagesPrompt(body.messages),
         name: "content",
         description: "get content",
-        structureSchema,
+        structureSchema: assistantContentMessageStructure.pick({
+          content: true,
+        }),
       },
       {
         mode: environment.AI_MODE,
