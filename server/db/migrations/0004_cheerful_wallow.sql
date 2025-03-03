@@ -1,0 +1,1 @@
+ALTER TABLE "usage" ADD COLUMN "structure_type" text;

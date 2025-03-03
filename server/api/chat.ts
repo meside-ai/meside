@@ -165,6 +165,7 @@ export const chatApi = new OpenAPIHono()
           inputToken: llmRaw.input,
           outputToken: llmRaw.output,
           finishReason: llmRaw.finishReason,
+          structureType: structure.type,
         });
         return messages;
       }),
@@ -231,7 +232,7 @@ export const chatApi = new OpenAPIHono()
       ),
     ];
 
-    const { structure } = await getAgent(systemMessage)({
+    const { structure, llmRaw } = await getAgent(systemMessage)({
       messages: composedMessages,
     });
 
@@ -250,6 +251,18 @@ export const chatApi = new OpenAPIHono()
         name: structure.name,
       })
       .where(eq(threadTable.threadId, parentThread.threadId));
+
+    await getDrizzle().insert(usageTable).values({
+      usageId: cuid(),
+      messageId: null,
+      ownerId: authUser.userId,
+      orgId: authUser.orgId,
+      modelName: llmRaw.model,
+      inputToken: llmRaw.input,
+      outputToken: llmRaw.output,
+      finishReason: llmRaw.finishReason,
+      structureType: structure.type,
+    });
 
     return c.json({
       message,

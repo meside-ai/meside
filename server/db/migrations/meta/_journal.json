@@ -22,6 +22,20 @@
       "when": 1740993165089,
       "tag": "0002_safe_wendell_vaughn",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1740994672666,
+      "tag": "0003_smooth_nova",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1740994776519,
+      "tag": "0004_cheerful_wallow",
+      "breakpoints": true
     }
   ]
 }
