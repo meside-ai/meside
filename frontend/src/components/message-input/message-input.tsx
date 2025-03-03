@@ -31,6 +31,7 @@ import {
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useRef } from "react";
 import { messageInputSubmitEvent } from "./message-input-submit-event";
+import { jsonToMarkdown } from "./message-markdown";
 import { createMentionSuggestionOptions } from "./message-suggestion-options";
 
 export type MessageInputProps = {
@@ -106,11 +107,13 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
 
   useEffect(() => {
     const callback = messageInputSubmitEvent.listen(() => {
-      const text = editor?.getText()?.trim();
-
-      if (text) {
-        submit(text);
+      const json = editor?.getJSON();
+      if (!json) {
+        return;
       }
+      const text = jsonToMarkdown(json);
+
+      submit(text);
     });
 
     return () => {
@@ -185,42 +188,6 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
             <IconTableMinus />
           </ActionIcon>
         </ActionIcon.Group>
-        {/* <Button onClick={() => editor.chain().focus().mergeCells().run()}>
-          Merge cells
-        </Button>
-        <Button onClick={() => editor.chain().focus().splitCell().run()}>
-          Split cell
-        </Button>
-        <Button
-          onClick={() => editor.chain().focus().toggleHeaderColumn().run()}
-        >
-          Toggle header column
-        </Button>
-        <Button onClick={() => editor.chain().focus().toggleHeaderRow().run()}>
-          Toggle header row
-        </Button>
-        <Button onClick={() => editor.chain().focus().toggleHeaderCell().run()}>
-          Toggle header cell
-        </Button>
-        <Button onClick={() => editor.chain().focus().mergeOrSplit().run()}>
-          Merge or split
-        </Button>
-        <Button
-          onClick={() =>
-            editor.chain().focus().setCellAttribute("colspan", 2).run()
-          }
-        >
-          Set cell attribute
-        </Button>
-        <Button onClick={() => editor.chain().focus().fixTables().run()}>
-          Fix tables
-        </Button>
-        <Button onClick={() => editor.chain().focus().goToNextCell().run()}>
-          Go to next cell
-        </Button>
-        <Button onClick={() => editor.chain().focus().goToPreviousCell().run()}>
-          Go to previous cell
-        </Button> */}
       </Box>
       <EditorContent editor={editor} />
     </Box>
