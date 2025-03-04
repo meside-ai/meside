@@ -27,10 +27,14 @@ export const Echarts = ({
       return null;
     }
 
-    const func = new Function("data", echartsOptions);
-    const echartsConfig = func.call(null, data);
-
-    return echartsConfig;
+    try {
+      const func = new Function("data", echartsOptions);
+      const echartsConfig = func.call(null, data);
+      return echartsConfig;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }, [data, echartsOptions]);
 
   if (!options) {
