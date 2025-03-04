@@ -1,13 +1,14 @@
 import { environment } from "@/configs/environment";
 import type { MessageEntity } from "@/db/schema/message";
 import { BadRequestError } from "@/utils/error";
-import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
-import type { BaseMessage } from "@langchain/core/messages";
-import type { ChatPromptTemplate } from "@langchain/core/prompts";
+import type { AIMessage, BaseMessage } from "@langchain/core/messages";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { tool } from "@langchain/core/tools";
 import { ChatDeepSeek } from "@langchain/deepseek";
 import { ChatOpenAI } from "@langchain/openai";
 import type { ZodSchema } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 import { getStructureContent } from "../agents";
 import type { LLMRaw } from "../types/chat.interface";
 
@@ -95,25 +96,27 @@ export const extractLLMRaw = (raw: BaseMessage): LLMRaw => {
   };
 };
 
-export const getAIResult = async <T>(
-  props: {
-    llm: BaseChatModel;
-    prompt: ChatPromptTemplate<any, any>;
-    name: string;
-    description: string;
-    structureSchema: ZodSchema<T>;
-  },
-  options: {
-    mode: "tool" | "structuredOutput";
-  },
-): Promise<{
+export const getAIResult = async <T>(props: {
+  messages: {
+    role: "system" | "user" | "assistant";
+    content: string;
+  }[];
+  name: string;
+  description: string;
+  structureSchema: ZodSchema<T>;
+}): Promise<{
   parsed: T;
   llmRaw: LLMRaw;
 }> => {
-  const { llm, prompt, name, description, structureSchema } = props;
-  const { mode } = options;
+  const { messages, name, description, structureSchema } = props;
+  const llm = getChatModel();
+  const mode = environment.AI_MODE;
 
   if (mode === "structuredOutput") {
+    const prompt = ChatPromptTemplate.fromMessages(messages, {
+      templateFormat: "mustache",
+    });
+
     const chain = prompt.pipe(
       llm.withStructuredOutput(structureSchema, {
         includeRaw: true,
@@ -129,6 +132,10 @@ export const getAIResult = async <T>(
   }
 
   if (mode === "tool") {
+    const prompt = ChatPromptTemplate.fromMessages(messages, {
+      templateFormat: "mustache",
+    });
+
     const structureTool = tool(
       async (data) => {
         return data;
@@ -153,6 +160,68 @@ export const getAIResult = async <T>(
     return {
       parsed,
       llmRaw: extractLLMRaw(raw),
+    };
+  }
+
+  if (mode === "text") {
+    const jsonSchema = zodToJsonSchema(structureSchema, name);
+
+    const formatInstructions = [
+      "#Instructions: Respond only in valid JSON. The JSON object you return should match the following JSON Schema:",
+      JSON.stringify(jsonSchema, null, 2),
+    ].join("\n");
+
+    const systemMessage = messages.find((message) => message.role === "system");
+
+    if (!systemMessage) {
+      throw new BadRequestError("System message not found");
+    }
+
+    const combinedMessages: {
+      role: "user" | "assistant";
+      content: string;
+    }[] = [
+      {
+        role: "user",
+        content: [
+          {
+            role: "user",
+            content: `${systemMessage.content}\n${formatInstructions}`,
+          },
+          ...messages.filter((message) => message.role !== "system"),
+        ].reduce((acc, message) => {
+          return `${acc}\n${message.content}`;
+        }, ""),
+      },
+    ];
+
+    const prompt = ChatPromptTemplate.fromMessages(combinedMessages, {
+      templateFormat: "mustache",
+    });
+
+    const parser = new JsonOutputParser<Record<string, unknown>>();
+
+    let aiMessage: AIMessage | null = null;
+
+    const chain = prompt
+      .pipe(llm)
+      .pipe((result) => {
+        aiMessage = result;
+        return result;
+      })
+      .pipe(parser);
+
+    const raw = await chain.invoke({});
+
+    const parsed = structureSchema.parse(raw);
+
+    if (!aiMessage) {
+      throw new BadRequestError("AI message not found");
+    }
+
+    return {
+      parsed,
+      llmRaw: extractLLMRaw(aiMessage),
     };
   }
 
