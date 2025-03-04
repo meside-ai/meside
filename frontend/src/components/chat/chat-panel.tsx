@@ -58,8 +58,13 @@ export const ChatPanel = ({ threadId, setThreadId }: ChatPanelProps) => {
   }, [systemMessage]);
 
   return (
-    <Box w="100%" h="100%" style={{ overflow: "hidden", position: "relative" }}>
-      <Box h="100%" style={{ overflow: "hidden" }}>
+    <Box
+      w="100%"
+      h="100%"
+      display="flex"
+      style={{ flexDirection: "column", overflow: "hidden" }}
+    >
+      <Box flex={1} style={{ overflow: "hidden" }}>
         <ScrollArea h="100%" style={{ overflow: "hidden" }}>
           <Box mt="md" />
           {threadId && (
@@ -74,10 +79,10 @@ export const ChatPanel = ({ threadId, setThreadId }: ChatPanelProps) => {
               isSendingUserMessage={isSendingUserMessage}
             />
           )}
-          <Box h={200} />
+          <Box h={40} />
         </ScrollArea>
       </Box>
-      <Box style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}>
+      <Box>
         <Box px="md" pb="md">
           <Paper withBorder p="md" shadow="lg" radius="lg">
             {/* <Group mb="sm" gap="xs">
