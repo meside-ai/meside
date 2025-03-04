@@ -19,6 +19,9 @@ export function jsonToMarkdown(json: JSONContent): string {
     case "table":
       return processTable(json.content || []);
 
+    case "mention":
+      return `${json.attrs?.label ?? ""} `;
+
     default:
       return "";
   }

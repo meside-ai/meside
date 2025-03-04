@@ -1,3 +1,4 @@
+import { Button, Group, Loader, Text as MantineText } from "@mantine/core";
 import CodeBlock from "@tiptap/extension-code-block";
 import Document from "@tiptap/extension-document";
 import Gapcursor from "@tiptap/extension-gapcursor";
@@ -19,6 +20,7 @@ import {
 import "./message-input.css";
 import { ActionIcon, Box } from "@mantine/core";
 import {
+  IconArrowUp,
   IconColumnInsertLeft,
   IconColumnInsertRight,
   IconColumnRemove,
@@ -62,7 +64,6 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
 
   const editor = useEditor({
     extensions: [
-      EnterSubmit,
       CodeBlock,
       Document,
       Paragraph,
@@ -70,7 +71,8 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
       HardBreak,
       History,
       Placeholder.configure({
-        placeholder: "Write your question …",
+        placeholder: "Write your question, press shift+enter to submit",
+        showOnlyWhenEditable: false,
       }),
       Mention.configure({
         renderText({ node }) {
@@ -93,25 +95,22 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
       TableRow,
       TableHeader,
       TableCell,
+      EnterSubmit,
     ],
     content: "",
   });
 
   useEffect(() => {
-    if (loading) {
-      editor?.setOptions({ editable: false });
-    } else {
-      editor?.setOptions({ editable: true });
-    }
-  }, [editor, loading]);
-
-  useEffect(() => {
     const callback = messageInputSubmitEvent.listen(() => {
+      if (loading) {
+        return;
+      }
       const json = editor?.getJSON();
       if (!json) {
         return;
       }
       const text = jsonToMarkdown(json);
+      editor?.commands.clearContent(true);
 
       submit(text);
     });
@@ -119,7 +118,7 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
     return () => {
       messageInputSubmitEvent.removeListener(callback);
     };
-  }, [editor, submit]);
+  }, [editor, loading, submit]);
 
   if (!editor) {
     return null;
@@ -190,6 +189,23 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
         </ActionIcon.Group>
       </Box>
       <EditorContent editor={editor} />
+      <Group justify="space-between">
+        <MantineText size="xs" c="dimmed">
+          Tips: Use / to search table columns
+        </MantineText>
+        <Button
+          variant="light"
+          size="xs"
+          onClick={() => {
+            if (loading) {
+              return;
+            }
+            messageInputSubmitEvent.dispatch();
+          }}
+        >
+          {loading ? <Loader type="dots" /> : <IconArrowUp />}
+        </Button>
+      </Group>
     </Box>
   );
 };
@@ -197,7 +213,11 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
 const EnterSubmit = Extension.create({
   addKeyboardShortcuts() {
     return {
-      Enter: () => {
+      "Mod-Enter": () => {
+        messageInputSubmitEvent.dispatch();
+        return true;
+      },
+      "Shift-Enter": () => {
         messageInputSubmitEvent.dispatch();
         return true;
       },

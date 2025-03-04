@@ -1,5 +1,4 @@
-import { ScrollArea } from "@mantine/core";
-import { TableView } from "../db/table-view";
+import { TableVirtualView } from "../db/table-virtual-view";
 import { WarehouseEditor } from "../warehouse/warehouse-editor";
 import { usePreviewContext } from "./preview-context";
 import type { PreviewEntity } from "./types";
@@ -20,11 +19,7 @@ const PreviewContentCore = ({ preview }: { preview: PreviewEntity }) => {
   }
 
   if (preview.payload.type === "warehouseTable") {
-    return (
-      <ScrollArea w="100%" h="100%">
-        <TableView messageId={preview.payload.messageId} />
-      </ScrollArea>
-    );
+    return <TableVirtualView messageId={preview.payload.messageId} />;
   }
 
   return "not built yet";

@@ -1,6 +1,6 @@
 import { getWarehouseExecute } from "@/queries/warehouse";
 import { useQuery } from "@tanstack/react-query";
-import type * as echarts from "echarts";
+import * as echarts from "echarts";
 import { useMemo } from "react";
 import { EChartCore } from "./echarts-core";
 
@@ -27,10 +27,16 @@ export const Echarts = ({
       return null;
     }
 
-    const func = new Function("data", echartsOptions);
-    const echartsConfig = func.call(null, data);
-
-    return echartsConfig;
+    try {
+      const func = new Function("data", "echarts", echartsOptions);
+      const echartsConfig = func.call(null, data, echarts);
+      return echartsConfig;
+    } catch (error) {
+      console.info("echarts config error start <--");
+      console.error(error);
+      console.info("echarts config error end -->");
+      return null;
+    }
   }, [data, echartsOptions]);
 
   if (!options) {
