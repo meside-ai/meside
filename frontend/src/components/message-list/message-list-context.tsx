@@ -7,10 +7,12 @@ export const MessageListContext = createContext<{
   setThreadId: (threadId: string) => void;
   isGettingAssistantResponse?: boolean;
   isSendingUserMessage?: boolean;
+  assistantError?: Error;
 }>({
   messages: [],
   threadId: "",
   setThreadId: () => {},
   isGettingAssistantResponse: false,
   isSendingUserMessage: false,
+  assistantError: undefined,
 });

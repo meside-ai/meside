@@ -56,12 +56,7 @@ export const MessageListItem = ({
       <Box flex={1}>
         <Box mb="xs">
           {message.messageRole === "ASSISTANT" && message.reason && (
-            <Text mb="xs" size="xs">
-              {message.reason}
-            </Text>
-          )}
-          {message.messageRole === "ASSISTANT" && message.text && (
-            <Markdown remarkPlugins={[remarkGfm]}>{message.text}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]}>{message.reason}</Markdown>
           )}
           <MessageContent message={message} />
         </Box>

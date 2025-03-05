@@ -3,7 +3,6 @@ import { getDrizzle } from "@/db/db";
 import { type MessageEntity, messageTable } from "@/db/schema/message";
 import { threadTable } from "@/db/schema/thread";
 import { usageTable } from "@/db/schema/usage";
-import { getMessageDtos } from "@/mappers/message";
 import { getAuth } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import {
@@ -13,20 +12,15 @@ import {
 } from "@/utils/error";
 import { getSystemMessage } from "@/utils/message";
 import { firstOrNotCreated, firstOrNotFound } from "@/utils/toolkit";
-import { streamSqlGeneration } from "@/workflows/sql-generation";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { MessageRole } from "@prisma/client";
 import { and, asc, eq, isNull } from "drizzle-orm";
-import { omit } from "es-toolkit/compat";
-import { streamSSE } from "hono/streaming";
 import {
   chatAssistantRoute,
-  chatAssistantStreamRoute,
   chatSystemRoute,
   chatUserRoute,
   nameAssistantRoute,
 } from "./chat.schema";
-import type { MessageDto } from "./message.schema";
 
 export const chatApi = new OpenAPIHono()
   .openapi(chatSystemRoute, async (c) => {
@@ -275,90 +269,6 @@ export const chatApi = new OpenAPIHono()
     return c.json({
       message,
     });
-  })
-  .openapi(chatAssistantStreamRoute, async (c) => {
-    const body = c.req.valid("query");
-
-    const authUser = getAuth(c);
-
-    if (!authUser) {
-      throw new UnauthorizedError();
-    }
-
-    const parentThread = firstOrNotFound(
-      await getDrizzle()
-        .select()
-        .from(threadTable)
-        .where(eq(threadTable.threadId, body.parentThreadId)),
-      "Failed to get parent thread",
-    );
-
-    const messages = await getDrizzle()
-      .select()
-      .from(messageTable)
-      .where(
-        and(
-          eq(messageTable.threadId, parentThread.threadId),
-          isNull(messageTable.deletedAt),
-        ),
-      )
-      .orderBy(asc(messageTable.createdAt));
-
-    if (messages.length === 0) {
-      throw new NotFoundError("No messages found");
-    }
-
-    const systemMessage = getSystemMessage(messages);
-
-    if (!systemMessage) {
-      throw new BadRequestError("No system message found");
-    }
-
-    const aiStream = await streamSqlGeneration({
-      messages,
-    });
-
-    return streamSSE(c, async (stream) => {
-      const reader = aiStream.getReader();
-      const initial: MessageEntity | Record<string, unknown> = {};
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-            const message = await persistMessage(initial);
-            Object.assign(initial, message);
-            await stream.writeSSE({
-              data: JSON.stringify(initial),
-            });
-            break;
-          }
-          Object.assign(initial, value);
-          await stream.writeSSE({
-            data: JSON.stringify(initial),
-          });
-        }
-      } finally {
-        reader.releaseLock();
-      }
-    });
   });
 
 export type ChatApiType = typeof chatApi;
-
-const persistMessage = async (
-  rawMessage: MessageEntity | Record<string, unknown>,
-): Promise<MessageDto> => {
-  const messageEntity = rawMessage as MessageEntity;
-
-  const message = firstOrNotCreated(
-    await getDrizzle()
-      .insert(messageTable)
-      .values(omit(messageEntity, ["createdAt", "updatedAt", "deletedAt"]))
-      .returning(),
-    "Failed to create assistant message",
-  );
-
-  const messageDtos = await getMessageDtos([message]);
-
-  return messageDtos[0];
-};

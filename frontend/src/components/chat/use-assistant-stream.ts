@@ -1,4 +1,5 @@
-import type { ChatAssistantStreamResponse } from "@/api/chat.schema";
+import { getStreamAssistantUrl } from "@/api";
+import type { StreamAssistantResponse } from "@/api/stream.schema";
 import { useRef, useState } from "react";
 
 export const useAssistantStream = () => {
@@ -8,7 +9,7 @@ export const useAssistantStream = () => {
 
   const stream = (
     threadId: string,
-    callback: (message: ChatAssistantStreamResponse) => void,
+    callback: (message: StreamAssistantResponse) => void,
   ) => {
     setIsLoading(true);
     setError(null);
@@ -18,13 +19,13 @@ export const useAssistantStream = () => {
     }
 
     try {
-      const url = `/aidw/api/chat/assistant-stream?parentThreadId=${threadId}`;
+      const url = getStreamAssistantUrl(threadId);
       const eventSource = new EventSource(url);
       eventSourceRef.current = eventSource;
 
       eventSource.onmessage = (event) => {
         try {
-          const chunk: ChatAssistantStreamResponse = JSON.parse(event.data);
+          const chunk: StreamAssistantResponse = JSON.parse(event.data);
           callback(chunk);
         } catch (e) {
           console.error("Error parsing message:", e);

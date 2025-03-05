@@ -15,8 +15,11 @@ export const useSendMessage = ({
   const { mutateAsync: sendUserMessage, isPending: isSendingUserMessage } =
     useMutation(getChatUser());
 
-  const { stream, isLoading: isGettingAssistantResponse } =
-    useAssistantStream();
+  const {
+    stream,
+    isLoading: isGettingAssistantResponse,
+    error: assistantError,
+  } = useAssistantStream();
 
   const isLoading = useMemo(
     () => isSendingUserMessage || isGettingAssistantResponse,
@@ -53,8 +56,6 @@ export const useSendMessage = ({
       );
 
       stream(parentThreadId, (messageChunk) => {
-        console.log("Received chunk:", messageChunk);
-
         queryClient.setQueryData(
           getMessageList({
             parentThreadId,
@@ -98,5 +99,6 @@ export const useSendMessage = ({
     isLoading,
     isSendingUserMessage,
     isGettingAssistantResponse,
+    assistantError,
   };
 };

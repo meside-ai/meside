@@ -1,20 +1,20 @@
 import type { MessageDto } from "@/api/message.schema";
 import { MESSAGE_CONTENT_WIDTH } from "@/utils/message-width";
-import { Box, Code, Text } from "@mantine/core";
+import { Box, Button, Code, Text } from "@mantine/core";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { TableView } from "../db/table-view";
 import { Echarts } from "../echarts/echarts";
+import { usePreviewContext } from "../preview/preview-context";
 import { WarehouseCard } from "../warehouse/warehouse-card";
 
 export const MessageContent = ({ message }: { message: MessageDto }) => {
+  const { openPreview } = usePreviewContext();
+
   if (!message?.structure?.type) {
     return <Text>no type</Text>;
   }
-  if (message.structure.type === "assistantContent") {
-    return <Text>{message.structure.content}</Text>;
-  }
-  if (message.structure.type === "assistantDb") {
+  if ("sql" in message.structure && message.structure.sql) {
     return (
       <Box>
         <Box w={MESSAGE_CONTENT_WIDTH} mb="md">
@@ -35,10 +35,28 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
         >
           <TableView messageId={message.messageId} compact />
         </Box>
+        <Button
+          size="xs"
+          variant="light"
+          onClick={() => {
+            openPreview({
+              name: "DB Query", // TODO: get the name from the parent thread
+              payload: { type: "warehouseTable", messageId: message.messageId },
+            });
+          }}
+          fullWidth
+        >
+          View more data
+        </Button>
       </Box>
     );
   }
-  if (message.structure.type === "assistantEcharts") {
+  if (
+    "echartsOptions" in message.structure &&
+    "warehouseId" in message.structure &&
+    message.structure.echartsOptions &&
+    message.structure.warehouseId
+  ) {
     return (
       <Box>
         <Box
@@ -70,6 +88,9 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
         {message.structure.content}
       </Markdown>
     );
+  }
+  if (message.structure.type === "assistantContent") {
+    return <Text>{message.structure.content}</Text>;
   }
   if (message.structure.type === "systemDb") {
     return (

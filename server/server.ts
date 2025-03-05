@@ -5,6 +5,7 @@ import { catalogApi } from "./api/catalog";
 import { chatApi } from "./api/chat";
 import { healthApi } from "./api/health";
 import { messageApi } from "./api/message";
+import { streamApi } from "./api/stream";
 import { threadApi } from "./api/thread";
 import { warehouseApi } from "./api/warehouse";
 import { createErrorHandler } from "./utils/error-handler";
@@ -17,6 +18,7 @@ app.route("/aidw/api/catalog", catalogApi);
 app.route("/aidw/api/chat", chatApi);
 app.route("/aidw/api/message", messageApi);
 app.route("/aidw/api/thread", threadApi);
+app.route("/aidw/api/stream", streamApi);
 
 app.get("/assets/*", serveStatic({ root: "./dist" }));
 app.get("/*", serveStatic({ path: "./dist/index.html" }));
