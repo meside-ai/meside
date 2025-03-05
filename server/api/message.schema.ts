@@ -1,19 +1,19 @@
 import { messageEntitySchema } from "@/db/schema/message";
-import { userEntitySchema } from "@/db/schema/user";
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
-import { threadDtoSchema } from "./thread.schema";
 
-export const messageDtoSchema = messageEntitySchema.extend({
-  owner: userEntitySchema
-    .pick({
-      userId: true,
-      name: true,
-      avatar: true,
-    })
-    .optional(),
-  parentThread: threadDtoSchema,
-  childThreads: z.array(threadDtoSchema),
+export const messageDtoSchema = messageEntitySchema.pick({
+  messageId: true,
+  threadId: true,
+  ownerId: true,
+  orgId: true,
+  messageRole: true,
+  reason: true,
+  text: true,
+  structure: true,
+  deletedAt: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export type MessageDto = z.infer<typeof messageDtoSchema>;

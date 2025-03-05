@@ -41,15 +41,15 @@ export class AIStructure {
                 initial.text,
                 input.schema,
               );
-              controller.enqueue(
-                Object.assign(initial, {
-                  structure,
-                }),
-              );
+              Object.assign(initial, {
+                structure,
+              });
+              controller.enqueue(initial);
               controller.close();
               break;
             }
-            controller.enqueue(Object.assign(initial, value));
+            Object.assign(initial, value);
+            controller.enqueue(initial);
           }
         } finally {
           reader.releaseLock();
@@ -64,11 +64,16 @@ export class AIStructure {
 const extractStructureFromAICompletionText = (
   text: string,
   schema: z.ZodSchema,
-) => {
+): AIStructureOutput["structure"] | null => {
   const jsonText = text.match(/```json\n([\s\S]*)\n```/);
   if (!jsonText) {
-    throw new Error("No JSON found in AI completion text");
+    return null;
   }
-  const json = JSON.parse(jsonText[1]);
-  return schema.parse(json);
+  try {
+    const json = JSON.parse(jsonText[1]);
+    return schema.parse(json);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 };

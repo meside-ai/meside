@@ -3,7 +3,7 @@ import {
   messageStructureSchema,
 } from "@/agents/types/message-structure";
 import { relations } from "drizzle-orm";
-import { json, pgEnum, pgTable } from "drizzle-orm/pg-core";
+import { json, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
@@ -21,6 +21,8 @@ export const messageTable = pgTable("message", {
   ownerId: foreignCuid("owner_id").notNull(),
   orgId: foreignCuid("org_id").notNull(),
   messageRole: messageRole("message_role").notNull(),
+  reason: text("reason").notNull().default(""),
+  text: text("text").notNull().default(""),
   structure: json("structure").notNull().$type<MessageStructure>(),
   ...useTimestamp(),
 });

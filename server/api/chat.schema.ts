@@ -157,15 +157,7 @@ export const chatAssistantStreamRequestSchema = z.object({
   parentThreadId: z.string(),
 });
 
-export const chatAssistantStreamResponseSchema = z.object({
-  message: messageEntitySchema.nullable(),
-  stream: z
-    .object({
-      reason: z.string(),
-      text: z.string(),
-    })
-    .nullable(),
-});
+export const chatAssistantStreamResponseSchema = messageEntitySchema;
 
 export type ChatAssistantStreamRequest = z.infer<
   typeof chatAssistantStreamRequestSchema
@@ -175,16 +167,10 @@ export type ChatAssistantStreamResponse = z.infer<
 >;
 
 export const chatAssistantStreamRoute = createRoute({
-  method: "post",
+  method: "get",
   path: "/assistant-stream",
   request: {
-    body: {
-      content: {
-        "application/json": {
-          schema: chatAssistantStreamRequestSchema,
-        },
-      },
-    },
+    query: chatAssistantStreamRequestSchema,
   },
   responses: {
     200: {

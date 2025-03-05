@@ -26,4 +26,5 @@ app.onError(createErrorHandler());
 export default {
   ...app,
   port: environment.PORT,
+  idleTimeout: environment.IDLE_TIMEOUT,
 };

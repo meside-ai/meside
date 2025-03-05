@@ -27,6 +27,11 @@ export const environmentSchema = z.object({
   SEED_WAREHOUSE_DATABASE: z.string().optional(),
   SEED_WAREHOUSE_USERNAME: z.string().optional(),
   SEED_WAREHOUSE_PASSWORD: z.string().optional(),
+  IDLE_TIMEOUT: z
+    .string()
+    .optional()
+    .default("20")
+    .transform((val) => Number.parseInt(val)),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);

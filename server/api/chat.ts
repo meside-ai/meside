@@ -1,11 +1,10 @@
 import { getAgent } from "@/agents/agents";
-import type { AIStructureOutput } from "@/ai/ai-structure";
 import { getDrizzle } from "@/db/db";
 import { type MessageEntity, messageTable } from "@/db/schema/message";
 import { threadTable } from "@/db/schema/thread";
 import { usageTable } from "@/db/schema/usage";
 import { getMessageDtos } from "@/mappers/message";
-import { type AuthUser, getAuth } from "@/utils/auth";
+import { getAuth } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import {
   BadRequestError,
@@ -18,9 +17,9 @@ import { streamSqlGeneration } from "@/workflows/sql-generation";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { MessageRole } from "@prisma/client";
 import { and, asc, eq, isNull } from "drizzle-orm";
+import { omit } from "es-toolkit/compat";
 import { streamSSE } from "hono/streaming";
 import {
-  type ChatAssistantStreamResponse,
   chatAssistantRoute,
   chatAssistantStreamRoute,
   chatSystemRoute,
@@ -221,6 +220,8 @@ export const chatApi = new OpenAPIHono()
       messageRole: MessageRole.SYSTEM,
       ownerId: authUser.userId,
       orgId: authUser.orgId,
+      reason: "",
+      text: "",
       structure: {
         type: "systemName",
         threadId: parentThread.threadId,
@@ -276,7 +277,7 @@ export const chatApi = new OpenAPIHono()
     });
   })
   .openapi(chatAssistantStreamRoute, async (c) => {
-    const body = c.req.valid("json");
+    const body = c.req.valid("query");
 
     const authUser = getAuth(c);
 
@@ -319,33 +320,21 @@ export const chatApi = new OpenAPIHono()
 
     return streamSSE(c, async (stream) => {
       const reader = aiStream.getReader();
-      const initial: AIStructureOutput = {
-        reason: "",
-        text: "",
-        promptTokens: 0,
-        completionTokens: 0,
-        structure: null,
-      };
+      const initial: MessageEntity | Record<string, unknown> = {};
       try {
         while (true) {
           const { done, value } = await reader.read();
           if (done) {
-            const message = await persistMessage({
-              threadId: parentThread.threadId,
-              authUser,
-              messageRole: MessageRole.ASSISTANT,
-              structure: initial.structure,
-              inputToken: initial.promptTokens,
-              outputToken: initial.completionTokens,
-            });
+            const message = await persistMessage(initial);
+            Object.assign(initial, message);
             await stream.writeSSE({
-              data: JSON.stringify(getStreamData(initial, message)),
+              data: JSON.stringify(initial),
             });
             break;
           }
-          const streamResponse = Object.assign(initial, value);
+          Object.assign(initial, value);
           await stream.writeSSE({
-            data: JSON.stringify(getStreamData(streamResponse, null)),
+            data: JSON.stringify(initial),
           });
         }
       } finally {
@@ -356,68 +345,16 @@ export const chatApi = new OpenAPIHono()
 
 export type ChatApiType = typeof chatApi;
 
-const getStreamData = (
-  output: AIStructureOutput,
-  message: MessageDto | null,
-): ChatAssistantStreamResponse => {
-  return {
-    message,
-    stream: {
-      reason: output.reason,
-      text: output.text,
-    },
-  };
-};
-
-const persistMessage = async (props: {
-  threadId: string;
-  authUser: AuthUser;
-  messageRole: MessageRole;
-  structure: MessageEntity["structure"];
-  inputToken: number;
-  outputToken: number;
-}): Promise<MessageDto> => {
-  const {
-    threadId,
-    authUser,
-    messageRole,
-    structure,
-    inputToken,
-    outputToken,
-  } = props;
+const persistMessage = async (
+  rawMessage: MessageEntity | Record<string, unknown>,
+): Promise<MessageDto> => {
+  const messageEntity = rawMessage as MessageEntity;
 
   const message = firstOrNotCreated(
-    await getDrizzle().transaction(async (tx) => {
-      const messages = await tx
-        .insert(messageTable)
-        .values({
-          messageId: cuid(),
-          threadId,
-          messageRole,
-          ownerId: authUser.userId,
-          orgId: authUser.orgId,
-          structure,
-        })
-        .returning();
-      await tx
-        .update(threadTable)
-        .set({
-          hasQuestions: true,
-        })
-        .where(eq(threadTable.threadId, threadId));
-      await tx.insert(usageTable).values({
-        usageId: cuid(),
-        messageId: messages[0].messageId,
-        ownerId: authUser.userId,
-        orgId: authUser.orgId,
-        modelName: "unknown",
-        inputToken,
-        outputToken,
-        finishReason: "unknown",
-        structureType: structure.type,
-      });
-      return messages;
-    }),
+    await getDrizzle()
+      .insert(messageTable)
+      .values(omit(messageEntity, ["createdAt", "updatedAt", "deletedAt"]))
+      .returning(),
     "Failed to create assistant message",
   );
 
