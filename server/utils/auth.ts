@@ -1,13 +1,13 @@
 import type { Context } from "hono";
 import { UnauthorizedError } from "./error";
 
-export const getAuth = (
-  c: Context,
-): {
+export type AuthUser = {
   userId: string;
   name: string;
   orgId: string;
-} | null => {
+};
+
+export const getAuth = (c: Context): AuthUser | null => {
   return {
     userId: "io56027z7qwd25mzq6upq947",
     orgId: "hkwgx29khaflgmm5c8ipp79r",

@@ -151,3 +151,49 @@ export const nameAssistantRoute = createRoute({
     },
   },
 });
+
+// chatAssistantStream
+export const chatAssistantStreamRequestSchema = z.object({
+  parentThreadId: z.string(),
+});
+
+export const chatAssistantStreamResponseSchema = z.object({
+  message: messageEntitySchema.nullable(),
+  stream: z
+    .object({
+      reason: z.string(),
+      text: z.string(),
+    })
+    .nullable(),
+});
+
+export type ChatAssistantStreamRequest = z.infer<
+  typeof chatAssistantStreamRequestSchema
+>;
+export type ChatAssistantStreamResponse = z.infer<
+  typeof chatAssistantStreamResponseSchema
+>;
+
+export const chatAssistantStreamRoute = createRoute({
+  method: "post",
+  path: "/assistant-stream",
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: chatAssistantStreamRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: chatAssistantStreamResponseSchema,
+        },
+      },
+      description: "Send a assistant message",
+    },
+  },
+});
