@@ -1,5 +1,5 @@
 import { getDrizzle } from "@/db/db";
-import { columnModel } from "@/db/schema/column";
+import { catalogTable } from "@/db/schema/catalog";
 import { warehouseTable } from "@/db/schema/warehouse";
 import { BadRequestError } from "@/utils/error";
 import { firstOrNotCreated } from "@/utils/toolkit";
@@ -11,13 +11,13 @@ export const getSystemDbMessageContent: GetContent = async ({ message }) => {
     throw new BadRequestError("System message is not a systemDb message");
   }
 
-  const columns = await getDrizzle()
+  const catalogs = await getDrizzle()
     .select()
-    .from(columnModel)
+    .from(catalogTable)
     .where(
       and(
-        eq(columnModel.warehouseId, message.structure.warehouseId),
-        isNull(columnModel.deletedAt),
+        eq(catalogTable.warehouseId, message.structure.warehouseId),
+        isNull(catalogTable.deletedAt),
       ),
     );
   const warehouse = firstOrNotCreated(
@@ -28,11 +28,11 @@ export const getSystemDbMessageContent: GetContent = async ({ message }) => {
     "Warehouse not found",
   );
   const tableMarkdownHeader =
-    "| Table Name | Column Name | Column Type | Description |";
-  const tableMarkdownSeparator = "| --- | --- | --- | --- |";
-  const columnTableMarkdown = columns
-    .map((column) => {
-      return `| ${column.tableName} | ${column.columnName} | ${column.columnType} | ${column.description} |`;
+    "| Schema Name | Table Name | Column Name | Column Type | Description |";
+  const tableMarkdownSeparator = "| --- | --- | --- | --- | --- |";
+  const catalogTableMarkdown = catalogs
+    .map((catalog) => {
+      return `| ${catalog.schemaName} | ${catalog.tableName} | ${catalog.columnName} | ${catalog.columnType} | ${catalog.description} |`;
     })
     .join("\n");
   const warehouseType = warehouse.type;
@@ -41,7 +41,7 @@ export const getSystemDbMessageContent: GetContent = async ({ message }) => {
   Table schema:
   ${tableMarkdownHeader}
   ${tableMarkdownSeparator}
-  ${columnTableMarkdown}
+  ${catalogTableMarkdown}
   `;
 
   return {

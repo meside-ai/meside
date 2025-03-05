@@ -43,7 +43,7 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
           variant="light"
           onClick={() => {
             openPreview({
-              name: message?.parentThread.name ?? "DB Query",
+              name: message?.parentThread?.name ?? "DB Query",
               payload: { type: "warehouseTable", messageId: message.messageId },
             });
           }}

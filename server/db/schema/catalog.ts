@@ -4,7 +4,7 @@ import type { z } from "zod";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
 import { warehouseType } from "./warehouse";
 
-export const catalogModel = pgTable("catalog", {
+export const catalogTable = pgTable("catalog", {
   catalogId: primaryKeyCuid("catalog_id"),
   warehouseId: foreignCuid("warehouse_id").notNull(),
   warehouseType: warehouseType("warehouse_type").notNull(),
@@ -18,6 +18,6 @@ export const catalogModel = pgTable("catalog", {
   ...useTimestamp(),
 });
 
-export const catalogModelSchema = createSelectSchema(catalogModel);
+export const catalogEntitySchema = createSelectSchema(catalogTable);
 
-export type CatalogModel = z.infer<typeof catalogModelSchema>;
+export type CatalogEntity = z.infer<typeof catalogEntitySchema>;

@@ -4,7 +4,7 @@ import type { z } from "zod";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
 import { warehouseType } from "./warehouse";
 
-export const relationModel = pgTable(
+export const relationTable = pgTable(
   "relation",
   {
     relationId: primaryKeyCuid("relation_id"),
@@ -24,6 +24,6 @@ export const relationModel = pgTable(
   (t) => [unique().on(t.fullName, t.foreignFullName)],
 );
 
-export const relationModelSchema = createSelectSchema(relationModel);
+export const relationEntitySchema = createSelectSchema(relationTable);
 
-export type RelationModel = z.infer<typeof relationModelSchema>;
+export type RelationEntity = z.infer<typeof relationEntitySchema>;

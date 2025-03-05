@@ -1,5 +1,5 @@
 import { getDrizzle } from "@/db/db";
-import { columnModel } from "@/db/schema/column";
+import { catalogTable } from "@/db/schema/catalog";
 import { messageTable } from "@/db/schema/message";
 import { warehouseTable } from "@/db/schema/warehouse";
 import { getWarehouseDtos } from "@/mappers/warehouse";
@@ -118,16 +118,16 @@ export const warehouseApi = new OpenAPIHono()
       throw new NotFoundError("Warehouse not found");
     }
 
-    const column = firstOrNotFound(
+    const catalog = firstOrNotFound(
       await getDrizzle()
         .select()
-        .from(columnModel)
-        .where(eq(columnModel.tableName, tableName))
+        .from(catalogTable)
+        .where(eq(catalogTable.tableName, tableName))
         .limit(1),
       "Table not found",
     );
 
-    if (!column) {
+    if (!catalog) {
       throw new NotFoundError("Table not found");
     }
 

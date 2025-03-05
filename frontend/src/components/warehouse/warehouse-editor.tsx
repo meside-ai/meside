@@ -1,5 +1,8 @@
-import type { ColumnListResponse } from "@/api/column.schema";
-import { getColumnList, getColumnLoad } from "@/queries/column";
+import {
+  type CatalogDto,
+  getCatalogList,
+  getCatalogLoad,
+} from "@/queries/catalog";
 import {
   Box,
   Button,
@@ -19,11 +22,11 @@ export type WarehouseEditorProps = {
 export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
   const queryClient = useQueryClient();
 
-  const columnListResult = useQuery(getColumnList({ warehouseId }));
+  const catalogListResult = useQuery(getCatalogList({ warehouseId }));
 
   const tables = useMemo(() => {
     // group by tableName
-    return columnListResult.data?.columns.reduce(
+    return catalogListResult.data?.catalogs.reduce(
       (acc, item) => {
         acc[item.tableName] = [
           ...(acc[item.tableName] || []),
@@ -36,14 +39,14 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
         ];
         return acc;
       },
-      {} as Record<string, ColumnListResponse["columns"]>
+      {} as Record<string, CatalogDto[]>
     );
-  }, [columnListResult.data?.columns]);
+  }, [catalogListResult.data?.catalogs]);
 
-  const columnLoadMutation = useMutation({
-    ...getColumnLoad(),
+  const catalogLoadMutation = useMutation({
+    ...getCatalogLoad(),
     onSuccess: () => {
-      queryClient.invalidateQueries(getColumnList({ warehouseId }));
+      queryClient.invalidateQueries(getCatalogList({ warehouseId }));
     },
   });
 
@@ -56,12 +59,12 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
       <Box flex={1} style={{ overflow: "hidden" }}>
         <ScrollArea h="100%">
           <Paper p="md" shadow="none">
-            {!columnListResult.isFetching && (
+            {!catalogListResult.isFetching && (
               <Box>
                 <Button
                   onClick={() =>
                     warehouseId &&
-                    columnLoadMutation.mutateAsync({ warehouseId })
+                    catalogLoadMutation.mutateAsync({ warehouseId })
                   }
                 >
                   refresh columns
@@ -76,21 +79,19 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
   );
 };
 
-const TableList = ({
-  tables,
-}: {
-  tables: Record<string, ColumnListResponse["columns"]>;
-}) => {
+const TableList = ({ tables }: { tables: Record<string, CatalogDto[]> }) => {
   return (
     <Box>
-      {Object.entries(tables).map(([tableName, columns]) => (
+      {Object.entries(tables).map(([tableName, catalogs]) => (
         <Box key={tableName}>
-          <Title order={6}>{tableName}</Title>
+          <Title order={6}>
+            {catalogs[0].schemaName}.{tableName}
+          </Title>
           <Box pl="md">
-            {columns.map((column) => (
-              <Group key={column.columnId} justify="space-between">
-                <Text>{column.columnName}</Text>
-                <Text size="xs">{column.columnType}</Text>
+            {catalogs.map((catalog) => (
+              <Group key={catalog.catalogId} justify="space-between">
+                <Text>{catalog.columnName}</Text>
+                <Text size="xs">{catalog.columnType}</Text>
               </Group>
             ))}
           </Box>
