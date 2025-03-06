@@ -76,14 +76,13 @@ export const ThreadPanel = () => {
 
   const { data } = useQuery(
     getThreadList({
-      parentMessageId: null,
       createdAtSort: "desc",
     })
   );
 
   return (
     <Box style={{ height: "100%", overflow: "overflow" }}>
-      <ScrollArea h="100%">
+      <ScrollArea h="100%" scrollbars="y">
         <Box mx="md">
           {data?.threads.map((thread) => (
             <NavLink

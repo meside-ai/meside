@@ -2,10 +2,20 @@
 
 ## 0.1
 
-- [ ] Support for BigQuery
-- [ ] Scheduled data transformations
-- [ ] Streaming answers with loading indicators
-- [ ] Table optimization
-- [ ] Data export functionality
-- [ ] SQL editor integration
-- [ ] Warehouse model labeling
+- [x] Stream answers with loading indicators 👍
+- [x] Optimize the table UI 👍
+- [ ] Integrate SQL editor 👎
+- [ ] Parse warehouse model relations 🏗️
+- [ ] Label warehouse model 👎
+- [ ] Rearrange threads and messages in the UI to make it easier to modify the question 🏗️
+
+## 0.2
+
+- [ ] Support BigQuery 👍
+- [ ] Schedule data transformations 👍
+- [ ] Limit table result count (maximum 5K rows)
+
+## 0.3
+
+- [ ] Export data to CSV, JSON, and Markdown
+- [ ] Stream table results

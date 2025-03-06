@@ -8,16 +8,18 @@ export type ConnectionConfig = {
   password: string;
 };
 
-export type WarehouseFactoryColumn = {
+export type WarehouseFactoryCatalog = {
+  schemaName: string;
   tableName: string;
   columnName: string;
   columnType: string;
+  description?: string;
 };
 
 export interface Warehouse {
-  getColumns: (
+  getCatalogs: (
     connection: ConnectionConfig,
-  ) => Promise<WarehouseFactoryColumn[]>;
+  ) => Promise<WarehouseFactoryCatalog[]>;
   query: (
     connection: ConnectionConfig,
     sql: string,

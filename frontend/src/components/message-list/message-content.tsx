@@ -14,10 +14,7 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
   if (!message?.structure?.type) {
     return <Text>no type</Text>;
   }
-  if (message.structure.type === "assistantContent") {
-    return <Text>{message.structure.content}</Text>;
-  }
-  if (message.structure.type === "assistantDb") {
+  if (message.structure.type === "assistantDb" && message.structure.sql) {
     return (
       <Box>
         <Box w={MESSAGE_CONTENT_WIDTH} mb="md">
@@ -43,7 +40,7 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
           variant="light"
           onClick={() => {
             openPreview({
-              name: message?.parentThread.name ?? "DB Query",
+              name: message?.parentThread?.name ?? "DB Query",
               payload: { type: "warehouseTable", messageId: message.messageId },
             });
           }}
@@ -54,7 +51,11 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
       </Box>
     );
   }
-  if (message.structure.type === "assistantEcharts") {
+  if (
+    message.structure.type === "assistantEcharts" &&
+    message.structure.echartsOptions &&
+    message.structure.warehouseId
+  ) {
     return (
       <Box>
         <Box
@@ -87,6 +88,9 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
       </Markdown>
     );
   }
+  if (message.structure.type === "assistantContent") {
+    return <Text>{message.structure.content}</Text>;
+  }
   if (message.structure.type === "systemDb") {
     return (
       <Box>
@@ -107,5 +111,5 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
       </Text>
     );
   }
-  return <Text>unknown</Text>;
+  return null;
 };

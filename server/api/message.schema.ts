@@ -12,8 +12,8 @@ export const messageDtoSchema = messageEntitySchema.extend({
       avatar: true,
     })
     .optional(),
-  parentThread: threadDtoSchema,
-  childThreads: z.array(threadDtoSchema),
+  parentThread: threadDtoSchema.optional(),
+  childThreads: z.array(threadDtoSchema).optional(),
 });
 
 export type MessageDto = z.infer<typeof messageDtoSchema>;

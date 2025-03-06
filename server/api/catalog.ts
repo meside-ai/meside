@@ -1,20 +1,22 @@
 import { getDrizzle } from "@/db/db";
-import { columnModel } from "@/db/schema/column";
+import { catalogTable } from "@/db/schema/catalog";
 import { warehouseTable } from "@/db/schema/warehouse";
+import { getAuthOrUnauthorized } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import { NotFoundError } from "@/utils/error";
 import { WarehouseFactory } from "@/warehouse/warehouse";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { and, eq, ilike, isNull, or } from "drizzle-orm";
+import { and, asc, eq, ilike, isNull, or } from "drizzle-orm";
 import {
-  columnListRoute,
-  columnLoadRoute,
-  columnSuggestionRoute,
-} from "./column.schema";
+  catalogListRoute,
+  catalogLoadRoute,
+  catalogSuggestionRoute,
+} from "./catalog.schema";
 
-export const columnApi = new OpenAPIHono()
-  .openapi(columnLoadRoute, async (c) => {
+export const catalogApi = new OpenAPIHono()
+  .openapi(catalogLoadRoute, async (c) => {
     const { warehouseId } = c.req.valid("json");
+    const auth = getAuthOrUnauthorized(c);
 
     const warehouses = await getDrizzle()
       .select()
@@ -35,41 +37,45 @@ export const columnApi = new OpenAPIHono()
     const warehouseFactory = new WarehouseFactory();
     const warehouseClass = warehouseFactory.create("postgresql");
 
-    const columns = await warehouseClass.getColumns(warehouse);
+    const catalogs = await warehouseClass.getCatalogs(warehouse);
 
     await getDrizzle()
-      .delete(columnModel)
-      .where(eq(columnModel.warehouseId, warehouseId));
+      .delete(catalogTable)
+      .where(eq(catalogTable.warehouseId, warehouseId));
 
     await getDrizzle()
-      .insert(columnModel)
+      .insert(catalogTable)
       .values(
-        columns.map((column) => ({
-          columnId: cuid(),
+        catalogs.map((catalog) => ({
+          ...catalog,
+          catalogId: cuid(),
           warehouseId,
-          ...column,
+          orgId: auth.orgId,
+          warehouseType: warehouse.type,
+          fullName: `${catalog.schemaName}.${catalog.tableName}.${catalog.columnName}`,
         })),
       );
 
     return c.json({});
   })
-  .openapi(columnListRoute, async (c) => {
+  .openapi(catalogListRoute, async (c) => {
     const { warehouseId } = c.req.valid("json");
-    const columns = await getDrizzle()
+    const catalogs = await getDrizzle()
       .select()
-      .from(columnModel)
+      .from(catalogTable)
       .where(
         and(
-          eq(columnModel.warehouseId, warehouseId),
-          isNull(columnModel.deletedAt),
+          eq(catalogTable.warehouseId, warehouseId),
+          isNull(catalogTable.deletedAt),
         ),
-      );
+      )
+      .orderBy(asc(catalogTable.schemaName), asc(catalogTable.tableName));
 
     return c.json({
-      columns,
+      catalogs,
     });
   })
-  .openapi(columnSuggestionRoute, async (c) => {
+  .openapi(catalogSuggestionRoute, async (c) => {
     const { warehouseId, keyword } = c.req.valid("json");
 
     const keywords = keyword.split(".");
@@ -110,32 +116,32 @@ const getTableOrColumnSuggestions = async (
     label: string;
   }[]
 > => {
-  const columns = await getDrizzle()
+  const catalogs = await getDrizzle()
     .select()
-    .from(columnModel)
+    .from(catalogTable)
     .where(
       and(
-        eq(columnModel.warehouseId, warehouseId),
-        isNull(columnModel.deletedAt),
+        eq(catalogTable.warehouseId, warehouseId),
+        isNull(catalogTable.deletedAt),
         or(
-          ilike(columnModel.tableName, `%${keyword}%`),
-          ilike(columnModel.columnName, `%${keyword}%`),
+          ilike(catalogTable.tableName, `%${keyword}%`),
+          ilike(catalogTable.columnName, `%${keyword}%`),
         ),
       ),
     )
     .limit(5);
 
-  const columnSuggestions: {
+  const catalogSuggestions: {
     id: string;
     label: string;
-  }[] = columns.map((column) => {
+  }[] = catalogs.map((catalog) => {
     return {
-      id: column.columnId,
-      label: `${column.tableName}.${column.columnName}`,
+      id: catalog.catalogId,
+      label: `${catalog.tableName}.${catalog.columnName}`,
     };
   });
 
-  return columnSuggestions.slice(0, 5);
+  return catalogSuggestions.slice(0, 5);
 };
 
 const getColumnSuggestions = async (
@@ -147,25 +153,25 @@ const getColumnSuggestions = async (
     label: string;
   }[]
 > => {
-  const columns = await getDrizzle()
+  const catalogs = await getDrizzle()
     .select()
-    .from(columnModel)
+    .from(catalogTable)
     .where(
       and(
-        eq(columnModel.warehouseId, warehouseId),
-        isNull(columnModel.deletedAt),
-        ilike(columnModel.tableName, `%${keyword[0]}%`),
-        ilike(columnModel.columnName, `%${keyword[1]}%`),
+        eq(catalogTable.warehouseId, warehouseId),
+        isNull(catalogTable.deletedAt),
+        ilike(catalogTable.tableName, `%${keyword[0]}%`),
+        ilike(catalogTable.columnName, `%${keyword[1]}%`),
       ),
     )
     .limit(5);
 
-  return columns.map((column) => {
+  return catalogs.map((catalog) => {
     return {
-      id: column.columnId,
-      label: `${column.tableName}.${column.columnName}`,
+      id: catalog.catalogId,
+      label: `${catalog.tableName}.${catalog.columnName}`,
     };
   });
 };
 
-export type ColumnApiType = typeof columnApi;
+export type CatalogApiType = typeof catalogApi;

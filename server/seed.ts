@@ -11,7 +11,7 @@ import type {
 } from "./agents/echarts";
 import { environment } from "./configs/environment";
 import { getDrizzle } from "./db/db";
-import { columnModel } from "./db/schema/column";
+import { catalogTable } from "./db/schema/catalog";
 import { messageTable } from "./db/schema/message";
 import { orgTable } from "./db/schema/org";
 import { threadTable } from "./db/schema/thread";
@@ -211,46 +211,66 @@ export async function main() {
     orgId,
   });
 
-  await db.insert(columnModel).values([
+  await db.insert(catalogTable).values([
     {
-      columnId: cuid(),
+      catalogId: cuid(),
       warehouseId,
+      warehouseType: WarehouseType.postgresql,
+      fullName: "public.album.album_id",
+      schemaName: "public",
       tableName: "album",
       columnName: "album_id",
       columnType: "INTEGER",
       description: "The ID of the album",
+      orgId,
     },
     {
-      columnId: cuid(),
+      catalogId: cuid(),
       warehouseId,
+      warehouseType: WarehouseType.postgresql,
+      fullName: "public.album.title",
+      schemaName: "public",
       tableName: "album",
       columnName: "title",
       columnType: "VARCHAR",
       description: "The title of the album",
+      orgId,
     },
     {
-      columnId: cuid(),
+      catalogId: cuid(),
       warehouseId,
+      warehouseType: WarehouseType.postgresql,
+      fullName: "public.album.artist_id",
+      schemaName: "public",
       tableName: "album",
       columnName: "artist_id",
       columnType: "INTEGER",
       description: "The ID of the artist",
+      orgId,
     },
     {
-      columnId: cuid(),
+      catalogId: cuid(),
       warehouseId,
+      warehouseType: WarehouseType.postgresql,
+      fullName: "public.artist.artist_id",
+      schemaName: "public",
       tableName: "artist",
       columnName: "artist_id",
       columnType: "INTEGER",
       description: "The ID of the artist",
+      orgId,
     },
     {
-      columnId: cuid(),
+      catalogId: cuid(),
       warehouseId,
+      warehouseType: WarehouseType.postgresql,
+      fullName: "public.artist.name",
+      schemaName: "public",
       tableName: "artist",
       columnName: "name",
       columnType: "VARCHAR",
       description: "The name of the artist",
+      orgId,
     },
   ]);
 }

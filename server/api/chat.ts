@@ -1,8 +1,7 @@
-import { getAgent } from "@/agents/agents";
+import { getSystemMessage } from "@/agents/utils/utils";
 import { getDrizzle } from "@/db/db";
 import { type MessageEntity, messageTable } from "@/db/schema/message";
 import { threadTable } from "@/db/schema/thread";
-import { usageTable } from "@/db/schema/usage";
 import { getAuth } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import {
@@ -10,11 +9,12 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/utils/error";
-import { getSystemMessage } from "@/utils/message";
 import { firstOrNotCreated, firstOrNotFound } from "@/utils/toolkit";
+import { getWorkflow } from "@/workflows/workflow";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { MessageRole } from "@prisma/client";
 import { and, asc, eq, isNull } from "drizzle-orm";
+import { omit } from "es-toolkit/compat";
 import {
   chatAssistantRoute,
   chatSystemRoute,
@@ -133,7 +133,7 @@ export const chatApi = new OpenAPIHono()
       throw new BadRequestError("No system message found");
     }
 
-    const { structure, llmRaw } = await getAgent(systemMessage)({
+    const assistantMessage = await getWorkflow(messages).generate({
       messages,
     });
 
@@ -141,14 +141,9 @@ export const chatApi = new OpenAPIHono()
       await getDrizzle().transaction(async (tx) => {
         const messages = await tx
           .insert(messageTable)
-          .values({
-            messageId: cuid(),
-            threadId: parentThread.threadId,
-            messageRole: MessageRole.ASSISTANT,
-            ownerId: authUser.userId,
-            orgId: authUser.orgId,
-            structure,
-          })
+          .values(
+            omit(assistantMessage, ["createdAt", "updatedAt", "deletedAt"]),
+          )
           .returning();
         await tx
           .update(threadTable)
@@ -156,17 +151,6 @@ export const chatApi = new OpenAPIHono()
             hasQuestions: true,
           })
           .where(eq(threadTable.threadId, parentThread.threadId));
-        await tx.insert(usageTable).values({
-          usageId: cuid(),
-          messageId: messages[0].messageId,
-          ownerId: authUser.userId,
-          orgId: authUser.orgId,
-          modelName: llmRaw.model,
-          inputToken: llmRaw.input,
-          outputToken: llmRaw.output,
-          finishReason: llmRaw.finishReason,
-          structureType: structure.type,
-        });
         return messages;
       }),
       "Failed to create assistant message",
@@ -214,6 +198,8 @@ export const chatApi = new OpenAPIHono()
       messageRole: MessageRole.SYSTEM,
       ownerId: authUser.userId,
       orgId: authUser.orgId,
+      reason: "",
+      text: "",
       structure: {
         type: "systemName",
         threadId: parentThread.threadId,
@@ -232,37 +218,20 @@ export const chatApi = new OpenAPIHono()
       ),
     ];
 
-    const { structure, llmRaw } = await getAgent(systemMessage)({
+    const message = await getWorkflow(composedMessages).generate({
       messages: composedMessages,
     });
 
-    const message: MessageEntity = {
-      ...systemMessage,
-      structure,
-    };
-
-    if (structure.type !== "assistantName") {
+    if (message.structure.type !== "assistantName") {
       throw new BadRequestError("Assistant name is not supported");
     }
 
     await getDrizzle()
       .update(threadTable)
       .set({
-        name: structure.name,
+        name: message.structure.name,
       })
       .where(eq(threadTable.threadId, parentThread.threadId));
-
-    await getDrizzle().insert(usageTable).values({
-      usageId: cuid(),
-      messageId: null,
-      ownerId: authUser.userId,
-      orgId: authUser.orgId,
-      modelName: llmRaw.model,
-      inputToken: llmRaw.input,
-      outputToken: llmRaw.output,
-      finishReason: llmRaw.finishReason,
-      structureType: structure.type,
-    });
 
     return c.json({
       message,

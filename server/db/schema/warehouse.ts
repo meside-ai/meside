@@ -1,9 +1,7 @@
 import { integer, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
-import { primaryKeyCuid, useTimestamp } from "../utils";
-import { orgTable } from "./org";
-import { userTable } from "./user";
+import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
 
 export const warehouseType = pgEnum("warehouse_type", ["postgresql"]);
 
@@ -17,12 +15,8 @@ export const warehouseTable = pgTable("warehouse", {
   username: text("username").notNull(),
   password: text("password").notNull(),
   schema: text("schema"),
-  ownerId: text("owner_id")
-    .references(() => userTable.userId)
-    .notNull(),
-  orgId: text("org_id")
-    .references(() => orgTable.orgId)
-    .notNull(),
+  ownerId: foreignCuid("owner_id").notNull(),
+  orgId: foreignCuid("org_id").notNull(),
   ...useTimestamp(),
 });
 

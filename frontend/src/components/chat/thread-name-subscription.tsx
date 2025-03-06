@@ -1,65 +1,56 @@
-import type { ChatAssistantResponse } from "@/api/chat.schema";
 import type { MessageListResponse } from "@/api/message.schema";
-import { getChatAssistant, getNameAssistant } from "@/queries/chat";
+import { getNameAssistant } from "@/queries/chat";
 import { getMessageList } from "@/queries/message";
 import { getThreadList } from "@/queries/thread";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { threadNameEvent } from "./thread-name-event";
 
 export const ThreadNameSubscription = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const unsubscribe = queryClient
-      .getMutationCache()
-      .subscribe(async (event: any) => {
-        const isChatAssistantUpdated =
-          event?.action?.type === "success" &&
-          event?.mutation?.options?.mutationKey?.[0] === getChatAssistant.name;
+    const unsubscribe = threadNameEvent.listen(async (payload) => {
+      const { threadId } = payload;
 
-        if (!isChatAssistantUpdated) {
-          return;
-        }
+      const query = queryClient.getQueryCache().find(
+        getMessageList({
+          parentThreadId: threadId,
+          createdAtSort: "asc",
+        })
+      );
 
-        const data: ChatAssistantResponse = event.mutation.state.data;
+      const messagesData = query?.state?.data as
+        | MessageListResponse
+        | undefined;
 
-        const query = queryClient.getQueryCache().find(
-          getMessageList({
-            parentThreadId: data.message.threadId,
-            createdAtSort: "asc",
-          })
-        );
+      if (!messagesData) {
+        return;
+      }
 
-        const messagesData: MessageListResponse | undefined = query?.state
-          ?.data as any;
+      const assistantMessages = messagesData.messages.filter(
+        (message) => message.messageRole === "ASSISTANT"
+      );
 
-        if (!messagesData) {
-          return;
-        }
+      if (assistantMessages.length > 1) {
+        return;
+      }
 
-        const assistantMessages = messagesData.messages.filter(
-          (message) => message.messageRole === "ASSISTANT"
-        );
+      const { mutationFn } = getNameAssistant();
 
-        if (assistantMessages.length > 1) {
-          return;
-        }
+      if (!mutationFn) {
+        return;
+      }
 
-        const { mutationFn } = getNameAssistant();
-
-        if (!mutationFn) {
-          return;
-        }
-
-        await mutationFn({
-          parentThreadId: data.message.threadId,
-        });
-
-        queryClient.invalidateQueries({ queryKey: [getThreadList.name] });
+      await mutationFn({
+        parentThreadId: threadId,
       });
 
+      queryClient.invalidateQueries({ queryKey: [getThreadList.name] });
+    });
+
     return () => {
-      unsubscribe();
+      threadNameEvent.removeListener(unsubscribe);
     };
   }, [queryClient]);
 

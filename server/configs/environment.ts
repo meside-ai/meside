@@ -11,13 +11,12 @@ export const environmentSchema = z.object({
     .transform((val) => (val ? Number.parseInt(val) : undefined)),
   DATABASE_URL: z.string(),
   REDIS_URL: z.string(),
-  AI_API_KEY: z.string(),
-  AI_BASE_URL: z.string().optional(),
-  AI_MODEL: z.string().optional(),
-  AI_MODE: z
-    .enum(["tool", "structuredOutput", "text"])
+  AI_MODEL: z
+    .enum(["gpt-4o", "o1", "deepseek-reasoner"])
     .optional()
-    .default("structuredOutput"),
+    .default("o1"),
+  OPENAI_API_KEY: z.string().optional(),
+  DEEPSEEK_API_KEY: z.string().optional(),
   // SEEDING
   SEED_WAREHOUSE_HOST: z.string().optional(),
   SEED_WAREHOUSE_PORT: z
@@ -27,6 +26,11 @@ export const environmentSchema = z.object({
   SEED_WAREHOUSE_DATABASE: z.string().optional(),
   SEED_WAREHOUSE_USERNAME: z.string().optional(),
   SEED_WAREHOUSE_PASSWORD: z.string().optional(),
+  IDLE_TIMEOUT: z
+    .string()
+    .optional()
+    .default("20")
+    .transform((val) => Number.parseInt(val)),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);

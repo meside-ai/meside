@@ -9,6 +9,8 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconThumbDown, IconThumbUp } from "@tabler/icons-react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { MessageChildThreads } from "./message-child-threds";
 import { MessageContent } from "./message-content";
 import { QuoteButton } from "./quote-button";
@@ -53,6 +55,9 @@ export const MessageListItem = ({
       </Box>
       <Box flex={1}>
         <Box mb="xs">
+          {message.messageRole === "ASSISTANT" && message.reason && (
+            <Markdown remarkPlugins={[remarkGfm]}>{message.reason}</Markdown>
+          )}
           <MessageContent message={message} />
         </Box>
 

@@ -1,4 +1,4 @@
-import { getColumnSuggestion } from "@/queries/column";
+import { getCatalogSuggestion } from "@/queries/catalog";
 import { queryClient } from "@/utils/query-client";
 import type { MentionOptions } from "@tiptap/extension-mention";
 import { ReactRenderer } from "@tiptap/react";
@@ -53,7 +53,7 @@ export const createMentionSuggestionOptions = (
     }
 
     const data = await queryClient.fetchQuery(
-      getColumnSuggestion({
+      getCatalogSuggestion({
         warehouseId,
         keyword: query,
       }),

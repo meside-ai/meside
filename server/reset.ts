@@ -1,6 +1,6 @@
 import { reset } from "drizzle-seed";
 import { getDrizzle } from "./db/db";
-import { columnModel } from "./db/schema/column";
+import { catalogTable } from "./db/schema/catalog";
 import { messageTable } from "./db/schema/message";
 import { orgTable } from "./db/schema/org";
 import { threadTable } from "./db/schema/thread";
@@ -15,7 +15,7 @@ export async function resetDb() {
     userTable,
     messageTable,
     warehouseTable,
-    columnModel,
+    catalogTable,
     threadTable,
   });
 }
