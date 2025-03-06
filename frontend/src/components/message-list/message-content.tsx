@@ -6,6 +6,7 @@ import { Echarts } from "../echarts/echarts";
 import { EditorJsonMarkdown } from "../markdown/editor-json-markdown";
 import { usePreviewContext } from "../preview/preview-context";
 import { WarehouseCard } from "../warehouse/warehouse-card";
+import { MessageUserContent } from "./message-user-content";
 
 export const MessageContent = ({ message }: { message: MessageDto }) => {
   const { openPreview } = usePreviewContext();
@@ -81,7 +82,7 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
     return <Text>{message.structure.content}</Text>;
   }
   if (message.structure.type === "userContent") {
-    return <EditorJsonMarkdown>{message.structure.content}</EditorJsonMarkdown>;
+    return <MessageUserContent message={message} />;
   }
   if (message.structure.type === "assistantContent") {
     return <Text>{message.structure.content}</Text>;
