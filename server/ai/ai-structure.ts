@@ -68,7 +68,6 @@ export class AIStructure {
               controller.enqueue(initial);
               break;
             case "object":
-              console.log(part.object);
               Object.assign(initial, {
                 structure: part.object,
               });

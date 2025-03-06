@@ -16,10 +16,22 @@ export type WarehouseFactoryCatalog = {
   description?: string;
 };
 
+export type WarehouseFactoryRelation = {
+  schemaName: string;
+  tableName: string;
+  columnName: string;
+  foreignSchemaName: string;
+  foreignTableName: string;
+  foreignColumnName: string;
+};
+
 export interface Warehouse {
   getCatalogs: (
     connection: ConnectionConfig,
   ) => Promise<WarehouseFactoryCatalog[]>;
+  getRelations: (
+    connection: ConnectionConfig,
+  ) => Promise<WarehouseFactoryRelation[]>;
   query: (
     connection: ConnectionConfig,
     sql: string,

@@ -7,6 +7,7 @@ import type {
   ConnectionConfig,
   Warehouse,
   WarehouseFactoryCatalog,
+  WarehouseFactoryRelation,
 } from "./warehouse.interface";
 
 export class PostgresWarehouse implements Warehouse {
@@ -55,6 +56,54 @@ export class PostgresWarehouse implements Warehouse {
         columnName: row.columnName,
         columnType: row.columnType,
         description: row.description ?? undefined,
+      }));
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    } finally {
+      await client.end();
+    }
+  }
+
+  async getRelations(
+    connection: ConnectionConfig,
+  ): Promise<WarehouseFactoryRelation[]> {
+    const { Client } = pg;
+    const client = new Client({
+      host: connection.host,
+      port: connection.port,
+      database: connection.database,
+      user: connection.username,
+      password: connection.password,
+    });
+
+    try {
+      await client.connect();
+
+      const res = await client.query(`
+        SELECT
+            tc.table_schema AS "schemaName",
+            tc.table_name AS "tableName",
+            kcu.column_name AS "columnName",
+            ccu.table_schema AS "foreignSchemaName",
+            ccu.table_name AS "foreignTableName",
+            ccu.column_name AS "foreignColumnName"
+        FROM information_schema.table_constraints AS tc
+        JOIN information_schema.key_column_usage AS kcu
+            ON tc.constraint_name = kcu.constraint_name
+            AND tc.table_schema = kcu.table_schema
+        JOIN information_schema.constraint_column_usage AS ccu
+            ON ccu.constraint_name = tc.constraint_name
+        WHERE tc.constraint_type = 'FOREIGN KEY'
+      `);
+
+      return res.rows.map((row) => ({
+        schemaName: row.schemaName,
+        tableName: row.tableName,
+        columnName: row.columnName,
+        foreignSchemaName: row.foreignSchemaName,
+        foreignTableName: row.foreignTableName,
+        foreignColumnName: row.foreignColumnName,
       }));
     } catch (error) {
       this.logger.error(error);
