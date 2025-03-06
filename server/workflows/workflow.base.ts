@@ -3,9 +3,46 @@ import { convertMessageRole } from "@/agents/utils/utils";
 import type { AIStructureOutput } from "@/ai/ai-structure";
 import type { MessageEntity } from "@/db/schema/message";
 import { cuid } from "@/utils/cuid";
+import type { Workflow } from "./workflow.interface";
 
-export class WorkflowTraits {
-  convertMessageEntitiesToPrompt = async (
+export class BaseWorkflow implements Workflow {
+  async stream(body: {
+    messages: MessageEntity[];
+  }): Promise<ReadableStream<MessageEntity>> {
+    throw new Error("Not implemented");
+  }
+
+  async generate(body: {
+    messages: MessageEntity[];
+  }): Promise<MessageEntity> {
+    const aiStream = await this.stream(body);
+
+    const reader = aiStream.getReader();
+    let initial: MessageEntity | null = null;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        if (initial === null) {
+          initial = value;
+        } else {
+          Object.assign(initial, value);
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+
+    if (initial === null) {
+      throw new Error("Initial message not found");
+    }
+
+    return initial;
+  }
+
+  protected convertMessageEntitiesToPrompt = async (
     messages: MessageEntity[],
   ): Promise<
     {
@@ -25,7 +62,7 @@ export class WorkflowTraits {
     );
   };
 
-  async createResult<T extends MessageEntity>(
+  protected async createResult<T extends MessageEntity>(
     aiStream: ReadableStream<AIStructureOutput>,
     immutableInitial: T,
   ): Promise<T> {
@@ -53,7 +90,7 @@ export class WorkflowTraits {
     return initial;
   }
 
-  createStream<T extends MessageEntity>(
+  protected createStream<T extends MessageEntity>(
     aiStream: ReadableStream<AIStructureOutput>,
     immutableInitial: T,
   ): ReadableStream<T> {
@@ -85,7 +122,7 @@ export class WorkflowTraits {
     });
   }
 
-  createInitialAssistantMessage<T extends MessageEntity>(
+  protected createInitialAssistantMessage<T extends MessageEntity>(
     systemMessage: MessageEntity,
     systemMessageStructure: T["structure"],
   ): T {

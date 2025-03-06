@@ -102,7 +102,7 @@ const getPromptWithSchema = (
   const jsonSchema = zodToJsonSchema(schema, name);
 
   const formatInstructions = [
-    "#Instructions: Respond only in valid JSON. The JSON object you return should match the following JSON Schema:",
+    "#Instructions: Respond only in valid JSON. The JSON object you return should match the following JSON Schema, return should be wrapped in ```json tags:",
     JSON.stringify(jsonSchema, null, 2),
   ].join("\n");
 

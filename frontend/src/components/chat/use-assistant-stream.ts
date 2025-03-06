@@ -1,6 +1,7 @@
 import { getStreamAssistantUrl } from "@/api";
 import type { StreamAssistantResponse } from "@/api/stream.schema";
 import { useRef, useState } from "react";
+import { threadNameEvent } from "./thread-name-event";
 
 export const useAssistantStream = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +27,7 @@ export const useAssistantStream = () => {
       eventSource.onmessage = (event) => {
         try {
           if (event.data === "[DONE]") {
+            threadNameEvent.dispatch({ threadId });
             setIsLoading(false);
             eventSource.close();
             return;

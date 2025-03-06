@@ -8,14 +8,14 @@ import { AIStructure } from "@/ai/ai-structure";
 import { environment } from "@/configs/environment";
 import type { MessageEntity } from "@/db/schema/message";
 import { BadRequestError } from "@/utils/error";
+import { BaseWorkflow } from "../workflow.base";
 import type { Workflow } from "../workflow.interface";
-import { WorkflowTraits } from "../workflow.traits";
 
 export type AssistantDbMessageEntity = Omit<MessageEntity, "structure"> & {
   structure: AssistantDbMessageStructure;
 };
 
-export class DbWorkflow extends WorkflowTraits implements Workflow {
+export class DbWorkflow extends BaseWorkflow implements Workflow {
   async stream(body: {
     messages: MessageEntity[];
   }): Promise<ReadableStream<AssistantDbMessageEntity>> {

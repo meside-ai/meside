@@ -14,11 +14,7 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
   if (!message?.structure?.type) {
     return <Text>no type</Text>;
   }
-  if (
-    message.messageRole === "ASSISTANT" &&
-    "sql" in message.structure &&
-    message.structure.sql
-  ) {
+  if (message.structure.type === "assistantDb" && message.structure.sql) {
     return (
       <Box>
         <Box w={MESSAGE_CONTENT_WIDTH} mb="md">
@@ -56,9 +52,7 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
     );
   }
   if (
-    message.messageRole === "ASSISTANT" &&
-    "echartsOptions" in message.structure &&
-    "warehouseId" in message.structure &&
+    message.structure.type === "assistantEcharts" &&
     message.structure.echartsOptions &&
     message.structure.warehouseId
   ) {
