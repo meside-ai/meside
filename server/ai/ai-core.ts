@@ -1,9 +1,7 @@
-import { deepseek } from "@ai-sdk/deepseek";
-import { openai } from "@ai-sdk/openai";
 import { type LanguageModelV1, streamText } from "ai";
 
 export type AICoreInput = {
-  model: "gpt-4o" | "o1" | "deepseek-reasoner";
+  model: LanguageModelV1;
   prompt: string;
 };
 
@@ -17,7 +15,7 @@ export type AICoreOutput = {
 export class AICore {
   stream(input: AICoreInput): ReadableStream<AICoreOutput> {
     const result = streamText({
-      model: this.getModel(input.model),
+      model: input.model,
       prompt: input.prompt,
     });
 
@@ -64,16 +62,5 @@ export class AICore {
     });
 
     return stream;
-  }
-
-  private getModel(model: AICoreInput["model"]): LanguageModelV1 {
-    switch (model) {
-      case "gpt-4o":
-        return openai("gpt-4o");
-      case "o1":
-        return openai("o1");
-      case "deepseek-reasoner":
-        return deepseek("deepseek-reasoner");
-    }
   }
 }

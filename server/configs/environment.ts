@@ -11,16 +11,12 @@ export const environmentSchema = z.object({
     .transform((val) => (val ? Number.parseInt(val) : undefined)),
   DATABASE_URL: z.string(),
   REDIS_URL: z.string(),
-  AI_API_KEY: z.string(),
-  AI_BASE_URL: z.string().optional(),
   AI_MODEL: z
     .enum(["gpt-4o", "o1", "deepseek-reasoner"])
     .optional()
     .default("o1"),
-  AI_MODE: z
-    .enum(["tool", "structuredOutput", "text"])
-    .optional()
-    .default("structuredOutput"),
+  OPENAI_API_KEY: z.string().optional(),
+  DEEPSEEK_API_KEY: z.string().optional(),
   // SEEDING
   SEED_WAREHOUSE_HOST: z.string().optional(),
   SEED_WAREHOUSE_PORT: z
