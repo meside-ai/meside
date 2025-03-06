@@ -1,5 +1,6 @@
 import { getDrizzle } from "@/db/db";
 import { catalogTable } from "@/db/schema/catalog";
+import { relationTable } from "@/db/schema/relation";
 import { warehouseTable } from "@/db/schema/warehouse";
 import { BadRequestError } from "@/utils/error";
 import { firstOrNotCreated } from "@/utils/toolkit";
@@ -20,6 +21,15 @@ export const getSystemDbMessageContent: GetContent = async ({ message }) => {
         isNull(catalogTable.deletedAt),
       ),
     );
+  const relations = await getDrizzle()
+    .select()
+    .from(relationTable)
+    .where(
+      and(
+        eq(relationTable.warehouseId, message.structure.warehouseId),
+        isNull(relationTable.deletedAt),
+      ),
+    );
   const warehouse = firstOrNotCreated(
     await getDrizzle()
       .select()
@@ -28,11 +38,21 @@ export const getSystemDbMessageContent: GetContent = async ({ message }) => {
     "Warehouse not found",
   );
   const tableMarkdownHeader =
-    "| Schema Name | Table Name | Column Name | Column Type | Description |";
-  const tableMarkdownSeparator = "| --- | --- | --- | --- | --- |";
+    "| Schema Name | Table Name | Column Name | Column Type | Foreign Key | Description |";
+  const tableMarkdownSeparator = "| --- | --- | --- | --- | --- | --- |";
   const catalogTableMarkdown = catalogs
     .map((catalog) => {
-      return `| ${catalog.schemaName} | ${catalog.tableName} | ${catalog.columnName} | ${catalog.columnType} | ${catalog.description} |`;
+      const description = catalog.description ?? "";
+      const foreign = relations.find(
+        (relation) =>
+          relation.foreignSchemaName === catalog.schemaName &&
+          relation.foreignTableName === catalog.tableName &&
+          relation.foreignColumnName === catalog.columnName,
+      );
+      const foreignKey = foreign
+        ? `${foreign?.foreignSchemaName}.${foreign?.foreignTableName}.${foreign?.foreignColumnName}`
+        : "";
+      return `| ${catalog.schemaName} | ${catalog.tableName} | ${catalog.columnName} | ${catalog.columnType} | ${foreignKey} | ${description} |`;
     })
     .join("\n");
   const warehouseType = warehouse.type;

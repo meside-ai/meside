@@ -2,7 +2,28 @@ import { catalogEntitySchema } from "@/db/schema/catalog";
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
 
-export const catalogDtoSchema = catalogEntitySchema;
+export const catalogDtoSchema = catalogEntitySchema
+  .pick({
+    fullName: true,
+    schemaName: true,
+    tableName: true,
+    columnName: true,
+    warehouseType: true,
+    columnType: true,
+    createdAt: true,
+    updatedAt: true,
+    deletedAt: true,
+  })
+  .extend({
+    foreign: z
+      .object({
+        fullName: z.string(),
+        schemaName: z.string(),
+        tableName: z.string(),
+        columnName: z.string(),
+      })
+      .optional(),
+  });
 
 export type CatalogDto = z.infer<typeof catalogDtoSchema>;
 

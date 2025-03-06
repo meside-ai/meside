@@ -1,6 +1,8 @@
 import { getDrizzle } from "@/db/db";
 import { catalogTable } from "@/db/schema/catalog";
+import { relationTable } from "@/db/schema/relation";
 import { warehouseTable } from "@/db/schema/warehouse";
+import { getCatalogDtos } from "@/mappers/catalog";
 import { getAuthOrUnauthorized } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import { NotFoundError } from "@/utils/error";
@@ -38,14 +40,14 @@ export const catalogApi = new OpenAPIHono()
     const warehouseClass = warehouseFactory.create("postgresql");
 
     const catalogs = await warehouseClass.getCatalogs(warehouse);
+    const relations = await warehouseClass.getRelations(warehouse);
 
-    await getDrizzle()
-      .delete(catalogTable)
-      .where(eq(catalogTable.warehouseId, warehouseId));
+    await getDrizzle().transaction(async (tx) => {
+      await tx
+        .delete(catalogTable)
+        .where(eq(catalogTable.warehouseId, warehouseId));
 
-    await getDrizzle()
-      .insert(catalogTable)
-      .values(
+      await tx.insert(catalogTable).values(
         catalogs.map((catalog) => ({
           ...catalog,
           catalogId: cuid(),
@@ -55,6 +57,25 @@ export const catalogApi = new OpenAPIHono()
           fullName: `${catalog.schemaName}.${catalog.tableName}.${catalog.columnName}`,
         })),
       );
+    });
+
+    await getDrizzle().transaction(async (tx) => {
+      await tx
+        .delete(relationTable)
+        .where(eq(relationTable.warehouseId, warehouseId));
+
+      await tx.insert(relationTable).values(
+        relations.map((relation) => ({
+          ...relation,
+          relationId: cuid(),
+          warehouseId,
+          orgId: auth.orgId,
+          warehouseType: warehouse.type,
+          fullName: `${relation.schemaName}.${relation.tableName}.${relation.columnName}`,
+          foreignFullName: `${relation.foreignSchemaName}.${relation.foreignTableName}.${relation.foreignColumnName}`,
+        })),
+      );
+    });
 
     return c.json({});
   })
@@ -71,8 +92,10 @@ export const catalogApi = new OpenAPIHono()
       )
       .orderBy(asc(catalogTable.schemaName), asc(catalogTable.tableName));
 
+    const catalogsDto = await getCatalogDtos(catalogs);
+
     return c.json({
-      catalogs,
+      catalogs: catalogsDto,
     });
   })
   .openapi(catalogSuggestionRoute, async (c) => {
