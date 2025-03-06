@@ -13,7 +13,10 @@ export const environmentSchema = z.object({
   REDIS_URL: z.string(),
   AI_API_KEY: z.string(),
   AI_BASE_URL: z.string().optional(),
-  AI_MODEL: z.string().optional(),
+  AI_MODEL: z
+    .enum(["gpt-4o", "o1", "deepseek-reasoner"])
+    .optional()
+    .default("o1"),
   AI_MODE: z
     .enum(["tool", "structuredOutput", "text"])
     .optional()

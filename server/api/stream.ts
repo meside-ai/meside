@@ -10,7 +10,7 @@ import {
 } from "@/utils/error";
 import { getSystemMessage } from "@/utils/message";
 import { firstOrNotCreated, firstOrNotFound } from "@/utils/toolkit";
-import { streamSqlGeneration } from "@/workflows/sql-generation";
+import { getWorkflow } from "@/workflows/workflow";
 import { zValidator } from "@hono/zod-validator";
 import { and, asc, eq, isNull } from "drizzle-orm";
 import { omit } from "es-toolkit/compat";
@@ -63,7 +63,7 @@ export const streamApi = new Hono().get(
       throw new BadRequestError("No system message found");
     }
 
-    const aiStream = await streamSqlGeneration({
+    const aiStream = await getWorkflow(messages).stream({
       messages,
     });
 

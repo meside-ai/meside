@@ -1,10 +1,17 @@
+import { BadRequestError } from "@/utils/error";
 import type { z } from "zod";
+import zodToJsonSchema from "zod-to-json-schema";
 import { AICore, type AICoreInput } from "./ai-core";
 
 export type AIStructureInput = {
   model: AICoreInput["model"];
-  prompt: AICoreInput["prompt"];
+  messages: {
+    role: "system" | "user" | "assistant";
+    content: string;
+  }[];
   schema: z.ZodSchema;
+  schemaName: string;
+  schemaDescription: string;
 };
 
 export type AIStructureOutput = {
@@ -17,10 +24,16 @@ export type AIStructureOutput = {
 
 export class AIStructure {
   streamObject(input: AIStructureInput): ReadableStream<AIStructureOutput> {
+    const prompt = getPromptWithSchema(
+      input.messages,
+      input.schema,
+      input.schemaName,
+    );
+
     const core = new AICore();
     const coreStream = core.stream({
       model: input.model,
-      prompt: input.prompt,
+      prompt,
     });
 
     const stream = new ReadableStream<AIStructureOutput>({
@@ -76,4 +89,38 @@ const extractStructureFromAICompletionText = (
     console.error(error);
     return null;
   }
+};
+
+const getPromptWithSchema = (
+  messages: {
+    role: "system" | "user" | "assistant";
+    content: string;
+  }[],
+  schema: z.ZodSchema,
+  name: string,
+): string => {
+  const jsonSchema = zodToJsonSchema(schema, name);
+
+  const formatInstructions = [
+    "#Instructions: Respond only in valid JSON. The JSON object you return should match the following JSON Schema:",
+    JSON.stringify(jsonSchema, null, 2),
+  ].join("\n");
+
+  const systemMessage = messages.find((message) => message.role === "system");
+
+  if (!systemMessage) {
+    throw new BadRequestError("System message not found");
+  }
+
+  const combinedContent = [
+    {
+      role: "user",
+      content: `${systemMessage.content}\n${formatInstructions}`,
+    },
+    ...messages.filter((message) => message.role !== "system"),
+  ].reduce((acc, message) => {
+    return `${acc}\n${message.content}`;
+  }, "");
+
+  return combinedContent;
 };
