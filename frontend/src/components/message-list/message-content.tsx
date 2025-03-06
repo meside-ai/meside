@@ -14,7 +14,11 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
   if (!message?.structure?.type) {
     return <Text>no type</Text>;
   }
-  if ("sql" in message.structure && message.structure.sql) {
+  if (
+    message.messageRole === "ASSISTANT" &&
+    "sql" in message.structure &&
+    message.structure.sql
+  ) {
     return (
       <Box>
         <Box w={MESSAGE_CONTENT_WIDTH} mb="md">
@@ -40,7 +44,7 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
           variant="light"
           onClick={() => {
             openPreview({
-              name: "DB Query", // TODO: get the name from the parent thread
+              name: message?.parentThread?.name ?? "DB Query",
               payload: { type: "warehouseTable", messageId: message.messageId },
             });
           }}
@@ -52,6 +56,7 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
     );
   }
   if (
+    message.messageRole === "ASSISTANT" &&
     "echartsOptions" in message.structure &&
     "warehouseId" in message.structure &&
     message.structure.echartsOptions &&

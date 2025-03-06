@@ -12,12 +12,6 @@ import { getUserDtos } from "./user";
 export const getMessageDtos = async (
   messages: MessageEntity[],
 ): Promise<MessageDto[]> => {
-  return messages;
-};
-
-export const getMessageDtosLegacy = async (
-  messages: MessageEntity[],
-): Promise<MessageDto[]> => {
   const userIds = uniq(
     messages
       .map((message) => message.ownerId)
