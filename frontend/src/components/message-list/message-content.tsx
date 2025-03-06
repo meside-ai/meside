@@ -112,5 +112,5 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
       </Text>
     );
   }
-  return <Text>unknown</Text>;
+  return null;
 };

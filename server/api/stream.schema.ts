@@ -4,6 +4,7 @@ import { z } from "zod";
 // streamAssistant
 export const streamAssistantRequestSchema = z.object({
   parentThreadId: z.string(),
+  sseDebounce: z.number().optional().default(500),
 });
 
 export const streamAssistantResponseSchema = messageEntitySchema;

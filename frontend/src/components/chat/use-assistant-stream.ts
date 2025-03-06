@@ -25,6 +25,12 @@ export const useAssistantStream = () => {
 
       eventSource.onmessage = (event) => {
         try {
+          if (event.data === "[DONE]") {
+            setIsLoading(false);
+            eventSource.close();
+            return;
+          }
+
           const chunk: StreamAssistantResponse = JSON.parse(event.data);
           callback(chunk);
         } catch (e) {

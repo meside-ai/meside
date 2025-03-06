@@ -70,6 +70,9 @@ export const streamApi = new Hono().get(
     return streamSSE(c, async (stream) => {
       const reader = aiStream.getReader();
       const initial: StreamAssistantResponse | Record<string, unknown> = {};
+      let lastWriteTime = 0;
+      const DEBOUNCE_INTERVAL = body.sseDebounce;
+
       try {
         while (true) {
           const { done, value } = await reader.read();
@@ -79,12 +82,20 @@ export const streamApi = new Hono().get(
             await stream.writeSSE({
               data: JSON.stringify(initial),
             });
+            await stream.writeSSE({
+              data: "[DONE]",
+            });
             break;
           }
           Object.assign(initial, value);
-          await stream.writeSSE({
-            data: JSON.stringify(initial),
-          });
+
+          const currentTime = Date.now();
+          if (currentTime - lastWriteTime >= DEBOUNCE_INTERVAL) {
+            await stream.writeSSE({
+              data: JSON.stringify(initial),
+            });
+            lastWriteTime = currentTime;
+          }
         }
       } finally {
         reader.releaseLock();
