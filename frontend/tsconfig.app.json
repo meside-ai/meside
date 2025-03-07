@@ -3,7 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/api/*": ["../server/api/*"]
+      "@meside/api/*": ["../server/api/*"],
+      "@meside/shared/*": ["../server/shared/*"]
     },
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "target": "ES2020",

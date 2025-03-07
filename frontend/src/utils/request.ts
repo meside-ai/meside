@@ -32,7 +32,7 @@ export const api = <T extends HonoBase<any, any, any>>(
     baseUrl: string;
   },
 ) => {
-  const baseUrl = options?.baseUrl ?? "/aidw/api";
+  const baseUrl = options?.baseUrl ?? "/meside/api";
   const defaultOptions = getOptions();
   return hc<T>(`${baseUrl}${url}`, defaultOptions);
 };

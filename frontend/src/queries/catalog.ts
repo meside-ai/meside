@@ -1,4 +1,5 @@
 import { catalogApi } from "@/api";
+import type { QueryClientError } from "@/utils/query-client";
 import type {
   CatalogListRequest,
   CatalogListResponse,
@@ -6,14 +7,13 @@ import type {
   CatalogLoadResponse,
   CatalogSuggestionRequest,
   CatalogSuggestionResponse,
-} from "@/api/catalog.schema";
-import type { QueryClientError } from "@/utils/query-client";
+} from "@meside/api/catalog.schema";
 import type {
   UseMutationOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
 
-export type { CatalogDto } from "@/api/catalog.schema";
+export type { CatalogDto } from "@meside/api/catalog.schema";
 
 export const getCatalogList = ({
   warehouseId,

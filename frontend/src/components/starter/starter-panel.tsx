@@ -1,4 +1,4 @@
-import type { MessageDto } from "@/api/message.schema";
+import type { MessageDto } from "@meside/api/message.schema";
 import { StarterSystemDb } from "./starter-system-db";
 
 type StarterPanelProps = {

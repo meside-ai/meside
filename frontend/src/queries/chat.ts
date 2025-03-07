@@ -1,4 +1,5 @@
 import { chatApi } from "@/api";
+import type { QueryClientError } from "@/utils/query-client";
 import type {
   ChatAssistantRequest,
   ChatAssistantResponse,
@@ -8,8 +9,7 @@ import type {
   ChatUserResponse,
   NameAssistantRequest,
   NameAssistantResponse,
-} from "@/api/chat.schema";
-import type { QueryClientError } from "@/utils/query-client";
+} from "@meside/api/chat.schema";
 import type { UseMutationOptions } from "@tanstack/react-query";
 
 export const getChatSystem = (): UseMutationOptions<

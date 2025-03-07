@@ -1,17 +1,17 @@
 import { threadApi } from "@/api";
+import type { QueryClientError } from "@/utils/query-client";
 import type {
   ThreadCreateResponse,
   ThreadListRequest,
   ThreadListResponse,
-} from "@/api/thread.schema";
-import type { ThreadCreateRequest } from "@/api/thread.schema";
-import type { QueryClientError } from "@/utils/query-client";
+} from "@meside/api/thread.schema";
+import type { ThreadCreateRequest } from "@meside/api/thread.schema";
 import type {
   UseMutationOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
 
-export type { ThreadDto } from "@/api/thread.schema";
+export type { ThreadDto } from "@meside/api/thread.schema";
 
 export const getThreadList = ({
   threadId,

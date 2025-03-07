@@ -1,5 +1,5 @@
 import { getStreamAssistantUrl } from "@/api";
-import type { StreamAssistantResponse } from "@/api/stream.schema";
+import type { StreamAssistantResponse } from "@meside/api/stream.schema";
 import { useRef, useState } from "react";
 import { threadNameEvent } from "./thread-name-event";
 

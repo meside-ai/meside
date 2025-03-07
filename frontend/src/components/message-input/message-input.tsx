@@ -14,6 +14,7 @@ import Text from "@tiptap/extension-text";
 import {
   EditorContent,
   Extension,
+  type JSONContent,
   mergeAttributes,
   useEditor,
 } from "@tiptap/react";
@@ -33,19 +34,24 @@ import {
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useRef } from "react";
 import { messageInputSubmitEvent } from "./message-input-submit-event";
-import { jsonToMarkdown } from "./message-markdown";
 import { createMentionSuggestionOptions } from "./message-suggestion-options";
 
 export type MessageInputProps = {
   state?: {
     warehouseId?: string;
   };
-  submit: (text: string) => void;
+  initialJSONContent?: JSONContent;
+  submit: (jsonContent: JSONContent) => void;
   loading?: boolean;
   placeholder?: string;
 };
 
-export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
+export const MessageInput = ({
+  state,
+  initialJSONContent,
+  submit,
+  loading,
+}: MessageInputProps) => {
   const stateRef = useRef<{
     warehouseId: string | null;
   } | null>(null);
@@ -97,7 +103,7 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
       TableCell,
       EnterSubmit,
     ],
-    content: "",
+    content: initialJSONContent,
   });
 
   useEffect(() => {
@@ -109,10 +115,8 @@ export const MessageInput = ({ state, submit, loading }: MessageInputProps) => {
       if (!json) {
         return;
       }
-      const text = jsonToMarkdown(json);
       editor?.commands.clearContent(true);
-
-      submit(text);
+      submit(json);
     });
 
     return () => {

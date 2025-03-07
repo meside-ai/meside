@@ -1,5 +1,5 @@
 import { healthApi } from "@/api";
-import type { HealthHeartbeatResponse } from "@/api/health.schema";
+import type { HealthHeartbeatResponse } from "@meside/api/health.schema";
 import type { UseQueryOptions } from "@tanstack/react-query";
 
 export const getHealthHeartbeat =

@@ -4,10 +4,10 @@ import type {
   MessageDetailResponse,
   MessageListRequest,
   MessageListResponse,
-} from "@/api/message.schema";
+} from "@meside/api/message.schema";
 import type { UseQueryOptions } from "@tanstack/react-query";
 
-export type { MessageDto } from "@/api/message.schema";
+export type { MessageDto } from "@meside/api/message.schema";
 
 export const getMessageList = ({
   parentThreadId,

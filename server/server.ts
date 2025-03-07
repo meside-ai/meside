@@ -12,13 +12,13 @@ import { createErrorHandler } from "./utils/error-handler";
 
 const app = new Hono();
 
-app.route("/aidw/api/health", healthApi);
-app.route("/aidw/api/warehouse", warehouseApi);
-app.route("/aidw/api/catalog", catalogApi);
-app.route("/aidw/api/chat", chatApi);
-app.route("/aidw/api/message", messageApi);
-app.route("/aidw/api/thread", threadApi);
-app.route("/aidw/api/stream", streamApi);
+app.route("/meside/api/health", healthApi);
+app.route("/meside/api/warehouse", warehouseApi);
+app.route("/meside/api/catalog", catalogApi);
+app.route("/meside/api/chat", chatApi);
+app.route("/meside/api/message", messageApi);
+app.route("/meside/api/thread", threadApi);
+app.route("/meside/api/stream", streamApi);
 
 app.get("/assets/*", serveStatic({ root: "./dist" }));
 app.get("/*", serveStatic({ path: "./dist/index.html" }));

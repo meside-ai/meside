@@ -1,10 +1,10 @@
-import type { CatalogApiType } from "@/api/catalog";
-import type { ChatApiType } from "@/api/chat";
-import type { HealthApiType } from "@/api/health";
-import type { MessageApiType } from "@/api/message";
-import type { StreamApiType } from "@/api/stream";
-import type { ThreadApiType } from "@/api/thread";
-import type { WarehouseApiType } from "@/api/warehouse";
+import type { CatalogApiType } from "@meside/api/catalog";
+import type { ChatApiType } from "@meside/api/chat";
+import type { HealthApiType } from "@meside/api/health";
+import type { MessageApiType } from "@meside/api/message";
+import type { StreamApiType } from "@meside/api/stream";
+import type { ThreadApiType } from "@meside/api/thread";
+import type { WarehouseApiType } from "@meside/api/warehouse";
 import { api } from "./utils/request";
 
 export const healthApi = api<HealthApiType>("/health");
@@ -16,5 +16,5 @@ export const threadApi = api<ThreadApiType>("/thread");
 export const streamApi = api<StreamApiType>("/stream");
 
 export const getStreamAssistantUrl = (parentThreadId: string) => {
-  return `/aidw/api/stream/assistant?parentThreadId=${parentThreadId}`;
+  return `/meside/api/stream/assistant?parentThreadId=${parentThreadId}`;
 };
