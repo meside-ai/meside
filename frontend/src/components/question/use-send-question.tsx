@@ -8,9 +8,11 @@ import { useQuestionContext } from "./context";
 export const useSendQuestion = ({
   parentQuestionId,
   questionPayload,
+  versionId,
 }: {
   parentQuestionId: string | null;
   questionPayload: QuestionCreateRequest["payload"];
+  versionId: string | null;
 }) => {
   const queryClient = useQueryClient();
   const { setQuestionCache, setQuestionId } = useQuestionContext();
@@ -30,7 +32,7 @@ export const useSendQuestion = ({
       const text = JSON.stringify(json);
 
       const { question } = await sendQuestion({
-        versionId: null,
+        versionId,
         userContent: text,
         payload: questionPayload,
         parentQuestionId,
@@ -45,6 +47,7 @@ export const useSendQuestion = ({
       sendQuestion,
       setQuestionCache,
       setQuestionId,
+      versionId,
     ]
   );
 

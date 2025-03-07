@@ -3,7 +3,9 @@ import { Box, Loader, ScrollArea, Skeleton, Text } from "@mantine/core";
 import type { QuestionDto } from "@meside/api/question.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { WorkflowFactory } from "../workflow/workflow-factory";
 import { useQuestionContext } from "./context";
+import { QuestionLayout } from "./question-layout";
 import { useStreamAnswer } from "./use-stream-answer";
 
 export const ChatPanel = () => {
@@ -66,14 +68,11 @@ export const ChatPanel = () => {
 
 const QuestionDetail = ({ question }: { question: QuestionDto }) => {
   return (
-    <Box>
-      <Box>
-        <Text>{question.userContent}</Text>
-      </Box>
-      <Box>
-        <Text>{question.assistantReason}</Text>
-        <Text>{question.assistantContent}</Text>
-      </Box>
-    </Box>
+    <WorkflowFactory
+      question={question}
+      renderQuestionLayout={(props) => {
+        return <QuestionLayout {...props} />;
+      }}
+    />
   );
 };

@@ -8,6 +8,7 @@ export const StartPanel = () => {
 
   const { handleQuestion, isSendingQuestion } = useSendQuestion({
     parentQuestionId: null,
+    versionId: null,
     questionPayload: {
       type: "db",
       sql: "",
