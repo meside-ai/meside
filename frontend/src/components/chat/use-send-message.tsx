@@ -1,6 +1,6 @@
-import type { MessageListResponse } from "@/api/message.schema";
 import { getChatUser } from "@/queries/chat";
 import { getMessageList } from "@/queries/message";
+import type { MessageListResponse } from "@meside/api/message.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useAssistantStream } from "./use-assistant-stream";

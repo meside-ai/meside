@@ -1,6 +1,6 @@
-import type { MessageDto } from "@/api/message.schema";
 import { MESSAGE_CONTENT_WIDTH } from "@/utils/message-width";
 import { Box, Button, Code, Text } from "@mantine/core";
+import type { MessageDto } from "@meside/api/message.schema";
 import { TableView } from "../db/table-view";
 import { Echarts } from "../echarts/echarts";
 import { EditorJsonMarkdown } from "../markdown/editor-json-markdown";

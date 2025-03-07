@@ -4,8 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/api/*": ["../server/api/*"],
-      "@shared/*": ["../server/shared/*"]
+      "@meside/api/*": ["../server/api/*"],
+      "@meside/shared/*": ["../server/shared/*"]
     }
   },
   "references": [

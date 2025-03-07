@@ -1,4 +1,5 @@
 import { warehouseApi } from "@/api";
+import type { QueryClientError } from "@/utils/query-client";
 import type {
   WarehouseCreateRequest,
   WarehouseCreateResponse,
@@ -7,8 +8,7 @@ import type {
   WarehouseExecuteRequest,
   WarehouseExecuteResponse,
   WarehouseListResponse,
-} from "@/api/warehouse.schema";
-import type { QueryClientError } from "@/utils/query-client";
+} from "@meside/api/warehouse.schema";
 import type {
   UseMutationOptions,
   UseQueryOptions,

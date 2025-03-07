@@ -1,8 +1,11 @@
-import type { MessageDto, MessageListResponse } from "@/api/message.schema";
 import { getChatSystem } from "@/queries/chat";
 import { getMessageList } from "@/queries/message";
 import { getThreadCreate } from "@/queries/thread";
 import { Button, Menu, Tooltip } from "@mantine/core";
+import type {
+  MessageDto,
+  MessageListResponse,
+} from "@meside/api/message.schema";
 import { IconGraphFilled, IconMessage2Plus } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";

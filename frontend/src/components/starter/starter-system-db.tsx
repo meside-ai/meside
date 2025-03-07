@@ -1,5 +1,3 @@
-import type { MessageListResponse } from "@/api/message.schema";
-import type { WarehouseCreateRequest } from "@/api/warehouse.schema";
 import { getChatSystem } from "@/queries/chat";
 import { getMessageList } from "@/queries/message";
 import { getThreadCreate } from "@/queries/thread";
@@ -17,6 +15,8 @@ import {
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
+import type { MessageListResponse } from "@meside/api/message.schema";
+import type { WarehouseCreateRequest } from "@meside/api/warehouse.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { z } from "zod";

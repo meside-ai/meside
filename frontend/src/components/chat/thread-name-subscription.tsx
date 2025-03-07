@@ -1,7 +1,7 @@
-import type { MessageListResponse } from "@/api/message.schema";
 import { getNameAssistant } from "@/queries/chat";
 import { getMessageList } from "@/queries/message";
 import { getThreadList } from "@/queries/thread";
+import type { MessageListResponse } from "@meside/api/message.schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { threadNameEvent } from "./thread-name-event";
