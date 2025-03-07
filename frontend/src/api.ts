@@ -16,5 +16,5 @@ export const threadApi = api<ThreadApiType>("/thread");
 export const streamApi = api<StreamApiType>("/stream");
 
 export const getStreamAssistantUrl = (parentThreadId: string) => {
-  return `/aidw/api/stream/assistant?parentThreadId=${parentThreadId}`;
+  return `/meside/api/stream/assistant?parentThreadId=${parentThreadId}`;
 };

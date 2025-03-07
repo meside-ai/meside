@@ -1,5 +1,5 @@
 {
-  "name": "aidw-server",
+  "name": "meside-server",
   "module": "server/server.ts",
   "type": "module",
   "version": "0.3.0",
