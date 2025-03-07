@@ -1,6 +1,7 @@
 import { getChatUser } from "@/queries/chat";
 import { getMessageList } from "@/queries/message";
 import type { MessageListResponse } from "@meside/api/message.schema";
+import type { EditorJSONContent } from "@meside/shared/editor-json-to-markdown";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useAssistantStream } from "./use-assistant-stream";
@@ -27,7 +28,9 @@ export const useSendMessage = ({
   );
 
   const handleMessage = useCallback(
-    async (text: string) => {
+    async (json: EditorJSONContent) => {
+      const text = JSON.stringify(json);
+
       const userMessage = await sendUserMessage({
         parentThreadId,
         structure: {
