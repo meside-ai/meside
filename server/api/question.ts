@@ -1,15 +1,16 @@
 import { getDrizzle } from "@/db/db";
-import { messageTable } from "@/db/schema/message";
 import { type QuestionEntity, questionTable } from "@/db/schema/question";
-import { getMessageDtos } from "@/mappers/message";
 import { getQuestionDtos } from "@/mappers/question";
 import { getAuthOrUnauthorized } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import { firstOrNotCreated, firstOrNull } from "@/utils/toolkit";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { type SQL, and, desc, eq, isNull } from "drizzle-orm";
-import { messageDetailRoute } from "./message.schema";
-import { questionCreateRoute, questionListRoute } from "./question.schema";
+import {
+  questionCreateRoute,
+  questionDetailRoute,
+  questionListRoute,
+} from "./question.schema";
 
 export const questionApi = new OpenAPIHono()
   .openapi(questionListRoute, async (c) => {
@@ -35,28 +36,28 @@ export const questionApi = new OpenAPIHono()
 
     return c.json({ questions: questionDtos });
   })
-  .openapi(messageDetailRoute, async (c) => {
-    const { messageId } = c.req.valid("json");
-    const message = firstOrNull(
+  .openapi(questionDetailRoute, async (c) => {
+    const { questionId } = c.req.valid("json");
+    const question = firstOrNull(
       await getDrizzle()
         .select()
-        .from(messageTable)
+        .from(questionTable)
         .where(
           and(
-            eq(messageTable.messageId, messageId),
-            isNull(messageTable.deletedAt),
+            eq(questionTable.questionId, questionId),
+            isNull(questionTable.deletedAt),
           ),
         )
         .limit(1),
     );
 
-    if (!message) {
-      return c.json({ message: null });
+    if (!question) {
+      return c.json({ question: null });
     }
 
-    const messageDtos = await getMessageDtos([message]);
+    const questionDtos = await getQuestionDtos([question]);
 
-    return c.json({ message: messageDtos[0] });
+    return c.json({ question: questionDtos[0] });
   })
   .openapi(questionCreateRoute, async (c) => {
     const body = c.req.valid("json");
@@ -86,6 +87,8 @@ export const questionApi = new OpenAPIHono()
           versionId: body.versionId ?? questionId,
           shortName: body.shortName ?? undefined,
           userContent: body.userContent,
+          assistantReason: "",
+          assistantContent: "",
           payload: body.payload,
           parentQuestionId: parentQuestion?.questionId ?? undefined,
           ownerId: auth.userId,

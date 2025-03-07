@@ -2,6 +2,7 @@ import type { CatalogApiType } from "@meside/api/catalog";
 import type { ChatApiType } from "@meside/api/chat";
 import type { HealthApiType } from "@meside/api/health";
 import type { MessageApiType } from "@meside/api/message";
+import type { QuestionApiType } from "@meside/api/question";
 import type { StreamApiType } from "@meside/api/stream";
 import type { ThreadApiType } from "@meside/api/thread";
 import type { WarehouseApiType } from "@meside/api/warehouse";
@@ -14,7 +15,12 @@ export const chatApi = api<ChatApiType>("/chat");
 export const messageApi = api<MessageApiType>("/message");
 export const threadApi = api<ThreadApiType>("/thread");
 export const streamApi = api<StreamApiType>("/stream");
+export const questionApi = api<QuestionApiType>("/question");
 
 export const getStreamAssistantUrl = (parentThreadId: string) => {
   return `/meside/api/stream/assistant?parentThreadId=${parentThreadId}`;
+};
+
+export const getStreamQuestionUrl = (questionId: string) => {
+  return `/meside/api/stream/question?questionId=${questionId}`;
 };

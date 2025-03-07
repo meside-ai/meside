@@ -14,9 +14,11 @@ import { getDrizzle } from "./db/db";
 import { catalogTable } from "./db/schema/catalog";
 import { messageTable } from "./db/schema/message";
 import { orgTable } from "./db/schema/org";
+import { questionTable } from "./db/schema/question";
 import { threadTable } from "./db/schema/thread";
 import { userTable } from "./db/schema/user";
 import { warehouseTable } from "./db/schema/warehouse";
+import type { QuestionPayload } from "./questions";
 import { cuid } from "./utils/cuid";
 import type { WarehouseQueryColumn } from "./warehouse";
 
@@ -34,6 +36,7 @@ export async function main() {
   const level2SystemMessageId = cuid();
   const level2UserMessageId = cuid();
   const level2AssistantMessageId = cuid();
+  const questionId = cuid();
 
   const sql = "SELECT * FROM artist LIMIT 10";
   const fields: WarehouseQueryColumn[] = [
@@ -61,6 +64,33 @@ export async function main() {
     name: "John Doe",
     email: "john.doe@example.com",
     password: "password",
+  });
+
+  await db.insert(questionTable).values({
+    questionId,
+    versionId: questionId,
+    ownerId: userId,
+    orgId,
+    shortName: "list all artists",
+    userContent: JSON.stringify({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "list all artists" }],
+        },
+      ],
+    }),
+    assistantReason: "OK, I will list all artists for you.",
+    assistantContent: "list all artists",
+
+    parentQuestionId: null,
+    payload: {
+      type: "db",
+      sql,
+      warehouseId,
+      fields,
+    } as QuestionPayload,
   });
 
   await db.insert(threadTable).values([

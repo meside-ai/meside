@@ -14,13 +14,16 @@ export const getOptions = (): ClientRequestOptions => {
       let message = "Unknown error";
       try {
         const error = await response.json();
-        if (error.error) {
+        if (error.error.name === "ZodError") {
+          message = "bad request error"; // TODO: display details of zod error
+        } else if (error.error) {
           message = error?.error;
         }
       } catch (error) {
         console.error("error", error);
         message = "Failed to fetch";
       }
+
       throw new Error(message);
     },
   };

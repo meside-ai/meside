@@ -1,4 +1,4 @@
-import type { QuestionPayload } from "@/questions";
+import { type QuestionPayload, questionPayloadSchema } from "@/questions";
 import { relations } from "drizzle-orm";
 import { jsonb, pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
@@ -12,9 +12,9 @@ export const questionTable = pgTable("question", {
   orgId: foreignCuid("org_id").notNull(),
   shortName: text("short_name").notNull().default("question"),
   userContent: text("user_content").notNull().default(""),
-  assistantReason: text("assistant_reason"),
-  assistantContent: text("assistant_content"),
-  payload: jsonb("payload").$type<QuestionPayload>(),
+  assistantReason: text("assistant_reason").notNull(),
+  assistantContent: text("assistant_content").notNull(),
+  payload: jsonb("payload").notNull().$type<QuestionPayload>(),
   parentQuestionId: foreignCuid("parent_question_id"),
   ...useTimestamp(),
 });
@@ -27,6 +27,8 @@ export const questionRelations = relations(questionTable, ({ one, many }) => ({
   childQuestions: many(questionTable),
 }));
 
-export const questionEntitySchema = createSelectSchema(questionTable);
+export const questionEntitySchema = createSelectSchema(questionTable, {
+  payload: questionPayloadSchema,
+});
 
 export type QuestionEntity = z.infer<typeof questionEntitySchema>;
