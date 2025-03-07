@@ -40,13 +40,13 @@ export async function main() {
     {
       tableName: "artists",
       columnName: "artist_id",
-      columnType: "integer",
+      columnType: "number",
       description: "The ID of the artist",
     },
     {
       tableName: "artists",
       columnName: "name",
-      columnType: "text",
+      columnType: "string",
       description: "The name of the artist",
     },
   ];
@@ -100,7 +100,15 @@ export async function main() {
       messageRole: MessageRole.USER,
       structure: {
         type: "userContent",
-        content: "list all artists",
+        content: JSON.stringify({
+          type: "doc",
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "list all artists" }],
+            },
+          ],
+        }),
       } as UserContentMessageStructure,
     },
     {
@@ -177,13 +185,13 @@ export async function main() {
           {
             tableName: "artists",
             columnName: "artist_id",
-            columnType: "integer",
+            columnType: "number",
             description: "The ID of the artist",
           },
           {
             tableName: "artists",
             columnName: "name",
-            columnType: "text",
+            columnType: "string",
             description: "The name of the artist",
           },
         ],
