@@ -14,12 +14,12 @@ import Text from "@tiptap/extension-text";
 import {
   EditorContent,
   Extension,
-  type JSONContent,
   mergeAttributes,
   useEditor,
 } from "@tiptap/react";
 import "./message-input.css";
 import { ActionIcon, Box } from "@mantine/core";
+import type { EditorJSONContent } from "@meside/shared/editor-json-to-markdown";
 import {
   IconArrowUp,
   IconColumnInsertLeft,
@@ -40,8 +40,8 @@ export type MessageInputProps = {
   state?: {
     warehouseId?: string;
   };
-  initialJSONContent?: JSONContent;
-  submit: (jsonContent: JSONContent) => void;
+  initialJSONContent?: EditorJSONContent;
+  submit: (jsonContent: EditorJSONContent) => void;
   loading?: boolean;
   placeholder?: string;
 };
@@ -217,14 +217,18 @@ export const MessageInput = ({
 const EnterSubmit = Extension.create({
   addKeyboardShortcuts() {
     return {
-      "Mod-Enter": () => {
+      Enter: () => {
         messageInputSubmitEvent.dispatch();
         return true;
       },
-      "Shift-Enter": () => {
-        messageInputSubmitEvent.dispatch();
-        return true;
-      },
+      // "Mod-Enter": () => {
+      //   messageInputSubmitEvent.dispatch();
+      //   return true;
+      // },
+      // "Shift-Enter": () => {
+      //   messageInputSubmitEvent.dispatch();
+      //   return true;
+      // },
     };
   },
 });

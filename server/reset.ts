@@ -3,7 +3,9 @@ import { getDrizzle } from "./db/db";
 import { catalogTable } from "./db/schema/catalog";
 import { messageTable } from "./db/schema/message";
 import { orgTable } from "./db/schema/org";
+import { questionTable } from "./db/schema/question";
 import { threadTable } from "./db/schema/thread";
+import { usageTable } from "./db/schema/usage";
 import { userTable } from "./db/schema/user";
 import { warehouseTable } from "./db/schema/warehouse";
 
@@ -17,6 +19,8 @@ export async function resetDb() {
     warehouseTable,
     catalogTable,
     threadTable,
+    usageTable,
+    questionTable,
   });
 }
 

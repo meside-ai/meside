@@ -1,4 +1,3 @@
-import { getMessageDetail } from "@/queries/message";
 import { getWarehouseExecute } from "@/queries/warehouse";
 import type { WarehouseQueryRow } from "@/queries/warehouse";
 import { Box, Table, Text } from "@mantine/core";
@@ -12,30 +11,19 @@ import {
 import { useMemo } from "react";
 
 export type TableViewProps = {
-  messageId: string;
-  compact?: boolean;
+  questionId: string;
 };
 
-export const TableView = ({ messageId, compact }: TableViewProps) => {
-  const messageDetailResult = useQuery(getMessageDetail({ messageId }));
-
-  const structure = messageDetailResult.data?.message?.structure;
-
+export const TableView = ({ questionId }: TableViewProps) => {
   const { data } = useQuery(
     getWarehouseExecute({
-      warehouseId:
-        structure && "warehouseId" in structure ? structure.warehouseId : "",
-      messageId,
+      questionId,
     })
   );
 
   const rows = useMemo(() => {
-    if (compact) {
-      return data?.rows.slice(0, 10);
-    }
-
-    return data?.rows;
-  }, [data, compact]);
+    return data?.rows.slice(0, 5);
+  }, [data]);
 
   const columns: ColumnDef<WarehouseQueryRow>[] = useMemo(() => {
     return (
@@ -51,7 +39,7 @@ export const TableView = ({ messageId, compact }: TableViewProps) => {
       {rows && rows.length > 0 && columns?.length > 0 ? (
         <TableRender columns={columns} data={rows} />
       ) : (
-        <Text>No data</Text>
+        <Text p="md">Rendering...</Text>
       )}
     </Box>
   );
@@ -76,7 +64,11 @@ const TableRender = ({
         {table.getHeaderGroups().map((headerGroup) => (
           <Table.Tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <Table.Th key={header.id}>
+              <Table.Th
+                key={header.id}
+                w={500}
+                style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              >
                 {header.isPlaceholder
                   ? null
                   : flexRender(

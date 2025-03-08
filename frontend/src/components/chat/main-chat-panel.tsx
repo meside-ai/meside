@@ -1,5 +1,4 @@
 import { Box } from "@mantine/core";
-import { StarterPanel } from "../starter/starter-panel";
 import { ChatPanel } from "./chat-panel";
 import { useChatContext } from "./context";
 
@@ -9,7 +8,7 @@ export const MainChatPanel = () => {
   if (!threadId) {
     return (
       <Box mx="md" pt="lg">
-        <StarterPanel structureType="systemDb" setThreadId={setThreadId} />
+        deprecated
       </Box>
     );
   }

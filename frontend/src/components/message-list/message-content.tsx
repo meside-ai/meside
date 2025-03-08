@@ -1,15 +1,10 @@
 import { MESSAGE_CONTENT_WIDTH } from "@/utils/message-width";
-import { Box, Button, Code, Text } from "@mantine/core";
+import { Box, Code, Text } from "@mantine/core";
 import type { MessageDto } from "@meside/api/message.schema";
-import { TableView } from "../db/table-view";
-import { Echarts } from "../echarts/echarts";
 import { EditorJsonMarkdown } from "../markdown/editor-json-markdown";
-import { usePreviewContext } from "../preview/preview-context";
 import { WarehouseCard } from "../warehouse/warehouse-card";
 
 export const MessageContent = ({ message }: { message: MessageDto }) => {
-  const { openPreview } = usePreviewContext();
-
   if (!message?.structure?.type) {
     return <Text>no type</Text>;
   }
@@ -32,21 +27,8 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
             overflow: "hidden",
           })}
         >
-          <TableView messageId={message.messageId} compact />
+          deprecated
         </Box>
-        <Button
-          size="xs"
-          variant="light"
-          onClick={() => {
-            openPreview({
-              name: message?.parentThread?.name ?? "DB Query",
-              payload: { type: "warehouseTable", messageId: message.messageId },
-            });
-          }}
-          fullWidth
-        >
-          View more data
-        </Button>
       </Box>
     );
   }
@@ -55,27 +37,7 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
     message.structure.echartsOptions &&
     message.structure.warehouseId
   ) {
-    return (
-      <Box>
-        <Box
-          h={300}
-          style={(theme) => ({
-            width: "100%",
-            border: "solid 1px",
-            borderColor: theme.colors.gray[7],
-            borderRadius: 6,
-            overflow: "hidden",
-            backgroundColor: theme.colors.gray[1],
-          })}
-        >
-          <Echarts
-            messageId={message.messageId}
-            warehouseId={message.structure.warehouseId}
-            echartsOptions={message.structure.echartsOptions}
-          />
-        </Box>
-      </Box>
-    );
+    return <Box>deprecated</Box>;
   }
   if (message.structure.type === "systemContent") {
     return <Text>{message.structure.content}</Text>;

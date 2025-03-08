@@ -5,6 +5,7 @@ import { catalogApi } from "./api/catalog";
 import { chatApi } from "./api/chat";
 import { healthApi } from "./api/health";
 import { messageApi } from "./api/message";
+import { questionApi } from "./api/question";
 import { streamApi } from "./api/stream";
 import { threadApi } from "./api/thread";
 import { warehouseApi } from "./api/warehouse";
@@ -19,6 +20,7 @@ app.route("/meside/api/chat", chatApi);
 app.route("/meside/api/message", messageApi);
 app.route("/meside/api/thread", threadApi);
 app.route("/meside/api/stream", streamApi);
+app.route("/meside/api/question", questionApi);
 
 app.get("/assets/*", serveStatic({ root: "./dist" }));
 app.get("/*", serveStatic({ path: "./dist/index.html" }));

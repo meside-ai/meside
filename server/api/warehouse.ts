@@ -1,6 +1,6 @@
 import { getDrizzle } from "@/db/db";
 import { catalogTable } from "@/db/schema/catalog";
-import { messageTable } from "@/db/schema/message";
+import { questionTable } from "@/db/schema/question";
 import { warehouseTable } from "@/db/schema/warehouse";
 import { getWarehouseDtos } from "@/mappers/warehouse";
 import { getAuthOrUnauthorized } from "@/utils/auth";
@@ -64,19 +64,25 @@ export const warehouseApi = new OpenAPIHono()
     return c.json({ warehouses: warehouseDtos });
   })
   .openapi(warehouseExecuteRoute, async (c) => {
-    const { messageId, warehouseId } = c.req.valid("json");
+    const { questionId } = c.req.valid("json");
 
-    const message = firstOrNotFound(
+    const question = firstOrNotFound(
       await getDrizzle()
         .select()
-        .from(messageTable)
-        .where(eq(messageTable.messageId, messageId))
+        .from(questionTable)
+        .where(eq(questionTable.questionId, questionId))
         .limit(1),
-      "Message not found",
+      "Question not found",
     );
 
-    if (!message) {
-      throw new NotFoundError("Message not found");
+    const warehouseId =
+      "warehouseId" in question.payload ? question.payload.warehouseId : null;
+    const sql = "sql" in question.payload ? question.payload.sql : null;
+
+    if (!warehouseId || !sql) {
+      throw new BadRequestError(
+        `Question has no warehouseId or sql, questionId: ${questionId}, warehouseId: ${warehouseId}, sql: ${sql}`,
+      );
     }
 
     const warehouse = firstOrNotFound(
@@ -92,11 +98,6 @@ export const warehouseApi = new OpenAPIHono()
       throw new NotFoundError("Warehouse not found");
     }
 
-    if (!("sql" in message.structure)) {
-      throw new BadRequestError("Message has no SQL field");
-    }
-
-    const sql = message.structure.sql;
     const warehouseFactory = new WarehouseFactory().create("postgresql");
     const warehouseResult = await warehouseFactory.query(warehouse, sql);
 

@@ -1,4 +1,3 @@
-import { getMessageDetail } from "@/queries/message";
 import { getWarehouseExecute } from "@/queries/warehouse";
 import { Box } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
@@ -8,20 +7,15 @@ import {
   useMantineReactTable,
 } from "mantine-react-table";
 import { useMemo } from "react";
+
 export type TableVirtualViewProps = {
-  messageId: string;
+  questionId: string;
 };
 
-export const TableVirtualView = ({ messageId }: TableVirtualViewProps) => {
-  const messageDetailResult = useQuery(getMessageDetail({ messageId }));
-
-  const structure = messageDetailResult.data?.message?.structure;
-
+export const TableVirtualView = ({ questionId }: TableVirtualViewProps) => {
   const { data } = useQuery(
     getWarehouseExecute({
-      warehouseId:
-        structure && "warehouseId" in structure ? structure.warehouseId : "",
-      messageId,
+      questionId,
     })
   );
 
@@ -45,10 +39,10 @@ export const TableVirtualView = ({ messageId }: TableVirtualViewProps) => {
       density: "xs",
     },
     columns,
-    data: rows ?? [], //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
-    enableRowSelection: true, //enable some features
-    enableColumnOrdering: true, //enable a feature for all columns
-    enableGlobalFilter: false, //turn off a feature
+    data: rows ?? [],
+    enableRowSelection: true,
+    enableColumnOrdering: true,
+    enableGlobalFilter: false,
     enableRowVirtualization: true,
     enableColumnVirtualization: true,
     enablePagination: false,
