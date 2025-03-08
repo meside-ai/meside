@@ -22,7 +22,6 @@ export const ChatPanel = () => {
     if (!questionCache) {
       return;
     }
-    console.log(questionCache.questionId === questionId);
     if (questionCache.questionId === questionId) {
       setQuestionCache(null);
       streamAnswer(questionId);

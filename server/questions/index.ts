@@ -22,9 +22,19 @@ export type EchartsQuestionPayload = z.infer<
   typeof echartsQuestionPayloadSchema
 >;
 
+export const nameQuestionPayloadSchema = z.object({
+  type: z.literal("name"),
+  name: z.string(),
+  minLength: z.number(),
+  maxLength: z.number(),
+});
+
+export type NameQuestionPayload = z.infer<typeof nameQuestionPayloadSchema>;
+
 export const questionPayloadSchema = z.union([
   dbQuestionPayloadSchema,
   echartsQuestionPayloadSchema,
+  nameQuestionPayloadSchema,
 ]);
 
 export type QuestionPayload = z.infer<typeof questionPayloadSchema>;

@@ -4,6 +4,7 @@ import { type QuestionEntity, questionTable } from "@/db/schema/question";
 import { threadTable } from "@/db/schema/thread";
 import { getMessageDtos } from "@/mappers/message";
 import { getAuth } from "@/utils/auth";
+import { cuid } from "@/utils/cuid";
 import {
   BadRequestError,
   NotFoundError,
@@ -23,6 +24,7 @@ import type { QuestionDto } from "./question.schema";
 import {
   type StreamAssistantResponse,
   streamAssistantRequestSchema,
+  streamObjectRequestSchema,
   streamQuestionRequestSchema,
 } from "./stream.schema";
 
@@ -180,7 +182,84 @@ export const streamApi = new Hono()
         }
       });
     },
-  );
+  )
+  .get("object", zValidator("query", streamObjectRequestSchema), async (c) => {
+    const body = c.req.valid("query");
+
+    const authUser = getAuth(c);
+
+    if (!authUser) {
+      throw new UnauthorizedError();
+    }
+
+    let question: QuestionEntity;
+
+    if (body.workflowType === "name") {
+      const questionId = cuid();
+      question = {
+        questionId,
+        userContent: body.userContent,
+        assistantContent: body.assistantContent,
+        assistantReason: "",
+        ownerId: authUser.userId,
+        orgId: authUser.orgId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        parentQuestionId: null,
+        deletedAt: null,
+        versionId: questionId,
+        shortName: "",
+        payload: {
+          type: "name",
+          name: "",
+          minLength: 5,
+          maxLength: 30,
+        },
+      };
+    } else {
+      throw new BadRequestError("Invalid workflow type");
+    }
+
+    const workflow = getWorkflowFactory(question);
+    const aiStream = await workflow.stream({
+      question,
+    });
+
+    return streamSSE(c, async (stream) => {
+      const reader = aiStream.getReader();
+      const initial: QuestionDto | Record<string, unknown> = {};
+      let lastWriteTime = 0;
+      const DEBOUNCE_INTERVAL = body.debounce;
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            await updateQuestionAnswer(initial as QuestionDto);
+            await stream.writeSSE({
+              data: JSON.stringify(initial),
+            });
+            await stream.writeSSE({
+              data: "[DONE]",
+            });
+            await stream.close();
+            break;
+          }
+          Object.assign(initial, value);
+
+          const currentTime = Date.now();
+          if (currentTime - lastWriteTime >= DEBOUNCE_INTERVAL) {
+            await stream.writeSSE({
+              data: JSON.stringify(initial),
+            });
+            lastWriteTime = currentTime;
+          }
+        }
+      } finally {
+        reader.releaseLock();
+      }
+    });
+  });
 
 const persistMessage = async (
   rawMessage: MessageEntity | Record<string, unknown>,

@@ -21,21 +21,12 @@ export const useStreamAnswer = () => {
             questionId: questionId,
           }).queryKey,
           (prev: QuestionDetailResponse | undefined) => {
-            console.log("prev", prev);
-            console.log("messageChunk1", messageChunk);
             if (!prev?.question) {
               return prev;
             }
-            console.log(
-              "messageChunk2",
-              messageChunk,
-              prev.question,
-              prev.question.questionId !== questionId
-            );
             if (prev.question.questionId !== questionId) {
               return prev;
             }
-            console.log("messageChunk3", prev, messageChunk);
             return {
               ...prev,
               question: {
