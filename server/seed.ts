@@ -1,21 +1,9 @@
-import { MessageRole, WarehouseType } from "@prisma/client";
-import { inArray } from "drizzle-orm";
-import type { UserContentMessageStructure } from "./agents/content";
-import type {
-  AssistantDbMessageStructure,
-  SystemDbMessageStructure,
-} from "./agents/db";
-import type {
-  AssistantEchartsMessageStructure,
-  SystemEchartsMessageStructure,
-} from "./agents/echarts";
+import { WarehouseType } from "@prisma/client";
 import { environment } from "./configs/environment";
 import { getDrizzle } from "./db/db";
 import { catalogTable } from "./db/schema/catalog";
-import { messageTable } from "./db/schema/message";
 import { orgTable } from "./db/schema/org";
 import { questionTable } from "./db/schema/question";
-import { threadTable } from "./db/schema/thread";
 import { userTable } from "./db/schema/user";
 import { warehouseTable } from "./db/schema/warehouse";
 import type { QuestionPayload } from "./questions";
@@ -28,15 +16,7 @@ export async function main() {
   const orgId = "hkwgx29khaflgmm5c8ipp79r";
   const userId = "io56027z7qwd25mzq6upq947";
   const warehouseId = "zhl0ec34cda00wgufqsqe80d";
-  const level1ThreadId = cuid();
-  const level1SystemMessageId = cuid();
-  const level1UserMessageId = cuid();
-  const level1AssistantMessageId = cuid();
-  const level2ThreadId = cuid();
-  const level2SystemMessageId = cuid();
-  const level2UserMessageId = cuid();
-  const level2AssistantMessageId = cuid();
-  const questionId = cuid();
+  const questionId = "cwh5pv4nxuh3xlhnlouz95q7";
 
   const sql = "SELECT * FROM artist LIMIT 10";
   const fields: WarehouseQueryColumn[] = [
@@ -147,149 +127,6 @@ export async function main() {
       } as QuestionPayload,
     },
   ]);
-
-  await db.insert(threadTable).values([
-    {
-      threadId: level1ThreadId,
-      parentMessageId: null,
-      ownerId: userId,
-      orgId,
-      name: "list all artists",
-    },
-    {
-      threadId: level2ThreadId,
-      parentMessageId: level1AssistantMessageId,
-      ownerId: userId,
-      orgId,
-      name: "generate a bar chart of artist ids",
-    },
-  ]);
-
-  await db.insert(messageTable).values([
-    {
-      messageId: level1SystemMessageId,
-      threadId: level1ThreadId,
-      orgId,
-      ownerId: userId,
-      messageRole: MessageRole.SYSTEM,
-      structure: {
-        type: "systemDb",
-        warehouseId,
-      } as SystemDbMessageStructure,
-    },
-    {
-      messageId: level1UserMessageId,
-      threadId: level1ThreadId,
-      orgId,
-      ownerId: userId,
-      messageRole: MessageRole.USER,
-      structure: {
-        type: "userContent",
-        content: JSON.stringify({
-          type: "doc",
-          content: [
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "list all artists" }],
-            },
-          ],
-        }),
-      } as UserContentMessageStructure,
-    },
-    {
-      messageId: level1AssistantMessageId,
-      threadId: level1ThreadId,
-      orgId,
-      ownerId: userId,
-      messageRole: MessageRole.ASSISTANT,
-      structure: {
-        type: "assistantDb",
-        warehouseId,
-        sql,
-        fields,
-      } as AssistantDbMessageStructure,
-    },
-
-    {
-      messageId: level2SystemMessageId,
-      threadId: level2ThreadId,
-      orgId,
-      ownerId: userId,
-      messageRole: MessageRole.SYSTEM,
-      structure: {
-        type: "systemEcharts",
-        warehouseId,
-        sql,
-        fields,
-      } as SystemEchartsMessageStructure,
-    },
-    {
-      messageId: level2UserMessageId,
-      threadId: level2ThreadId,
-      orgId,
-      ownerId: userId,
-      messageRole: MessageRole.USER,
-      structure: {
-        type: "userContent",
-        content: "list all albums",
-      } as UserContentMessageStructure,
-    },
-    {
-      messageId: level2AssistantMessageId,
-      threadId: level2ThreadId,
-      orgId,
-      ownerId: userId,
-      messageRole: MessageRole.ASSISTANT,
-      structure: {
-        type: "assistantEcharts",
-        echartsOptions: `
-          return {
-            tooltip: {},
-            xAxis: {
-              type: "category",
-              data: data.rows.map((row) => {
-                return row.name;
-              }),
-            },
-            yAxis: {
-              type: "value",
-            },
-            series: [
-              {
-                data: data.rows.map((row) => {
-                  return row.artist_id;
-                }),
-                type: "bar",
-              },
-            ],
-          };
-        `,
-        warehouseId,
-        sql,
-        fields: [
-          {
-            tableName: "artists",
-            columnName: "artist_id",
-            columnType: "number",
-            description: "The ID of the artist",
-          },
-          {
-            tableName: "artists",
-            columnName: "name",
-            columnType: "string",
-            description: "The name of the artist",
-          },
-        ],
-      } as AssistantEchartsMessageStructure,
-    },
-  ]);
-
-  await db
-    .update(threadTable)
-    .set({
-      hasQuestions: true,
-    })
-    .where(inArray(threadTable.threadId, [level1ThreadId, level2ThreadId]));
 
   await db.insert(warehouseTable).values({
     warehouseId,

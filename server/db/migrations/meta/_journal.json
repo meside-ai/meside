@@ -57,6 +57,13 @@
       "when": 1741348683625,
       "tag": "0007_chemical_impossible_man",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1741478145259,
+      "tag": "0008_square_ezekiel",
+      "breakpoints": true
     }
   ]
 }
