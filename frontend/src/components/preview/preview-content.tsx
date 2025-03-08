@@ -1,5 +1,6 @@
-import { TableVirtualView } from "../db/table-virtual-view";
 import { WarehouseEditor } from "../warehouse/warehouse-editor";
+import { TableVirtualView } from "../workflow/db/table-virtual-view";
+import { EchartsLazyLoader } from "../workflow/echarts/echarts-lazy-loader";
 import { usePreviewContext } from "./preview-context";
 import type { PreviewEntity } from "./types";
 
@@ -18,8 +19,12 @@ const PreviewContentCore = ({ preview }: { preview: PreviewEntity }) => {
     return <WarehouseEditor warehouseId={preview.payload.warehouseId} />;
   }
 
-  if (preview.payload.type === "warehouseTable") {
-    return <TableVirtualView messageId={preview.payload.messageId} />;
+  if (preview.payload.type === "db") {
+    return <TableVirtualView questionId={preview.payload.questionId} />;
+  }
+
+  if (preview.payload.type === "echarts") {
+    return <EchartsLazyLoader questionId={preview.payload.questionId} />;
   }
 
   return "not built yet";

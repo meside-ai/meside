@@ -59,9 +59,11 @@ export const ChooseWarehouse = ({
           />
         </Box>
         <Group>
-          <Button type="submit">Confirm</Button>
+          <Button size="xs" type="submit">
+            Confirm
+          </Button>
 
-          <Button variant="subtle" onClick={open}>
+          <Button size="xs" variant="subtle" onClick={open}>
             Add new database
           </Button>
         </Group>

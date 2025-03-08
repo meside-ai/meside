@@ -10,12 +10,12 @@ export const previewEntitySchema = z.object({
       warehouseId: z.string(),
     }),
     z.object({
-      type: z.literal("warehouseTable"),
-      messageId: z.string(),
+      type: z.literal("db"),
+      questionId: z.string(),
     }),
     z.object({
-      type: z.literal("warehouseEcharts"),
-      messageId: z.string(),
+      type: z.literal("echarts"),
+      questionId: z.string(),
     }),
   ]),
 });

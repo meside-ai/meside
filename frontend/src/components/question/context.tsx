@@ -6,6 +6,8 @@ export type QuestionContextType = {
   setQuestionId: (questionId: string | null) => void;
   questionCache: QuestionDto | null;
   setQuestionCache: (question: QuestionDto | null) => void;
+  quotedQuestionId: string | null;
+  setQuotedQuestionId: (quotedQuestionId: string | null) => void;
 };
 
 export const QuestionContext = createContext<QuestionContextType | null>(null);

@@ -55,7 +55,7 @@ export const QuestionLayout = ({
   answerError,
 }: QuestionLayoutProps) => {
   const [isEditing, setIsEditing] = useState(false);
-
+  const { setQuotedQuestionId } = useQuestionContext();
   return (
     <Box mx="md">
       <Box>
@@ -128,7 +128,7 @@ export const QuestionLayout = ({
           answerError) && <AssistantHeader question={question} />}
         {isGettingAnswer && (
           <Box>
-            <Loader variant="dots" />
+            <Loader type="dots" />
           </Box>
         )}
         {answerError && (
@@ -142,7 +142,7 @@ export const QuestionLayout = ({
           pl="md"
           style={(theme) => ({
             borderLeft: `3px solid ${theme.colors.gray[8]}`,
-            maxWidth: MESSAGE_CONTENT_WIDTH,
+            maxWidth: MESSAGE_CONTENT_WIDTH - 40,
           })}
         >
           <EditorJsonMarkdown>{question.assistantReason}</EditorJsonMarkdown>
@@ -168,6 +168,17 @@ export const QuestionLayout = ({
           </Group>
         </Box>
         {afterAssistantAction}
+        <Box>
+          <Button
+            size="xs"
+            variant="light"
+            onClick={() => {
+              setQuotedQuestionId(question.questionId);
+            }}
+          >
+            Quote this to ask a new question
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

@@ -1,11 +1,26 @@
 import { Box, Paper } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MessageInput } from "../message-input/message-input";
+import { usePreviewContext } from "../preview/preview-context";
 import { useSendQuestion } from "../question/use-send-question";
 import { ChooseWarehouse } from "./choose-warehouse";
 
 export const DbWorkflowStarter = () => {
   const [warehouseId, setWarehouseId] = useState<string | null>(null);
+
+  const { openPreview } = usePreviewContext();
+
+  useEffect(() => {
+    if (warehouseId) {
+      openPreview({
+        name: "Warehouse explorer",
+        payload: {
+          type: "warehouseColumn",
+          warehouseId,
+        },
+      });
+    }
+  }, [openPreview, warehouseId]);
 
   const { handleQuestion, isSendingQuestion } = useSendQuestion({
     parentQuestionId: null,

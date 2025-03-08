@@ -1,1 +1,1 @@
-export const MESSAGE_CONTENT_WIDTH = 510;
+export const MESSAGE_CONTENT_WIDTH = 568;

@@ -1,4 +1,3 @@
-import { assistantDbMessageStructure } from "@/agents/db";
 import { AIStructure } from "@/ai/ai-structure";
 import { environment } from "@/configs/environment";
 import { getDrizzle } from "@/db/db";
@@ -6,6 +5,7 @@ import { catalogTable } from "@/db/schema/catalog";
 import type { QuestionEntity } from "@/db/schema/question";
 import { relationTable } from "@/db/schema/relation";
 import { warehouseTable } from "@/db/schema/warehouse";
+import { dbQuestionPayloadSchema } from "@/questions";
 import { firstOrNotCreated } from "@/utils/toolkit";
 import { eq, isNull } from "drizzle-orm";
 import { and } from "drizzle-orm";
@@ -87,7 +87,7 @@ export class DbWorkflow extends BaseWorkflow implements Workflow {
           content: prompt,
         },
       ],
-      schema: assistantDbMessageStructure.pick({
+      schema: dbQuestionPayloadSchema.pick({
         sql: true,
       }),
       schemaName: "sql",

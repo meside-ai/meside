@@ -217,14 +217,18 @@ export const MessageInput = ({
 const EnterSubmit = Extension.create({
   addKeyboardShortcuts() {
     return {
-      "Mod-Enter": () => {
+      Enter: () => {
         messageInputSubmitEvent.dispatch();
         return true;
       },
-      "Shift-Enter": () => {
-        messageInputSubmitEvent.dispatch();
-        return true;
-      },
+      // "Mod-Enter": () => {
+      //   messageInputSubmitEvent.dispatch();
+      //   return true;
+      // },
+      // "Shift-Enter": () => {
+      //   messageInputSubmitEvent.dispatch();
+      //   return true;
+      // },
     };
   },
 });

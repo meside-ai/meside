@@ -18,16 +18,14 @@ export type WarehouseQueryRow = WarehouseExecuteResponse["rows"][number];
 export type WarehouseQueryColumn = WarehouseExecuteResponse["fields"][number];
 
 export const getWarehouseExecute = ({
-  warehouseId,
-  messageId,
+  questionId,
 }: WarehouseExecuteRequest): UseQueryOptions<WarehouseExecuteResponse> => ({
-  enabled: !!warehouseId && !!messageId,
-  queryKey: [getWarehouseExecute.name, warehouseId, messageId],
+  enabled: !!questionId,
+  queryKey: [getWarehouseExecute.name, questionId],
   queryFn: async () => {
     const res = await warehouseApi.execute.$post({
       json: {
-        warehouseId,
-        messageId,
+        questionId,
       },
     });
     const json = await res.json();

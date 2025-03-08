@@ -4,6 +4,7 @@ import { z } from "zod";
 
 const QuestionSearchSchema = z.object({
   questionId: z.string().optional(),
+  quotedQuestionId: z.string().optional(),
 });
 
 export const Route = createFileRoute("/question/")({

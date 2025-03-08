@@ -1,4 +1,5 @@
 import { Box } from "@mantine/core";
+import { PreviewPanel } from "../preview/preview-panel";
 import { PreviewProvider } from "../preview/preview-provider";
 import { MainChatPanel } from "./main-chat-panel";
 import { MenuPanel } from "./menu-panel";
@@ -35,9 +36,9 @@ export const Question = () => {
             <Box w={600} h="100%" style={{ overflow: "hidden" }}>
               <MainChatPanel />
             </Box>
-            {/* <Box flex={1} h="100%" style={{ overflow: "hidden" }}>
+            <Box flex={1} h="100%" style={{ overflow: "hidden" }}>
               <PreviewPanel />
-            </Box> */}
+            </Box>
           </Box>
         </Box>
       </QuestionProvider>

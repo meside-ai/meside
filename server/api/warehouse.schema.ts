@@ -151,8 +151,7 @@ export const warehouseDetailRoute = createRoute({
 
 // warehouseExecute
 export const warehouseExecuteRequestSchema = z.object({
-  messageId: z.string(),
-  warehouseId: z.string(),
+  questionId: z.string(),
 });
 
 export const warehouseExecuteResponseSchema = z.object({
