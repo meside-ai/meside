@@ -19,7 +19,6 @@ export const ChatPanel = () => {
 
   const { streamAnswer, isGettingAnswer, answerError } = useStreamAnswer({
     onCompleted: (data) => {
-      console.log("onCompleted", data);
       if (data.question) {
         questionNameEvent.dispatch({
           userContent: data.question.userContent,

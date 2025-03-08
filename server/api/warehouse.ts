@@ -80,7 +80,9 @@ export const warehouseApi = new OpenAPIHono()
     const sql = "sql" in question.payload ? question.payload.sql : null;
 
     if (!warehouseId || !sql) {
-      throw new BadRequestError("Question has no warehouseId or sql");
+      throw new BadRequestError(
+        `Question has no warehouseId or sql, questionId: ${questionId}, warehouseId: ${warehouseId}, sql: ${sql}`,
+      );
     }
 
     const warehouse = firstOrNotFound(

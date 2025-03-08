@@ -96,7 +96,6 @@ export class BaseWorkflow implements Workflow {
               assistantReason: value.reason,
               assistantContent: value.text,
             });
-            console.log("ii", initial.payload, value.structure);
             Object.assign(
               initial.payload,
               value.structure ? value.structure : {},

@@ -224,7 +224,6 @@ const UserContentEditor = ({
 
 const QuestionSiblings = ({ question }: { question: QuestionDto }) => {
   const { setQuestionId } = useQuestionContext();
-  console.log("question", question);
   const siblingIds = useMemo(() => {
     return question?.siblingIds ?? [];
   }, [question?.siblingIds]);
