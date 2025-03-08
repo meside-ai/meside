@@ -2,6 +2,8 @@ import type { QuestionDto } from "@meside/api/question.schema";
 
 export type RenderQuestionLayout = (props: {
   question: QuestionDto;
+  isGettingAnswer: boolean;
+  answerError: Error | undefined;
   beforeUserContent?: JSX.Element | JSX.Element[];
   afterUserContent?: JSX.Element | JSX.Element[];
   afterUserEdit?: JSX.Element | JSX.Element[];
@@ -14,5 +16,7 @@ export type RenderQuestionLayout = (props: {
 
 export type WorkflowProps = {
   question: QuestionDto;
+  isGettingAnswer: boolean;
+  answerError: Error | undefined;
   renderQuestionLayout: RenderQuestionLayout;
 };

@@ -1,17 +1,12 @@
-import { Box } from "@mantine/core";
+import { StarterPanel } from "../starter/starter-panel";
 import { ChatPanel } from "./chat-panel";
 import { useQuestionContext } from "./context";
-import { StartPanel } from "./start-panel";
 
 export const MainChatPanel = () => {
   const { questionId } = useQuestionContext();
 
   if (!questionId) {
-    return (
-      <Box mx="md" pt="lg">
-        <StartPanel />
-      </Box>
-    );
+    return <StarterPanel />;
   }
 
   return <ChatPanel />;

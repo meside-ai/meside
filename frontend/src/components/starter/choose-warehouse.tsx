@@ -1,6 +1,3 @@
-import { getChatSystem } from "@/queries/chat";
-import { getMessageList } from "@/queries/message";
-import { getThreadCreate } from "@/queries/thread";
 import { getWarehouseCreate, getWarehouseList } from "@/queries/warehouse";
 import {
   Box,
@@ -15,82 +12,38 @@ import {
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import type { MessageListResponse } from "@meside/api/message.schema";
 import type { WarehouseCreateRequest } from "@meside/api/warehouse.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { z } from "zod";
 import { WarehouseSelect } from "../warehouse/warehouse-select";
 
-type StarterSystemDbFormValues = {
+type ChooseWarehouseFormValues = {
   warehouseId: string | null;
 };
 
-type StarterSystemDbProps = {
-  setThreadId: (threadId: string) => void;
+type ChooseWarehouseProps = {
+  warehouseId: string | null;
+  setWarehouseId: (warehouseId: string | null) => void;
 };
 
-export const StarterSystemDb = ({ setThreadId }: StarterSystemDbProps) => {
-  const queryClient = useQueryClient();
-
-  const form = useForm<StarterSystemDbFormValues>({
+export const ChooseWarehouse = ({
+  warehouseId,
+  setWarehouseId,
+}: ChooseWarehouseProps) => {
+  const form = useForm<ChooseWarehouseFormValues>({
     initialValues: {
-      warehouseId: null,
+      warehouseId,
     },
   });
 
-  const { mutateAsync: createThread, isPending: isCreatingThread } =
-    useMutation(getThreadCreate());
-
-  const { mutateAsync: sendSystemMessage, isPending: isSendingSystemMessage } =
-    useMutation(getChatSystem());
-
-  const isLoading = useMemo(
-    () => isCreatingThread || isSendingSystemMessage,
-    [isCreatingThread, isSendingSystemMessage]
-  );
-
   const handleSendSystemMessage = useCallback(
-    async ({ warehouseId }: StarterSystemDbFormValues) => {
-      if (!warehouseId) {
-        return;
+    async ({ warehouseId }: ChooseWarehouseFormValues) => {
+      if (warehouseId) {
+        setWarehouseId(warehouseId);
       }
-
-      const { thread } = await createThread({
-        parentMessageId: null,
-        name: "New Thread",
-      });
-
-      const systemMessage = await sendSystemMessage({
-        parentThreadId: thread.threadId,
-        structure: {
-          type: "systemDb",
-          warehouseId,
-        },
-      });
-
-      queryClient.setQueryData(
-        getMessageList({
-          parentThreadId: thread.threadId,
-          createdAtSort: "asc",
-        }).queryKey,
-        (data: MessageListResponse | undefined) => {
-          if (!data) {
-            return {
-              messages: [systemMessage.message],
-            };
-          }
-
-          return {
-            ...data,
-            messages: [systemMessage.message, ...data.messages],
-          };
-        }
-      );
-
-      setThreadId(thread.threadId);
     },
-    [createThread, queryClient, sendSystemMessage, setThreadId]
+    [setWarehouseId]
   );
 
   const [opened, { open, close }] = useDisclosure(false);
@@ -106,9 +59,7 @@ export const StarterSystemDb = ({ setThreadId }: StarterSystemDbProps) => {
           />
         </Box>
         <Group>
-          <Button type="submit" loading={isLoading}>
-            Start
-          </Button>
+          <Button type="submit">Confirm</Button>
 
           <Button variant="subtle" onClick={open}>
             Add new database

@@ -157,6 +157,9 @@ export const streamApi = new Hono()
             if (done) {
               await updateQuestionAnswer(initial as QuestionDto);
               await stream.writeSSE({
+                data: JSON.stringify(initial),
+              });
+              await stream.writeSSE({
                 data: "[DONE]",
               });
               await stream.close();

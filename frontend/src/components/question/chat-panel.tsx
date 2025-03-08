@@ -1,6 +1,5 @@
 import { getQuestionDetail } from "@/queries/question";
-import { Box, Loader, ScrollArea, Skeleton, Text } from "@mantine/core";
-import type { QuestionDto } from "@meside/api/question.schema";
+import { Box, ScrollArea, Skeleton } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { WorkflowFactory } from "../workflow/workflow-factory";
@@ -20,7 +19,6 @@ export const ChatPanel = () => {
   const { streamAnswer, isGettingAnswer, answerError } = useStreamAnswer();
 
   useEffect(() => {
-    console.log("questionCache", questionCache);
     if (!questionCache) {
       return;
     }
@@ -48,31 +46,19 @@ export const ChatPanel = () => {
               <Skeleton h={40} />
             </Box>
           )}
-          {data?.question && <QuestionDetail question={data.question} />}
-          {isGettingAnswer && (
-            <Box>
-              <Loader variant="dots" />
-            </Box>
-          )}
-          {answerError && (
-            <Box>
-              <Text>Error: {answerError.message}</Text>
-            </Box>
+          {data?.question && (
+            <WorkflowFactory
+              question={data.question}
+              isGettingAnswer={isGettingAnswer}
+              answerError={answerError ?? undefined}
+              renderQuestionLayout={(props) => {
+                return <QuestionLayout {...props} />;
+              }}
+            />
           )}
           <Box h={40} />
         </ScrollArea>
       </Box>
     </Box>
-  );
-};
-
-const QuestionDetail = ({ question }: { question: QuestionDto }) => {
-  return (
-    <WorkflowFactory
-      question={question}
-      renderQuestionLayout={(props) => {
-        return <QuestionLayout {...props} />;
-      }}
-    />
   );
 };

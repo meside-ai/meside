@@ -204,7 +204,11 @@ const getPromptWithSchema = (
   const systemMessage = messages.find((message) => message.role === "system");
 
   if (!systemMessage) {
-    throw new BadRequestError("System message not found");
+    const message = messages[0];
+    if (!message) {
+      throw new BadRequestError("System message not found");
+    }
+    return `${message.content}\n${formatInstructions}`;
   }
 
   const combinedContent = [

@@ -1,9 +1,12 @@
+import { MESSAGE_CONTENT_WIDTH } from "@/utils/message-width";
 import {
   ActionIcon,
+  Avatar,
   Box,
   Button,
-  Divider,
   Group,
+  Loader,
+  Popover,
   Text,
   Tooltip,
 } from "@mantine/core";
@@ -16,6 +19,7 @@ import {
   IconPencil,
   IconThumbDown,
   IconThumbUp,
+  IconX,
 } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { EditorJsonMarkdown } from "../markdown/editor-json-markdown";
@@ -33,6 +37,8 @@ export type QuestionLayoutProps = {
   afterAssistantContent?: JSX.Element | JSX.Element[];
   afterAssistantAction?: JSX.Element | JSX.Element[];
   leftAssistantAction?: JSX.Element | JSX.Element[];
+  isGettingAnswer?: boolean;
+  answerError?: Error;
 };
 
 export const QuestionLayout = ({
@@ -45,45 +51,106 @@ export const QuestionLayout = ({
   afterAssistantContent,
   afterAssistantAction,
   leftAssistantAction,
+  isGettingAnswer,
+  answerError,
 }: QuestionLayoutProps) => {
   const [isEditing, setIsEditing] = useState(false);
+
   return (
-    <Box>
+    <Box mx="md">
       <Box>
         {beforeUserContent}
         {isEditing && (
-          <UserContentEditor question={question} setIsEditing={setIsEditing} />
+          <Box
+            style={(theme) => ({
+              border: `1px solid ${theme.colors.gray[8]}`,
+              borderRadius: 20,
+              padding: 10,
+            })}
+            mb="md"
+          >
+            <UserContentEditor
+              question={question}
+              setIsEditing={setIsEditing}
+            />
+            <Box display="flex" style={{ justifyContent: "flex-end" }} pt="xs">
+              <Button
+                variant="light"
+                size="xs"
+                onClick={() => setIsEditing(false)}
+                leftSection={<IconX size={14} />}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Box>
         )}
         {!isEditing && (
-          <EditorJsonMarkdown>{question.userContent}</EditorJsonMarkdown>
+          <Box display="flex" style={{ justifyContent: "flex-end" }}>
+            <Tooltip label="Edit">
+              <Button
+                variant="transparent"
+                onClick={() => {
+                  setIsEditing(!isEditing);
+                }}
+                leftSection={<IconPencil size={14} />}
+                mt={10}
+              >
+                Edit
+              </Button>
+            </Tooltip>
+            <Box
+              style={(theme) => ({
+                maxWidth: 360,
+                backgroundColor: theme.colors.gray[8],
+                borderRadius: 20,
+                paddingLeft: 20,
+                paddingRight: 20,
+              })}
+            >
+              <EditorJsonMarkdown>{question.userContent}</EditorJsonMarkdown>
+            </Box>
+          </Box>
         )}
         {afterUserContent}
         {!isEditing && (
           <Box display="flex" style={{ justifyContent: "space-between" }}>
-            <Group mb="xs" gap={0}>
-              <Tooltip label="Edit">
-                <Button
-                  variant="transparent"
-                  onClick={() => {
-                    setIsEditing(!isEditing);
-                  }}
-                  leftSection={<IconPencil size={14} />}
-                >
-                  Edit
-                </Button>
-              </Tooltip>
-            </Group>
+            <Box w={1} />
             <QuestionSiblings question={question} />
           </Box>
         )}
         {afterUserEdit}
       </Box>
-      <Divider />
       <Box>
+        {(question.assistantReason ||
+          question.assistantContent ||
+          isGettingAnswer ||
+          answerError) && <AssistantHeader question={question} />}
+        {isGettingAnswer && (
+          <Box>
+            <Loader variant="dots" />
+          </Box>
+        )}
+        {answerError && (
+          <Box>
+            <Text>Error: {answerError.message}</Text>
+          </Box>
+        )}
         {beforeAssistantReason}
-        <Text>{question.assistantReason}</Text>
+        <Box
+          ml="md"
+          pl="md"
+          style={(theme) => ({
+            borderLeft: `3px solid ${theme.colors.gray[8]}`,
+            maxWidth: MESSAGE_CONTENT_WIDTH,
+          })}
+        >
+          <EditorJsonMarkdown>{question.assistantReason}</EditorJsonMarkdown>
+        </Box>
         {beforeAssistantContent}
-        <Text>{question.assistantContent}</Text>
+        <Box style={{ maxWidth: MESSAGE_CONTENT_WIDTH, overflow: "hidden" }}>
+          <EditorJsonMarkdown>{question.assistantContent}</EditorJsonMarkdown>
+        </Box>
         {afterAssistantContent}
         <Box>
           <Group mb="xs" gap={0}>
@@ -191,5 +258,40 @@ const QuestionSiblings = ({ question }: { question: QuestionDto }) => {
         <IconChevronRight size={14} />
       </ActionIcon>
     </Group>
+  );
+};
+
+const AssistantHeader = ({ question }: { question: QuestionDto }) => {
+  return (
+    <Box>
+      <Box
+        display="inline-flex"
+        style={(theme) => ({
+          alignItems: "center",
+          gap: 12,
+          border: `1px solid ${theme.colors.gray[8]}`,
+          padding: 4,
+          paddingLeft: 12,
+          paddingRight: 12,
+          borderRadius: 30,
+        })}
+        mb="md"
+      >
+        <Popover position="bottom" withArrow shadow="md" withinPortal>
+          <Popover.Target>
+            <Avatar size="sm" radius="xl" color="blue">
+              AS
+            </Avatar>
+          </Popover.Target>
+          <Popover.Dropdown>
+            <Text>ID: {question.questionId}</Text>
+            <Text>Created at: {question.createdAt}</Text>
+            <Text>Updated at: {question.updatedAt}</Text>
+            <Text>payload type: {question.payload.type}</Text>
+          </Popover.Dropdown>
+        </Popover>
+        <Text>Assistant</Text>
+      </Box>
+    </Box>
   );
 };

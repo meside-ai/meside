@@ -1,16 +1,14 @@
-import { MESSAGE_CONTENT_WIDTH } from "@/utils/message-width";
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { usePreviewContext } from "../preview/preview-context";
 import { WarehouseCard } from "../warehouse/warehouse-card";
 import type { WorkflowProps } from "./workflow-types";
 
 export const DbWorkflow = ({
   question,
+  isGettingAnswer,
+  answerError,
   renderQuestionLayout,
 }: WorkflowProps) => {
-  const { openPreview } = usePreviewContext();
-
   const questionLayout = useMemo(() => {
     if (question.payload.type !== "db") {
       return null;
@@ -18,14 +16,16 @@ export const DbWorkflow = ({
 
     return renderQuestionLayout({
       question,
+      isGettingAnswer,
+      answerError,
       beforeUserContent: (
-        <Box>
+        <Box mb="md">
           <WarehouseCard warehouseId={question?.payload?.warehouseId} />
         </Box>
       ),
       afterAssistantContent: (
         <Box>
-          <Box
+          {/* <Box
             w={MESSAGE_CONTENT_WIDTH}
             h={200}
             mb="sm"
@@ -36,9 +36,9 @@ export const DbWorkflow = ({
               overflow: "hidden",
             })}
           >
-            {/* <TableView messageId={message.messageId} compact /> */}
+            <TableView messageId={message.messageId} compact />
           </Box>
-          {/* <Button
+          <Button
           size="xs"
           variant="light"
           onClick={() => {
@@ -57,7 +57,7 @@ export const DbWorkflow = ({
         </Box>
       ),
     });
-  }, [question, renderQuestionLayout]);
+  }, [answerError, isGettingAnswer, question, renderQuestionLayout]);
 
   if (question.payload.type !== "db") {
     return null;

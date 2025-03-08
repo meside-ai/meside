@@ -1,18 +1,22 @@
-import type { MessageDto } from "@meside/api/message.schema";
-import { StarterSystemDb } from "./starter-system-db";
+import { Box, Button } from "@mantine/core";
+import { useState } from "react";
+import { DbWorkflowStarter } from "./db-workflow-starter";
 
-type StarterPanelProps = {
-  structureType: MessageDto["structure"]["type"];
-  setThreadId: (threadId: string) => void;
-};
+export const StarterPanel = () => {
+  const [workflowType, setWorkflowType] = useState<"db" | "echarts">("db");
 
-export const StarterPanel = ({
-  structureType,
-  setThreadId,
-}: StarterPanelProps) => {
-  if (structureType === "systemDb") {
-    return <StarterSystemDb setThreadId={setThreadId} />;
-  }
-
-  return "not built";
+  return (
+    <Box>
+      <Box>
+        <Button>Data warehouse query</Button>
+        <Button>Bar chart</Button>
+        <Button>Line chart</Button>
+        <Button>Pie chart</Button>
+        <Button>Scatter plot</Button>
+        <Button>Heatmap</Button>
+        <Button>Word cloud</Button>
+      </Box>
+      <Box>{workflowType === "db" && <DbWorkflowStarter />}</Box>
+    </Box>
+  );
 };
