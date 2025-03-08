@@ -290,7 +290,7 @@ const AssistantHeader = ({ question }: { question: QuestionDto }) => {
         <Popover position="bottom" withArrow shadow="md" withinPortal>
           <Popover.Target>
             <Avatar size="sm" radius="xl" color="blue">
-              AS
+              M
             </Avatar>
           </Popover.Target>
           <Popover.Dropdown>
@@ -300,7 +300,7 @@ const AssistantHeader = ({ question }: { question: QuestionDto }) => {
             <Text>payload type: {question.payload.type}</Text>
           </Popover.Dropdown>
         </Popover>
-        <Text>Assistant</Text>
+        <Text>Meside</Text>
       </Box>
     </Box>
   );
