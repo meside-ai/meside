@@ -20,23 +20,26 @@ export const EchartsWorkflow = ({
       isGettingAnswer,
       answerError,
       afterAssistantContent: (
-        <>
-          {question.assistantContent && (
-            <Box
-              w={MESSAGE_CONTENT_WIDTH}
-              h={300}
-              display="flex"
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Box w={500} h={300}>
-                <EchartsLazyLoader questionId={question.questionId} />
-              </Box>
-            </Box>
-          )}
-        </>
+        <Box
+          w={MESSAGE_CONTENT_WIDTH}
+          h={300}
+          display="flex"
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            w={500}
+            h={300}
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+            }}
+          >
+            <EchartsLazyLoader questionId={question.questionId} />
+          </Box>
+        </Box>
       ),
     });
   }, [answerError, isGettingAnswer, question, renderQuestionLayout]);
