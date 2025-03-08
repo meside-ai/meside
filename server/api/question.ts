@@ -5,7 +5,7 @@ import { getAuthOrUnauthorized } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import { firstOrNotCreated, firstOrNull } from "@/utils/toolkit";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { type SQL, and, desc, eq, isNull } from "drizzle-orm";
+import { type SQL, and, asc, desc, eq, isNull } from "drizzle-orm";
 import {
   questionCreateRoute,
   questionDetailRoute,
@@ -27,10 +27,10 @@ export const questionApi = new OpenAPIHono()
     }
 
     const questions = await getDrizzle()
-      .select()
+      .selectDistinctOn([questionTable.versionId])
       .from(questionTable)
       .where(and(...filter))
-      .orderBy(desc(questionTable.createdAt));
+      .orderBy(asc(questionTable.versionId), desc(questionTable.createdAt));
 
     const questionDtos = await getQuestionDtos(questions);
 

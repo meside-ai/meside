@@ -6,6 +6,7 @@ import { userDtoSchema } from "./user.schema";
 
 export const questionDtoSchema = questionEntitySchema.extend({
   owner: userDtoSchema.optional(),
+  siblingIds: z.array(z.string()).optional(),
 });
 
 export type QuestionDto = z.infer<typeof questionDtoSchema>;

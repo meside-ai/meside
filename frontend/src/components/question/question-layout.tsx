@@ -10,10 +10,17 @@ import {
 import type { QuestionDto } from "@meside/api/question.schema";
 import type { EditorJSONContent } from "@meside/shared/editor-json-to-markdown";
 import { parseJsonOrNull } from "@meside/shared/json";
-import { IconPencil, IconThumbDown, IconThumbUp } from "@tabler/icons-react";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconPencil,
+  IconThumbDown,
+  IconThumbUp,
+} from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { EditorJsonMarkdown } from "../markdown/editor-json-markdown";
 import { MessageInput } from "../message-input/message-input";
+import { useQuestionContext } from "./context";
 import { useSendQuestion } from "./use-send-question";
 
 export type QuestionLayoutProps = {
@@ -52,7 +59,7 @@ export const QuestionLayout = ({
         )}
         {afterUserContent}
         {!isEditing && (
-          <Box>
+          <Box display="flex" style={{ justifyContent: "space-between" }}>
             <Group mb="xs" gap={0}>
               <Tooltip label="Edit">
                 <Button
@@ -66,6 +73,7 @@ export const QuestionLayout = ({
                 </Button>
               </Tooltip>
             </Group>
+            <QuestionSiblings question={question} />
           </Box>
         )}
         {afterUserEdit}
@@ -133,5 +141,55 @@ const UserContentEditor = ({
         }}
       />
     </Box>
+  );
+};
+
+const QuestionSiblings = ({ question }: { question: QuestionDto }) => {
+  const { setQuestionId } = useQuestionContext();
+  console.log("question", question);
+  const siblingIds = useMemo(() => {
+    return question?.siblingIds ?? [];
+  }, [question?.siblingIds]);
+
+  const totalCount = useMemo(() => {
+    return siblingIds.length;
+  }, [siblingIds.length]);
+
+  const currentIndex = useMemo(() => {
+    return siblingIds.indexOf(question.questionId);
+  }, [siblingIds, question.questionId]);
+
+  if (totalCount === 1) {
+    return null;
+  }
+
+  return (
+    <Group gap={0} align="center">
+      <ActionIcon
+        variant="transparent"
+        onClick={() => {
+          setQuestionId(siblingIds[currentIndex - 1]);
+        }}
+        style={{
+          visibility: currentIndex > 0 ? "visible" : "hidden",
+        }}
+      >
+        <IconChevronLeft size={14} />
+      </ActionIcon>
+      <Text>
+        {currentIndex + 1}/{totalCount}
+      </Text>
+      <ActionIcon
+        variant="transparent"
+        onClick={() => {
+          setQuestionId(siblingIds[currentIndex + 1]);
+        }}
+        style={{
+          visibility: currentIndex < totalCount - 1 ? "visible" : "hidden",
+        }}
+      >
+        <IconChevronRight size={14} />
+      </ActionIcon>
+    </Group>
   );
 };

@@ -66,32 +66,87 @@ export async function main() {
     password: "password",
   });
 
-  await db.insert(questionTable).values({
-    questionId,
-    versionId: questionId,
-    ownerId: userId,
-    orgId,
-    shortName: "list all artists",
-    userContent: JSON.stringify({
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [{ type: "text", text: "list all artists" }],
-        },
-      ],
-    }),
-    assistantReason: "OK, I will list all artists for you.",
-    assistantContent: "list all artists",
+  await db.insert(questionTable).values([
+    {
+      questionId,
+      versionId: questionId,
+      ownerId: userId,
+      orgId,
+      shortName: "list all artists",
+      userContent: JSON.stringify({
+        type: "doc",
+        content: [
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "list all artists" }],
+          },
+        ],
+      }),
+      assistantReason: "OK, I will list all artists for you.",
+      assistantContent: "list all artists",
 
-    parentQuestionId: null,
-    payload: {
-      type: "db",
-      sql,
-      warehouseId,
-      fields,
-    } as QuestionPayload,
-  });
+      parentQuestionId: null,
+      payload: {
+        type: "db",
+        sql,
+        warehouseId,
+        fields,
+      } as QuestionPayload,
+    },
+    {
+      questionId: cuid(),
+      versionId: questionId,
+      ownerId: userId,
+      orgId,
+      shortName: "list all albums",
+      userContent: JSON.stringify({
+        type: "doc",
+        content: [
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "list all albums" }],
+          },
+        ],
+      }),
+      assistantReason: "OK, I will list all albums for you.",
+      assistantContent: "list all albums",
+
+      parentQuestionId: null,
+      payload: {
+        type: "db",
+        sql,
+        warehouseId,
+        fields,
+      } as QuestionPayload,
+    },
+
+    {
+      questionId: cuid(),
+      versionId: questionId,
+      ownerId: userId,
+      orgId,
+      shortName: "list all tracks",
+      userContent: JSON.stringify({
+        type: "doc",
+        content: [
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "list all tracks" }],
+          },
+        ],
+      }),
+      assistantReason: "OK, I will list all tracks for you.",
+      assistantContent: "list all tracks",
+
+      parentQuestionId: null,
+      payload: {
+        type: "db",
+        sql,
+        warehouseId,
+        fields,
+      } as QuestionPayload,
+    },
+  ]);
 
   await db.insert(threadTable).values([
     {
