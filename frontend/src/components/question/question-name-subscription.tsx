@@ -1,7 +1,5 @@
 import { getQuestionList } from "@/queries/question";
-import type { QuestionListResponse } from "@meside/api/question.schema";
 import { useQueryClient } from "@tanstack/react-query";
-import { produce } from "immer";
 import { useEffect } from "react";
 import { questionNameEvent } from "./question-name-event";
 import { useStreamObject } from "./use-stream-object";
@@ -24,26 +22,27 @@ export const QuestionNameSubscription = () => {
         },
         (object, done) => {
           if (done) {
+            queryClient.invalidateQueries(getQuestionList({}));
             return;
           }
           if (!object) {
             return;
           }
-          queryClient.setQueryData(
-            getQuestionList({}).queryKey,
-            (prev: QuestionListResponse | undefined) => {
-              if (!prev?.questions) {
-                return prev;
-              }
-              return produce(prev, (draft) => {
-                for (const question of draft.questions) {
-                  if (question.questionId === object.questionId) {
-                    question.shortName = object.shortName;
-                  }
-                }
-              });
-            }
-          );
+          // queryClient.setQueryData(
+          //   getQuestionList({}).queryKey,
+          //   (prev: QuestionListResponse | undefined) => {
+          //     if (!prev?.questions) {
+          //       return prev;
+          //     }
+          //     return produce(prev, (draft) => {
+          //       for (const question of draft.questions) {
+          //         if (question.questionId === object.questionId) {
+          //           question.shortName = object.shortName;
+          //         }
+          //       }
+          //     });
+          //   }
+          // );
         }
       );
     });

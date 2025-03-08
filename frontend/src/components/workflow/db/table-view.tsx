@@ -39,7 +39,7 @@ export const TableView = ({ questionId }: TableViewProps) => {
       {rows && rows.length > 0 && columns?.length > 0 ? (
         <TableRender columns={columns} data={rows} />
       ) : (
-        <Text>No data</Text>
+        <Text p="md">Rendering...</Text>
       )}
     </Box>
   );

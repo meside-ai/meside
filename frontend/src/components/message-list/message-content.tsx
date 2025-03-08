@@ -1,14 +1,10 @@
 import { MESSAGE_CONTENT_WIDTH } from "@/utils/message-width";
-import { Box, Button, Code, Text } from "@mantine/core";
+import { Box, Code, Text } from "@mantine/core";
 import type { MessageDto } from "@meside/api/message.schema";
-import { TableView } from "../db/table-view";
 import { EditorJsonMarkdown } from "../markdown/editor-json-markdown";
-import { usePreviewContext } from "../preview/preview-context";
 import { WarehouseCard } from "../warehouse/warehouse-card";
 
 export const MessageContent = ({ message }: { message: MessageDto }) => {
-  const { openPreview } = usePreviewContext();
-
   if (!message?.structure?.type) {
     return <Text>no type</Text>;
   }
@@ -31,21 +27,8 @@ export const MessageContent = ({ message }: { message: MessageDto }) => {
             overflow: "hidden",
           })}
         >
-          <TableView messageId={message.messageId} compact />
+          deprecated
         </Box>
-        <Button
-          size="xs"
-          variant="light"
-          onClick={() => {
-            openPreview({
-              name: message?.parentThread?.name ?? "DB Query",
-              payload: { type: "warehouseTable", messageId: message.messageId },
-            });
-          }}
-          fullWidth
-        >
-          View more data
-        </Button>
       </Box>
     );
   }

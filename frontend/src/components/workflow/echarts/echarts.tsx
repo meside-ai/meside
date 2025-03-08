@@ -1,5 +1,6 @@
 import { getQuestionDetail } from "@/queries/question";
 import { getWarehouseExecute } from "@/queries/warehouse";
+import { Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import * as echarts from "echarts";
 import { useMemo } from "react";
@@ -44,7 +45,7 @@ export const Echarts = ({ questionId }: EchartsProps) => {
   }, [data, questionDetailResult.data?.question]);
 
   if (!options) {
-    return "loading";
+    return <Text p="md">Rendering...</Text>;
   }
 
   return <EChartCore options={options} />;
