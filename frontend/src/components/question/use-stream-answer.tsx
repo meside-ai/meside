@@ -1,10 +1,15 @@
 import { getQuestionDetail } from "@/queries/question";
 import type { QuestionDetailResponse } from "@meside/api/question.schema";
+import type { StreamQuestionResponse } from "@meside/api/stream.schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useQuestionStream } from "./use-question-stream";
 
-export const useStreamAnswer = () => {
+export const useStreamAnswer = ({
+  onCompleted,
+}: {
+  onCompleted?: (question: QuestionDetailResponse) => void;
+}) => {
   const queryClient = useQueryClient();
 
   const {
@@ -15,7 +20,16 @@ export const useStreamAnswer = () => {
 
   const streamAnswer = useCallback(
     async (questionId: string) => {
-      stream(questionId, (messageChunk) => {
+      stream(questionId, (messageChunk, done) => {
+        const question: StreamQuestionResponse | object = {};
+        if (done) {
+          onCompleted?.(question as QuestionDetailResponse);
+          return;
+        }
+        if (!messageChunk) {
+          return;
+        }
+        Object.assign(question, messageChunk);
         queryClient.setQueryData(
           getQuestionDetail({
             questionId: questionId,
@@ -40,7 +54,7 @@ export const useStreamAnswer = () => {
         );
       });
     },
-    [queryClient, stream]
+    [onCompleted, queryClient, stream]
   );
 
   return {

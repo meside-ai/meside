@@ -13,7 +13,7 @@ export const useStreamObject = () => {
   const stream = useCallback(
     (
       body: StreamObjectRequest,
-      callback: (object: StreamObjectResponse) => void,
+      callback: (object: StreamObjectResponse | null, done: boolean) => void,
     ) => {
       setIsLoading(true);
       setError(null);
@@ -32,11 +32,12 @@ export const useStreamObject = () => {
             if (event.data === "[DONE]") {
               setIsLoading(false);
               eventSource.close();
+              callback(null, true);
               return;
             }
 
             const chunk: StreamObjectResponse = JSON.parse(event.data);
-            callback(chunk);
+            callback(chunk, false);
           } catch (e) {
             console.error("Error parsing message:", e);
           }

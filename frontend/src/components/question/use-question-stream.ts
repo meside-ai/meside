@@ -10,7 +10,10 @@ export const useQuestionStream = () => {
   const stream = useCallback(
     (
       questionId: string,
-      callback: (message: StreamQuestionResponse) => void,
+      callback: (
+        question: StreamQuestionResponse | null,
+        done: boolean,
+      ) => void,
     ) => {
       setIsLoading(true);
       setError(null);
@@ -30,11 +33,12 @@ export const useQuestionStream = () => {
               // threadNameEvent.dispatch({ threadId });
               setIsLoading(false);
               eventSource.close();
+              callback(null, true);
               return;
             }
 
             const chunk: StreamQuestionResponse = JSON.parse(event.data);
-            callback(chunk);
+            callback(chunk, false);
           } catch (e) {
             console.error("Error parsing message:", e);
           }

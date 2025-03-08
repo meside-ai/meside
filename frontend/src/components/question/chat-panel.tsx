@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { WorkflowFactory } from "../workflow/workflow-factory";
 import { useQuestionContext } from "./context";
 import { QuestionLayout } from "./question-layout";
+import { questionNameEvent } from "./question-name-event";
 import { useStreamAnswer } from "./use-stream-answer";
 
 export const ChatPanel = () => {
@@ -16,7 +17,17 @@ export const ChatPanel = () => {
     })
   );
 
-  const { streamAnswer, isGettingAnswer, answerError } = useStreamAnswer();
+  const { streamAnswer, isGettingAnswer, answerError } = useStreamAnswer({
+    onCompleted: (data) => {
+      console.log("onCompleted", data);
+      if (data.question) {
+        questionNameEvent.dispatch({
+          userContent: data.question.userContent,
+          assistantContent: data.question.assistantContent,
+        });
+      }
+    },
+  });
 
   useEffect(() => {
     if (!questionCache) {
