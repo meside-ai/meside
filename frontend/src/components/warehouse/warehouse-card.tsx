@@ -34,7 +34,7 @@ export const WarehouseCard = ({ warehouseId }: WarehouseCardProps) => {
             onClick={() => {
               openPreview({
                 name: "Warehouse",
-                payload: { type: "warehouseColumn", warehouseId },
+                payload: { type: "previewWarehouse", warehouseId },
               });
             }}
           >

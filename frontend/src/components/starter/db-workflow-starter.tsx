@@ -15,7 +15,7 @@ export const DbWorkflowStarter = () => {
       openPreview({
         name: "Warehouse explorer",
         payload: {
-          type: "warehouseColumn",
+          type: "previewWarehouse",
           warehouseId,
         },
       });

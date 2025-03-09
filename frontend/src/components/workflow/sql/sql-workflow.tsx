@@ -52,7 +52,7 @@ export const SqlWorkflow = ({
                   openPreview({
                     name: question.shortName ?? "DB Query",
                     payload: {
-                      type: "db",
+                      type: "previewSql",
                       questionId: question.questionId,
                     },
                   });

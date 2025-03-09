@@ -15,15 +15,15 @@ export const PreviewContent = () => {
 };
 
 const PreviewContentCore = ({ preview }: { preview: PreviewEntity }) => {
-  if (preview.payload.type === "warehouseColumn") {
+  if (preview.payload.type === "previewWarehouse") {
     return <WarehouseEditor warehouseId={preview.payload.warehouseId} />;
   }
 
-  if (preview.payload.type === "db") {
+  if (preview.payload.type === "previewSql") {
     return <TableVirtualView questionId={preview.payload.questionId} />;
   }
 
-  if (preview.payload.type === "echarts") {
+  if (preview.payload.type === "previewEcharts") {
     return <EchartsLazyLoader questionId={preview.payload.questionId} />;
   }
 
