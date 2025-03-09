@@ -7,8 +7,7 @@
 - [ ] Integrate SQL editor 👎
 - [x] Parse warehouse model relations
 - [ ] Label warehouse model 👎
-- [ ] Rearrange threads and messages in the UI to make it easier to modify the question 🏗️
-- [ ] Add question classification agent to choose workflow automatically when user ask a question 👍
+- [x] Reshape threads and messages in the UI to make it easier to modify the question
 
 ## 0.2
 
@@ -20,3 +19,5 @@
 
 - [ ] Export data to CSV, JSON, and Markdown
 - [ ] Stream table results
+- [ ] Add question classification agent to choose workflow automatically when user ask a question 👍
+- [ ] Multiple-AI and configuration (Define specific-task AI, different workflow use different specific-task AI, configure source of the specific-task AI)

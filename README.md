@@ -23,7 +23,11 @@ Meside is an open-source, AI-driven data transformation tool designed to streaml
    ```bash  
    cd ./server  
    cp .env.default .env
-   echo 'AI_API_KEY=<your-api-key>' >> .env
+   echo 'AI_MODEL=gpt-4o' >> .env
+   echo 'OPENAI_API_KEY=<your-api-key>' >> .env
+   # if you want to use DeepSeek-R1, but currently only support DeepSeek official platform
+   # echo 'AI_MODEL=deepseek-reasoner' >> .env
+   # echo 'DEEPSEEK_API_KEY=<your-api-key>' >> .env
    bun install  
    bun run migrate  # Initialize database  
    bun run reset    # Reset dev environment  
