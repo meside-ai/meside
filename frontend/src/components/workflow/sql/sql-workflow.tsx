@@ -5,7 +5,8 @@ import { usePreviewContext } from "../../preview/preview-context";
 import { WarehouseCard } from "../../warehouse/warehouse-card";
 import type { WorkflowProps } from "../workflow-types";
 import { TableView } from "./table-view";
-export const DbWorkflow = ({
+
+export const SqlWorkflow = ({
   question,
   isGettingAnswer,
   answerError,
@@ -14,7 +15,7 @@ export const DbWorkflow = ({
   const { openPreview } = usePreviewContext();
 
   const questionLayout = useMemo(() => {
-    if (question.payload.type !== "db") {
+    if (question.payload.type !== "sql") {
       return null;
     }
 
@@ -73,7 +74,7 @@ export const DbWorkflow = ({
     renderQuestionLayout,
   ]);
 
-  if (question.payload.type !== "db") {
+  if (question.payload.type !== "sql") {
     return null;
   }
 

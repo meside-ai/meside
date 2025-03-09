@@ -1,6 +1,6 @@
 import { WarehouseEditor } from "../warehouse/warehouse-editor";
-import { TableVirtualView } from "../workflow/db/table-virtual-view";
 import { EchartsLazyLoader } from "../workflow/echarts/echarts-lazy-loader";
+import { TableVirtualView } from "../workflow/sql/table-virtual-view";
 import { usePreviewContext } from "./preview-context";
 import type { PreviewEntity } from "./types";
 

@@ -1,16 +1,18 @@
 import { getQuestionDetail } from "@/queries/question";
-import { Box, Button } from "@mantine/core";
+import { Box, Button, Text } from "@mantine/core";
+import type { QuestionDto } from "@meside/api/question.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useQuestionContext } from "../question/context";
 import { DbWorkflowStarter } from "./db-workflow-starter";
 import { EchartsWorkflowStarter } from "./echarts-workflow-starter";
+
 export const StarterPanel = () => {
   const { quotedQuestionId } = useQuestionContext();
 
-  const [workflowType, setWorkflowType] = useState<null | "db" | "echarts">(
-    null
-  );
+  const [workflowType, setWorkflowType] = useState<
+    null | QuestionDto["payload"]["type"]
+  >(null);
 
   const quotedQuestionResult = useQuery(
     getQuestionDetail({ questionId: quotedQuestionId ?? "" })
@@ -25,6 +27,25 @@ export const StarterPanel = () => {
       button.quotedType?.includes(type)
     );
   }, [quotedQuestionResult.data?.question?.payload.type]);
+
+  const starter = useMemo(() => {
+    if (!workflowType) {
+      return null;
+    }
+
+    switch (workflowType) {
+      case "sql":
+        return <DbWorkflowStarter />;
+      case "echarts":
+        return (
+          <EchartsWorkflowStarter
+            quotedQuestion={quotedQuestionResult.data?.question ?? undefined}
+          />
+        );
+      default:
+        return <Text>Not implemented</Text>;
+    }
+  }, [workflowType, quotedQuestionResult.data?.question]);
 
   return (
     <Box p="md">
@@ -43,31 +64,24 @@ export const StarterPanel = () => {
           ))}
         </Button.Group>
       </Box>
-      <Box>{workflowType === "db" && <DbWorkflowStarter />}</Box>
-      <Box>
-        {workflowType === "echarts" && (
-          <EchartsWorkflowStarter
-            quotedQuestion={quotedQuestionResult.data?.question ?? undefined}
-          />
-        )}
-      </Box>
+      <Box>{starter}</Box>
     </Box>
   );
 };
 
 const workflowButtons: {
-  type: "db" | "echarts";
+  type: QuestionDto["payload"]["type"];
   label: string;
-  quotedType: ("db" | "echarts")[] | null;
+  quotedType: QuestionDto["payload"]["type"][] | null;
 }[] = [
   {
-    type: "db",
+    type: "sql",
     label: "Data warehouse query",
     quotedType: null,
   },
   {
     type: "echarts",
     label: "Charts",
-    quotedType: ["db", "echarts"],
+    quotedType: ["sql", "echarts"],
   },
 ];

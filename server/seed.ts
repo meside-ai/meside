@@ -67,7 +67,7 @@ export async function main() {
 
       parentQuestionId: null,
       payload: {
-        type: "db",
+        type: "sql",
         sql,
         warehouseId,
         fields,
@@ -93,7 +93,7 @@ export async function main() {
 
       parentQuestionId: null,
       payload: {
-        type: "db",
+        type: "sql",
         sql,
         warehouseId,
         fields,
@@ -120,7 +120,7 @@ export async function main() {
 
       parentQuestionId: null,
       payload: {
-        type: "db",
+        type: "sql",
         sql,
         warehouseId,
         fields,

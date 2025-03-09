@@ -26,7 +26,7 @@ export const DbWorkflowStarter = () => {
     parentQuestionId: null,
     versionId: null,
     questionPayload: {
-      type: "db",
+      type: "sql",
       sql: "",
       warehouseId: warehouseId ?? "",
       fields: [],
