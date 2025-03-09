@@ -1,6 +1,6 @@
 import { type QuestionPayload, questionPayloadSchema } from "@/questions";
 import { relations } from "drizzle-orm";
-import { jsonb, pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
@@ -8,6 +8,7 @@ import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
 export const questionTable = pgTable("question", {
   questionId: primaryKeyCuid("question_id"),
   versionId: varchar("version_id", { length: 128 }).notNull(),
+  activeVersion: boolean("active_version").notNull().default(false),
   ownerId: foreignCuid("owner_id").notNull(),
   orgId: foreignCuid("org_id").notNull(),
   shortName: text("short_name").notNull().default("question"),

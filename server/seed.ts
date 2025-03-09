@@ -76,6 +76,7 @@ export async function main() {
     {
       questionId: cuid(),
       versionId: questionId,
+      activeVersion: true,
       ownerId: userId,
       orgId,
       shortName: "list all albums",

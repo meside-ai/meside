@@ -11,7 +11,7 @@ import {
 } from "@/utils/toolkit";
 import { getWorkflowFactory } from "@/workflows/workflow.factory";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { type SQL, and, asc, desc, eq, isNull } from "drizzle-orm";
+import { type SQL, and, desc, eq, isNull } from "drizzle-orm";
 import {
   questionCreateRoute,
   questionDetailRoute,
@@ -26,6 +26,7 @@ export const questionApi = new OpenAPIHono()
     const filter: SQL[] = [];
 
     filter.push(isNull(questionTable.deletedAt));
+    filter.push(eq(questionTable.activeVersion, true));
 
     if (body.parentQuestionId) {
       filter.push(eq(questionTable.parentQuestionId, body.parentQuestionId));
@@ -34,10 +35,10 @@ export const questionApi = new OpenAPIHono()
     }
 
     const questions = await getDrizzle()
-      .selectDistinctOn([questionTable.versionId])
+      .select()
       .from(questionTable)
       .where(and(...filter))
-      .orderBy(asc(questionTable.versionId), desc(questionTable.createdAt));
+      .orderBy(desc(questionTable.createdAt));
 
     const questionDtos = await getQuestionDtos(questions);
 
@@ -87,21 +88,37 @@ export const questionApi = new OpenAPIHono()
     const questionId = cuid();
 
     const question = firstOrNotCreated(
-      await getDrizzle()
-        .insert(questionTable)
-        .values({
-          questionId,
-          versionId: body.versionId ?? questionId,
-          shortName: body.shortName ?? undefined,
-          userContent: body.userContent,
-          assistantReason: "",
-          assistantContent: "",
-          payload: body.payload,
-          parentQuestionId: parentQuestion?.questionId ?? undefined,
-          ownerId: auth.userId,
-          orgId: auth.orgId,
-        })
-        .returning(),
+      await getDrizzle().transaction(async (tx) => {
+        await tx
+          .update(questionTable)
+          .set({
+            activeVersion: false,
+          })
+          .where(
+            and(
+              eq(questionTable.versionId, body.versionId ?? questionId),
+              eq(questionTable.activeVersion, true),
+            ),
+          );
+
+        const questions = await tx
+          .insert(questionTable)
+          .values({
+            questionId,
+            versionId: body.versionId ?? questionId,
+            activeVersion: true,
+            shortName: body.shortName ?? undefined,
+            userContent: body.userContent,
+            assistantReason: "",
+            assistantContent: "",
+            payload: body.payload,
+            parentQuestionId: parentQuestion?.questionId ?? undefined,
+            ownerId: auth.userId,
+            orgId: auth.orgId,
+          })
+          .returning();
+        return questions;
+      }),
       "Failed to create question",
     );
 
