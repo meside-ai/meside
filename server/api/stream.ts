@@ -4,7 +4,7 @@ import { getAuth } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import { BadRequestError, UnauthorizedError } from "@/utils/error";
 import { firstOrNotFound } from "@/utils/toolkit";
-import { getWorkflowFactory } from "@/workflows-v2/workflow.factory";
+import { getWorkflowFactory } from "@/workflows/workflow.factory";
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
