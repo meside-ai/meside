@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import { usePreviewContext } from "../../preview/preview-context";
 import { WarehouseCard } from "../../warehouse/warehouse-card";
 import type { WorkflowProps } from "../workflow-types";
-import { TableView } from "./table-view";
+import { TableView } from "./components/table-view";
+import { TableVirtualView } from "./components/table-virtual-view";
 
 export const SqlWorkflow = ({
   question,
@@ -52,7 +53,7 @@ export const SqlWorkflow = ({
                   openPreview({
                     name: question.shortName ?? "DB Query",
                     payload: {
-                      type: "previewSql",
+                      type: "previewQuestion",
                       questionId: question.questionId,
                     },
                   });
@@ -64,6 +65,11 @@ export const SqlWorkflow = ({
             </Box>
           )}
         </>
+      ),
+      previewPanel: (
+        <Box>
+          <TableVirtualView questionId={question.questionId} />
+        </Box>
       ),
     });
   }, [

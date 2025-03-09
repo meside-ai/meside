@@ -12,6 +12,7 @@ export type RenderQuestionLayout = (props: {
   afterAssistantContent?: JSX.Element | JSX.Element[];
   afterAssistantAction?: JSX.Element | JSX.Element[];
   leftAssistantAction?: JSX.Element | JSX.Element[];
+  previewPanel?: JSX.Element | JSX.Element[];
 }) => JSX.Element;
 
 export type WorkflowProps = {

@@ -10,11 +10,7 @@ export const previewEntitySchema = z.object({
       warehouseId: z.string(),
     }),
     z.object({
-      type: z.literal("previewSql"),
-      questionId: z.string(),
-    }),
-    z.object({
-      type: z.literal("previewEcharts"),
+      type: z.literal("previewQuestion"),
       questionId: z.string(),
     }),
   ]),

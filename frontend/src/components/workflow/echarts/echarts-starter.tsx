@@ -1,16 +1,10 @@
 import { Badge, Box, Group, Paper, Text, Title } from "@mantine/core";
-import type { QuestionDto } from "@meside/api/question.schema";
 import { useMemo } from "react";
-import { MessageInput } from "../message-input/message-input";
-import { useSendQuestion } from "../question/use-send-question";
+import { MessageInput } from "../../message-input/message-input";
+import { useSendQuestion } from "../../question/use-send-question";
+import type { StarterProps } from "../starter-types";
 
-export type EchartsWorkflowStarterProps = {
-  quotedQuestion?: QuestionDto;
-};
-
-export const EchartsWorkflowStarter = ({
-  quotedQuestion,
-}: EchartsWorkflowStarterProps) => {
+export const EchartsWorkflowStarter = ({ quotedQuestion }: StarterProps) => {
   const quotedQuestionPayload = useMemo(() => {
     if (quotedQuestion?.payload.type === "sql") {
       return quotedQuestion.payload;

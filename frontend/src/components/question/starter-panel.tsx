@@ -1,14 +1,15 @@
 import { getQuestionDetail } from "@/queries/question";
-import { Box, Button, Text } from "@mantine/core";
+import { Box, Button } from "@mantine/core";
 import type { QuestionDto } from "@meside/api/question.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { usePreviewContext } from "../preview/preview-context";
 import { useQuestionContext } from "../question/context";
-import { DbWorkflowStarter } from "./db-workflow-starter";
-import { EchartsWorkflowStarter } from "./echarts-workflow-starter";
+import { StarterFactory } from "../workflow/starter-factory";
 
 export const StarterPanel = () => {
   const { quotedQuestionId } = useQuestionContext();
+  const { openPreview } = usePreviewContext();
 
   const [workflowType, setWorkflowType] = useState<
     null | QuestionDto["payload"]["type"]
@@ -28,25 +29,6 @@ export const StarterPanel = () => {
     );
   }, [quotedQuestionResult.data?.question?.payload.type]);
 
-  const starter = useMemo(() => {
-    if (!workflowType) {
-      return null;
-    }
-
-    switch (workflowType) {
-      case "sql":
-        return <DbWorkflowStarter />;
-      case "echarts":
-        return (
-          <EchartsWorkflowStarter
-            quotedQuestion={quotedQuestionResult.data?.question ?? undefined}
-          />
-        );
-      default:
-        return <Text>Not implemented</Text>;
-    }
-  }, [workflowType, quotedQuestionResult.data?.question]);
-
   return (
     <Box p="md">
       <Box mb="sm">Choose a workflow to get started</Box>
@@ -64,7 +46,15 @@ export const StarterPanel = () => {
           ))}
         </Button.Group>
       </Box>
-      <Box>{starter}</Box>
+      {workflowType && (
+        <Box>
+          <StarterFactory
+            workflowType={workflowType}
+            quotedQuestion={quotedQuestionResult.data?.question ?? null}
+            openPreview={openPreview}
+          />
+        </Box>
+      )}
     </Box>
   );
 };

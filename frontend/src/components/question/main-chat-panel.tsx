@@ -1,6 +1,6 @@
-import { StarterPanel } from "../starter/starter-panel";
 import { ChatPanel } from "./chat-panel";
 import { useQuestionContext } from "./context";
+import { StarterPanel } from "./starter-panel";
 
 export const MainChatPanel = () => {
   const { questionId } = useQuestionContext();

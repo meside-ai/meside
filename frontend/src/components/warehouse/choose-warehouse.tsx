@@ -16,7 +16,7 @@ import type { WarehouseCreateRequest } from "@meside/api/warehouse.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { z } from "zod";
-import { WarehouseSelect } from "../warehouse/warehouse-select";
+import { WarehouseSelect } from "./warehouse-select";
 
 type ChooseWarehouseFormValues = {
   warehouseId: string | null;
