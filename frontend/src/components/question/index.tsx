@@ -4,12 +4,11 @@ import { PreviewProvider } from "../preview/preview-provider";
 import { MainChatPanel } from "./main-chat-panel";
 import { MenuPanel } from "./menu-panel";
 import { QuestionProvider } from "./provider";
-import { QuestionNameSubscription } from "./question-name-subscription";
+
 export const Question = () => {
   return (
     <PreviewProvider>
       <QuestionProvider>
-        <QuestionNameSubscription />
         <Box
           w="100vw"
           h="100vh"

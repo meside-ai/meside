@@ -18,12 +18,9 @@ export class NameWorkflow extends BaseWorkflow implements Workflow {
     const userQuestion = this.convertUserContentToPrompt(question.userContent);
 
     const prompt = [
-      "summary for the thread based on the messages",
-      `min length is ${question.payload.minLength}`,
-      `max length is ${question.payload.maxLength}`,
-      "# user question:",
+      `give a question short name. word count should be between ${question.payload.minLength} and ${question.payload.maxLength}`,
+      "# question history:",
       userQuestion,
-      "# assistant answer:",
       question.assistantContent,
     ].join("\n");
 

@@ -127,26 +127,30 @@ export const questionCreateRoute = createRoute({
   },
 });
 
-// questionName
-export const questionNameRequestSchema = z.object({
+// questionSummaryName
+export const questionSummaryNameRequestSchema = z.object({
   questionId: z.string(),
 });
 
-export const questionNameResponseSchema = z.object({
-  question: questionDtoSchema,
+export const questionSummaryNameResponseSchema = z.object({
+  shortName: z.string(),
 });
 
-export type QuestionNameRequest = z.infer<typeof questionNameRequestSchema>;
-export type QuestionNameResponse = z.infer<typeof questionNameResponseSchema>;
+export type QuestionSummaryNameRequest = z.infer<
+  typeof questionSummaryNameRequestSchema
+>;
+export type QuestionSummaryNameResponse = z.infer<
+  typeof questionSummaryNameResponseSchema
+>;
 
-export const questionNameRoute = createRoute({
+export const questionSummaryNameRoute = createRoute({
   method: "post",
   path: "/name",
   request: {
     body: {
       content: {
         "application/json": {
-          schema: questionNameRequestSchema,
+          schema: questionSummaryNameRequestSchema,
         },
       },
     },
@@ -155,7 +159,7 @@ export const questionNameRoute = createRoute({
     200: {
       content: {
         "application/json": {
-          schema: questionNameResponseSchema,
+          schema: questionSummaryNameResponseSchema,
         },
       },
       description: "Create the question",
