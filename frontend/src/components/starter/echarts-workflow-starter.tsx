@@ -1,5 +1,6 @@
 import { Badge, Box, Group, Paper, Text, Title } from "@mantine/core";
 import type { QuestionDto } from "@meside/api/question.schema";
+import { useMemo } from "react";
 import { MessageInput } from "../message-input/message-input";
 import { useSendQuestion } from "../question/use-send-question";
 
@@ -10,14 +11,26 @@ export type EchartsWorkflowStarterProps = {
 export const EchartsWorkflowStarter = ({
   quotedQuestion,
 }: EchartsWorkflowStarterProps) => {
+  const quotedQuestionPayload = useMemo(() => {
+    if (quotedQuestion?.payload.type === "sql") {
+      return quotedQuestion.payload;
+    }
+
+    return {
+      warehouseId: "",
+      sql: "",
+      fields: [],
+    };
+  }, [quotedQuestion]);
+
   const { handleQuestion, isSendingQuestion } = useSendQuestion({
     parentQuestionId: null,
     versionId: null,
     questionPayload: {
       type: "echarts",
-      warehouseId: quotedQuestion?.payload.warehouseId ?? "",
-      sql: quotedQuestion?.payload.sql ?? "",
-      fields: quotedQuestion?.payload.fields ?? [],
+      warehouseId: quotedQuestionPayload.warehouseId,
+      sql: quotedQuestionPayload.sql,
+      fields: quotedQuestionPayload.fields,
       echartsOptions: "",
     },
   });
@@ -51,7 +64,7 @@ export const EchartsWorkflowStarter = ({
           loading={isSendingQuestion}
           placeholder="Describe your chart based on your quoted data"
           state={{
-            warehouseId: quotedQuestion.payload.warehouseId,
+            warehouseId: quotedQuestionPayload.warehouseId,
           }}
         />
       </Paper>
