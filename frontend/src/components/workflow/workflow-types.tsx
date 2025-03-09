@@ -1,23 +1,27 @@
 import type { QuestionDto } from "@meside/api/question.schema";
+import type { ReactNode } from "react";
+import type { PreviewEntity } from "../preview/types";
 
-export type RenderQuestionLayout = (props: {
+export type InjectedQuestionLayoutProps = {
   question: QuestionDto;
   isGettingAnswer: boolean;
   answerError: Error | undefined;
-  beforeUserContent?: JSX.Element | JSX.Element[];
-  afterUserContent?: JSX.Element | JSX.Element[];
-  afterUserEdit?: JSX.Element | JSX.Element[];
-  beforeAssistantReason?: JSX.Element | JSX.Element[];
-  beforeAssistantContent?: JSX.Element | JSX.Element[];
-  afterAssistantContent?: JSX.Element | JSX.Element[];
-  afterAssistantAction?: JSX.Element | JSX.Element[];
-  leftAssistantAction?: JSX.Element | JSX.Element[];
-  previewPanel?: JSX.Element | JSX.Element[];
-}) => JSX.Element;
+  openPreview: (payload: Omit<PreviewEntity, "previewId">) => void;
+  beforeUserContent?: JSX.Element | JSX.Element[] | "" | null;
+  afterUserContent?: JSX.Element | JSX.Element[] | "" | null;
+  afterUserEdit?: JSX.Element | JSX.Element[] | "" | null;
+  beforeAssistantReason?: JSX.Element | JSX.Element[] | "" | null;
+  beforeAssistantContent?: JSX.Element | JSX.Element[] | "" | null;
+  afterAssistantContent?: JSX.Element | JSX.Element[] | "" | null;
+  afterAssistantAction?: JSX.Element | JSX.Element[] | "" | null;
+  leftAssistantAction?: JSX.Element | JSX.Element[] | "" | null;
+  previewPanel?: JSX.Element | JSX.Element[] | "" | null;
+};
 
 export type WorkflowProps = {
   question: QuestionDto;
   isGettingAnswer: boolean;
   answerError: Error | undefined;
-  renderQuestionLayout: RenderQuestionLayout;
+  openPreview: (payload: Omit<PreviewEntity, "previewId">) => void;
+  injectedQuestionLayout: (props: InjectedQuestionLayoutProps) => ReactNode;
 };

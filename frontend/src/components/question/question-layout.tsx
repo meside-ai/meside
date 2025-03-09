@@ -24,22 +24,9 @@ import {
 import { useMemo, useState } from "react";
 import { EditorJsonMarkdown } from "../markdown/editor-json-markdown";
 import { MessageInput } from "../message-input/message-input";
+import type { InjectedQuestionLayoutProps } from "../workflow/workflow-types";
 import { useQuestionContext } from "./context";
 import { useSendQuestion } from "./use-send-question";
-
-export type QuestionLayoutProps = {
-  question: QuestionDto;
-  beforeUserContent?: JSX.Element | JSX.Element[];
-  afterUserContent?: JSX.Element | JSX.Element[];
-  afterUserEdit?: JSX.Element | JSX.Element[];
-  beforeAssistantReason?: JSX.Element | JSX.Element[];
-  beforeAssistantContent?: JSX.Element | JSX.Element[];
-  afterAssistantContent?: JSX.Element | JSX.Element[];
-  afterAssistantAction?: JSX.Element | JSX.Element[];
-  leftAssistantAction?: JSX.Element | JSX.Element[];
-  isGettingAnswer?: boolean;
-  answerError?: Error;
-};
 
 export const QuestionLayout = ({
   question,
@@ -53,9 +40,10 @@ export const QuestionLayout = ({
   leftAssistantAction,
   isGettingAnswer,
   answerError,
-}: QuestionLayoutProps) => {
+}: InjectedQuestionLayoutProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const { setQuotedQuestionId } = useQuestionContext();
+
   return (
     <Box mx="md">
       <Box>

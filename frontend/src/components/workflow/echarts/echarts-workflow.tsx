@@ -1,25 +1,19 @@
 import { MESSAGE_CONTENT_WIDTH } from "@/utils/message-width";
-import { Box } from "@mantine/core";
-import { useMemo } from "react";
+import { Box, Text } from "@mantine/core";
 import type { WorkflowProps } from "../workflow-types";
 import { EchartsLazyLoader } from "./components/echarts-lazy-loader";
 
-export const EchartsWorkflow = ({
-  question,
-  isGettingAnswer,
-  answerError,
-  renderQuestionLayout,
-}: WorkflowProps) => {
-  const questionLayout = useMemo(() => {
-    if (question.payload.type !== "echarts") {
-      return null;
-    }
+export const EchartsWorkflow = (props: WorkflowProps) => {
+  const { injectedQuestionLayout: InjectedQuestionLayout, question } = props;
 
-    return renderQuestionLayout({
-      question,
-      isGettingAnswer,
-      answerError,
-      afterAssistantContent: (
+  if (question.payload.type !== "echarts") {
+    return <Text>Not a echarts question</Text>;
+  }
+
+  return (
+    <InjectedQuestionLayout
+      {...props}
+      afterAssistantContent={
         <Box
           w={MESSAGE_CONTENT_WIDTH}
           h={300}
@@ -40,9 +34,7 @@ export const EchartsWorkflow = ({
             <EchartsLazyLoader questionId={question.questionId} />
           </Box>
         </Box>
-      ),
-    });
-  }, [answerError, isGettingAnswer, question, renderQuestionLayout]);
-
-  return <>{questionLayout}</>;
+      }
+    />
+  );
 };

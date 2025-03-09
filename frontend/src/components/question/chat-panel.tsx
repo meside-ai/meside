@@ -80,9 +80,8 @@ export const ChatPanel = () => {
               question={data.question}
               isGettingAnswer={isGettingAnswer}
               answerError={answerError ?? undefined}
-              renderQuestionLayout={(props) => {
-                return <QuestionLayout {...props} />;
-              }}
+              openPreview={openPreview}
+              injectedQuestionLayout={QuestionLayout}
             />
           )}
           <Box h={40} />
