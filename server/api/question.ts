@@ -3,13 +3,20 @@ import { type QuestionEntity, questionTable } from "@/db/schema/question";
 import { getQuestionDtos } from "@/mappers/question";
 import { getAuthOrUnauthorized } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
-import { firstOrNotCreated, firstOrNull } from "@/utils/toolkit";
+import { BadRequestError } from "@/utils/error";
+import {
+  firstOrNotCreated,
+  firstOrNotFound,
+  firstOrNull,
+} from "@/utils/toolkit";
+import { getWorkflowFactory } from "@/workflows/workflow.factory";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { type SQL, and, asc, desc, eq, isNull } from "drizzle-orm";
 import {
   questionCreateRoute,
   questionDetailRoute,
   questionListRoute,
+  questionSummaryNameRoute,
 } from "./question.schema";
 
 export const questionApi = new OpenAPIHono()
@@ -101,6 +108,45 @@ export const questionApi = new OpenAPIHono()
     const questionDto = await getQuestionDtos([question]);
 
     return c.json({ question: questionDto[0] });
+  })
+  .openapi(questionSummaryNameRoute, async (c) => {
+    const body = c.req.valid("json");
+
+    const question = firstOrNotFound(
+      await getDrizzle()
+        .select()
+        .from(questionTable)
+        .where(eq(questionTable.questionId, body.questionId)),
+      "Question not found",
+    );
+
+    const nameQuestion: QuestionEntity = {
+      ...question,
+      payload: {
+        type: "name",
+        name: "",
+        minLength: 3,
+        maxLength: 20,
+      },
+    };
+
+    const workflow = getWorkflowFactory(nameQuestion);
+    const newQuestion = await workflow.generate({
+      question: nameQuestion,
+    });
+
+    if (newQuestion.payload.type !== "name") {
+      throw new BadRequestError("Invalid workflow type");
+    }
+
+    await getDrizzle()
+      .update(questionTable)
+      .set({
+        shortName: newQuestion.payload.name,
+      })
+      .where(eq(questionTable.questionId, body.questionId));
+
+    return c.json({ shortName: newQuestion.payload.name });
   });
 
 export type QuestionApiType = typeof questionApi;

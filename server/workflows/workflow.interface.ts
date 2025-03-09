@@ -1,11 +1,11 @@
-import type { MessageEntity } from "@/db/schema/message";
+import type { QuestionEntity } from "@/db/schema/question";
 
 export interface Workflow {
   stream(body: {
-    messages: MessageEntity[];
-  }): Promise<ReadableStream<MessageEntity>>;
+    question: QuestionEntity;
+  }): Promise<ReadableStream<QuestionEntity>>;
 
   generate(body: {
-    messages: MessageEntity[];
-  }): Promise<MessageEntity>;
+    question: QuestionEntity;
+  }): Promise<QuestionEntity>;
 }

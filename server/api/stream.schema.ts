@@ -1,21 +1,5 @@
-import { messageEntitySchema } from "@/db/schema/message";
 import { z } from "zod";
 import { questionDtoSchema } from "./question.schema";
-
-// streamAssistant
-export const streamAssistantRequestSchema = z.object({
-  parentThreadId: z.string(),
-  sseDebounce: z.number().optional().default(500),
-});
-
-export const streamAssistantResponseSchema = messageEntitySchema;
-
-export type StreamAssistantRequest = z.infer<
-  typeof streamAssistantRequestSchema
->;
-export type StreamAssistantResponse = z.infer<
-  typeof streamAssistantResponseSchema
->;
 
 // streamQuestion
 export const streamQuestionRequestSchema = z.object({
@@ -35,7 +19,11 @@ export const streamObjectRequestSchema = z.object({
   userContent: z.string(),
   assistantContent: z.string(),
   workflowType: z.enum(["name"]),
-  debounce: z.number().optional().default(500),
+  debounce: z
+    .string()
+    .optional()
+    .default("500")
+    .transform((val) => Number(val)),
 });
 
 export const streamObjectResponseSchema = questionDtoSchema;

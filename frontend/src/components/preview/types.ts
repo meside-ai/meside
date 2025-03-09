@@ -6,15 +6,11 @@ export const previewEntitySchema = z.object({
   icon: z.string().optional(),
   payload: z.union([
     z.object({
-      type: z.literal("warehouseColumn"),
+      type: z.literal("previewWarehouse"),
       warehouseId: z.string(),
     }),
     z.object({
-      type: z.literal("db"),
-      questionId: z.string(),
-    }),
-    z.object({
-      type: z.literal("echarts"),
+      type: z.literal("previewQuestion"),
       questionId: z.string(),
     }),
   ]),

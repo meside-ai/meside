@@ -2,7 +2,7 @@ import { MESSAGE_CONTENT_WIDTH } from "@/utils/message-width";
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
 import type { WorkflowProps } from "../workflow-types";
-import { EchartsLazyLoader } from "./echarts-lazy-loader";
+import { EchartsLazyLoader } from "./components/echarts-lazy-loader";
 
 export const EchartsWorkflow = ({
   question,

@@ -8,7 +8,7 @@ import { useQuestionStream } from "./use-question-stream";
 export const useStreamAnswer = ({
   onCompleted,
 }: {
-  onCompleted?: (question: QuestionDetailResponse) => void;
+  onCompleted?: (question: StreamQuestionResponse) => void;
 }) => {
   const queryClient = useQueryClient();
 
@@ -20,10 +20,11 @@ export const useStreamAnswer = ({
 
   const streamAnswer = useCallback(
     async (questionId: string) => {
+      const question: StreamQuestionResponse | object = {};
+
       stream(questionId, (messageChunk, done) => {
-        const question: StreamQuestionResponse | object = {};
         if (done) {
-          onCompleted?.(question as QuestionDetailResponse);
+          onCompleted?.(question as StreamQuestionResponse);
           return;
         }
         if (!messageChunk) {

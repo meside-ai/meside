@@ -1,14 +1,23 @@
 import { warehouseQueryColumnSchema } from "@/warehouse";
 import { z } from "zod";
 
-export const dbQuestionPayloadSchema = z.object({
-  type: z.literal("db"),
+export const sqlQuestionPayloadSchema = z.object({
+  type: z.literal("sql"),
   sql: z.string(),
   warehouseId: z.string(),
   fields: z.array(warehouseQueryColumnSchema),
 });
 
-export type DbQuestionPayload = z.infer<typeof dbQuestionPayloadSchema>;
+export type SqlQuestionPayload = z.infer<typeof sqlQuestionPayloadSchema>;
+
+export const relationQuestionPayloadSchema = z.object({
+  type: z.literal("relation"),
+  warehouseId: z.string(),
+});
+
+export type RelationQuestionPayload = z.infer<
+  typeof relationQuestionPayloadSchema
+>;
 
 export const echartsQuestionPayloadSchema = z.object({
   type: z.literal("echarts"),
@@ -31,10 +40,20 @@ export const nameQuestionPayloadSchema = z.object({
 
 export type NameQuestionPayload = z.infer<typeof nameQuestionPayloadSchema>;
 
+export const contentQuestionPayloadSchema = z.object({
+  type: z.literal("content"),
+});
+
+export type ContentQuestionPayload = z.infer<
+  typeof contentQuestionPayloadSchema
+>;
+
 export const questionPayloadSchema = z.union([
-  dbQuestionPayloadSchema,
+  sqlQuestionPayloadSchema,
+  relationQuestionPayloadSchema,
   echartsQuestionPayloadSchema,
   nameQuestionPayloadSchema,
+  contentQuestionPayloadSchema,
 ]);
 
 export type QuestionPayload = z.infer<typeof questionPayloadSchema>;

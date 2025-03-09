@@ -1,24 +1,26 @@
-import { getStructureContent } from "@/agents/agents";
-import { convertMessageRole } from "@/agents/utils/utils";
 import type { AIStructureOutput } from "@/ai/ai-structure";
-import type { MessageEntity } from "@/db/schema/message";
-import { cuid } from "@/utils/cuid";
+import type { QuestionEntity } from "@/db/schema/question";
+import {
+  type EditorJSONContent,
+  editorJsonToMarkdown,
+} from "@/shared/editor-json-to-markdown";
+import { parseJsonOrNull } from "@/shared/json";
 import type { Workflow } from "./workflow.interface";
 
 export class BaseWorkflow implements Workflow {
   async stream(body: {
-    messages: MessageEntity[];
-  }): Promise<ReadableStream<MessageEntity>> {
+    question: QuestionEntity;
+  }): Promise<ReadableStream<QuestionEntity>> {
     throw new Error("Not implemented");
   }
 
   async generate(body: {
-    messages: MessageEntity[];
-  }): Promise<MessageEntity> {
+    question: QuestionEntity;
+  }): Promise<QuestionEntity> {
     const aiStream = await this.stream(body);
 
     const reader = aiStream.getReader();
-    let initial: MessageEntity | null = null;
+    let initial: QuestionEntity | null = null;
     try {
       while (true) {
         const { done, value } = await reader.read();
@@ -42,27 +44,15 @@ export class BaseWorkflow implements Workflow {
     return initial;
   }
 
-  protected convertMessageEntitiesToPrompt = async (
-    messages: MessageEntity[],
-  ): Promise<
-    {
-      role: "system" | "user" | "assistant";
-      content: string;
-    }[]
-  > => {
-    return await Promise.all(
-      messages.map(async (message) => {
-        const getContent = getStructureContent(message);
-        const data = await getContent({ message });
-        return {
-          role: convertMessageRole(message.messageRole),
-          content: data.content,
-        };
-      }),
-    );
+  protected convertUserContentToPrompt = (userContent: string): string => {
+    const json = parseJsonOrNull<EditorJSONContent>(userContent);
+    if (json) {
+      return editorJsonToMarkdown(json);
+    }
+    return userContent;
   };
 
-  protected async createResult<T extends MessageEntity>(
+  protected async createResult<T extends QuestionEntity>(
     aiStream: ReadableStream<AIStructureOutput>,
     immutableInitial: T,
   ): Promise<T> {
@@ -78,10 +68,7 @@ export class BaseWorkflow implements Workflow {
           reason: value.reason,
           text: value.text,
         });
-        Object.assign(
-          initial.structure,
-          value.structure ? value.structure : {},
-        );
+        Object.assign(initial.payload, value.structure ? value.structure : {});
       }
     } finally {
       reader.releaseLock();
@@ -90,7 +77,7 @@ export class BaseWorkflow implements Workflow {
     return initial;
   }
 
-  protected createStream<T extends MessageEntity>(
+  protected createStream<T extends QuestionEntity>(
     aiStream: ReadableStream<AIStructureOutput>,
     immutableInitial: T,
   ): ReadableStream<T> {
@@ -106,11 +93,11 @@ export class BaseWorkflow implements Workflow {
               break;
             }
             Object.assign(initial, {
-              reason: value.reason,
-              text: value.text,
+              assistantReason: value.reason,
+              assistantContent: value.text,
             });
             Object.assign(
-              initial.structure,
+              initial.payload,
               value.structure ? value.structure : {},
             );
             controller.enqueue(initial);
@@ -120,26 +107,5 @@ export class BaseWorkflow implements Workflow {
         }
       },
     });
-  }
-
-  protected createInitialAssistantMessage<T extends MessageEntity>(
-    systemMessage: MessageEntity,
-    systemMessageStructure: T["structure"],
-  ): T {
-    const initial = {
-      messageId: cuid(),
-      threadId: systemMessage.threadId,
-      ownerId: systemMessage.ownerId,
-      orgId: systemMessage.orgId,
-      messageRole: "ASSISTANT",
-      reason: "",
-      text: "",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deletedAt: null,
-      structure: systemMessageStructure,
-    } as T;
-
-    return initial;
   }
 }

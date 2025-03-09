@@ -7,13 +7,13 @@ import type {
   QuestionDetailResponse,
   QuestionListRequest,
   QuestionListResponse,
+  QuestionSummaryNameRequest,
+  QuestionSummaryNameResponse,
 } from "@meside/api/question.schema";
 import type {
   UseMutationOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
-
-export type { MessageDto } from "@meside/api/message.schema";
 
 export const getQuestionList = ({
   parentQuestionId,
@@ -55,6 +55,21 @@ export const getQuestionCreate = (): UseMutationOptions<
   mutationKey: [getQuestionCreate.name],
   mutationFn: async (body) => {
     const response = await questionApi.create.$post({
+      json: body,
+    });
+    const json = await response.json();
+    return json;
+  },
+});
+
+export const getQuestionSummaryName = (): UseMutationOptions<
+  QuestionSummaryNameResponse,
+  QueryClientError,
+  QuestionSummaryNameRequest
+> => ({
+  mutationKey: [getQuestionSummaryName.name],
+  mutationFn: async (body) => {
+    const response = await questionApi.name.$post({
       json: body,
     });
     const json = await response.json();
