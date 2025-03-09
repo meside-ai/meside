@@ -21,28 +21,10 @@ export const QuestionNameSubscription = () => {
           debounce: 500,
         },
         (object, done) => {
-          if (done) {
+          if (done && !object) {
             queryClient.invalidateQueries(getQuestionList({}));
             return;
           }
-          if (!object) {
-            return;
-          }
-          // queryClient.setQueryData(
-          //   getQuestionList({}).queryKey,
-          //   (prev: QuestionListResponse | undefined) => {
-          //     if (!prev?.questions) {
-          //       return prev;
-          //     }
-          //     return produce(prev, (draft) => {
-          //       for (const question of draft.questions) {
-          //         if (question.questionId === object.questionId) {
-          //           question.shortName = object.shortName;
-          //         }
-          //       }
-          //     });
-          //   }
-          // );
         }
       );
     });

@@ -21,10 +21,10 @@ export const ChatPanel = () => {
 
   const { streamAnswer, isGettingAnswer, answerError } = useStreamAnswer({
     onCompleted: (data) => {
-      if (data.question) {
+      if (data) {
         questionNameEvent.dispatch({
-          userContent: data.question.userContent,
-          assistantContent: data.question.assistantContent,
+          userContent: data.userContent,
+          assistantContent: data.assistantContent,
         });
       }
     },
