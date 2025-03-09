@@ -30,35 +30,59 @@ export const ChatPanel = () => {
     },
   });
 
-  const { streamAnswer, isGettingAnswer, answerError } = useStreamAnswer({
-    onCompleted: (data) => {
-      if (data) {
-        questionSummaryName({
-          questionId: data.questionId,
-        });
-      }
-    },
-  });
+  const { streamAnswer, isGettingAnswer, answerError } = useStreamAnswer();
 
   useEffect(() => {
-    openPreview({
-      name: questionCache?.shortName ?? "Question Preview",
-      payload: {
-        type: "previewQuestion",
-        questionId: questionId ?? "",
-      },
-    });
-
+    // @remark this branch means the question was opened in menu
     if (!questionCache) {
+      openPreview({
+        name: "Question Preview",
+        payload: {
+          type: "previewQuestion",
+          questionId: questionId ?? "",
+        },
+      });
       return;
     }
     if (questionCache.questionId === questionId) {
+      // @remark this branch means the question was created and redirected to this page
+      // and getting assistant answer
       setQuestionCache(null);
-      streamAnswer(questionId);
+      streamAnswer(questionId).then((data) => {
+        openPreview({
+          name: "Question Preview",
+          payload: {
+            type: "previewQuestion",
+            questionId: questionId ?? "",
+          },
+        });
+
+        queryClient.invalidateQueries(
+          getQuestionDetail({
+            questionId: questionId ?? "",
+          })
+        );
+
+        if (data.questionId) {
+          questionSummaryName({
+            questionId: data.questionId,
+          });
+        }
+      });
     } else {
+      // @remark this branch means cache error happened, so clear the cache
       setQuestionCache(null);
+      throw new Error("Question cache error");
     }
-  }, [questionId, questionCache, setQuestionCache, streamAnswer, openPreview]);
+  }, [
+    questionId,
+    questionCache,
+    setQuestionCache,
+    streamAnswer,
+    openPreview,
+    questionSummaryName,
+    queryClient,
+  ]);
 
   return (
     <Box
