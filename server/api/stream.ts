@@ -1,8 +1,7 @@
 import { getDrizzle } from "@/db/db";
 import { type QuestionEntity, questionTable } from "@/db/schema/question";
 import { getAuth } from "@/utils/auth";
-import { cuid } from "@/utils/cuid";
-import { BadRequestError, UnauthorizedError } from "@/utils/error";
+import { UnauthorizedError } from "@/utils/error";
 import { firstOrNotFound } from "@/utils/toolkit";
 import { getWorkflowFactory } from "@/workflows/workflow.factory";
 import { zValidator } from "@hono/zod-validator";
@@ -10,86 +9,12 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import type { QuestionDto } from "./question.schema";
-import {
-  streamObjectRequestSchema,
-  streamQuestionRequestSchema,
-} from "./stream.schema";
+import { streamQuestionRequestSchema } from "./stream.schema";
 
-export const streamApi = new Hono()
-  .get(
-    "question",
-    zValidator("query", streamQuestionRequestSchema),
-    async (c) => {
-      const body = c.req.valid("query");
-
-      const authUser = getAuth(c);
-
-      if (!authUser) {
-        throw new UnauthorizedError();
-      }
-
-      const question = firstOrNotFound(
-        await getDrizzle()
-          .select()
-          .from(questionTable)
-          .where(eq(questionTable.questionId, body.questionId)),
-        "Failed to get question",
-      );
-
-      if (question.assistantContent) {
-        return streamSSE(c, async (stream) => {
-          await stream.writeSSE({
-            data: JSON.stringify(question as QuestionDto),
-          });
-          await stream.writeSSE({
-            data: "[DONE]",
-          });
-          await stream.close();
-        });
-      }
-
-      const workflow = getWorkflowFactory(question);
-      const aiStream = await workflow.stream({
-        question,
-      });
-
-      return streamSSE(c, async (stream) => {
-        const reader = aiStream.getReader();
-        const initial: QuestionDto | Record<string, unknown> = {};
-        let lastWriteTime = 0;
-        const DEBOUNCE_INTERVAL = body.debounce;
-
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-              await updateQuestionAnswer(initial as QuestionDto);
-              await stream.writeSSE({
-                data: JSON.stringify(initial),
-              });
-              await stream.writeSSE({
-                data: "[DONE]",
-              });
-              await stream.close();
-              break;
-            }
-            Object.assign(initial, value);
-
-            const currentTime = Date.now();
-            if (currentTime - lastWriteTime >= DEBOUNCE_INTERVAL) {
-              await stream.writeSSE({
-                data: JSON.stringify(initial),
-              });
-              lastWriteTime = currentTime;
-            }
-          }
-        } finally {
-          reader.releaseLock();
-        }
-      });
-    },
-  )
-  .get("object", zValidator("query", streamObjectRequestSchema), async (c) => {
+export const streamApi = new Hono().get(
+  "question",
+  zValidator("query", streamQuestionRequestSchema),
+  async (c) => {
     const body = c.req.valid("query");
 
     const authUser = getAuth(c);
@@ -98,32 +23,24 @@ export const streamApi = new Hono()
       throw new UnauthorizedError();
     }
 
-    let question: QuestionEntity;
+    const question = firstOrNotFound(
+      await getDrizzle()
+        .select()
+        .from(questionTable)
+        .where(eq(questionTable.questionId, body.questionId)),
+      "Failed to get question",
+    );
 
-    if (body.workflowType === "name") {
-      const questionId = cuid();
-      question = {
-        questionId,
-        userContent: body.userContent,
-        assistantContent: body.assistantContent,
-        assistantReason: "",
-        ownerId: authUser.userId,
-        orgId: authUser.orgId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        parentQuestionId: null,
-        deletedAt: null,
-        versionId: questionId,
-        shortName: "",
-        payload: {
-          type: "name",
-          name: "",
-          minLength: 5,
-          maxLength: 30,
-        },
-      };
-    } else {
-      throw new BadRequestError("Invalid workflow type");
+    if (question.assistantContent) {
+      return streamSSE(c, async (stream) => {
+        await stream.writeSSE({
+          data: JSON.stringify(question as QuestionDto),
+        });
+        await stream.writeSSE({
+          data: "[DONE]",
+        });
+        await stream.close();
+      });
     }
 
     const workflow = getWorkflowFactory(question);
@@ -165,7 +82,8 @@ export const streamApi = new Hono()
         reader.releaseLock();
       }
     });
-  });
+  },
+);
 
 const updateQuestionAnswer = async (body: {
   questionId: QuestionEntity["questionId"];

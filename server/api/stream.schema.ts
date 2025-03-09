@@ -13,20 +13,3 @@ export type StreamQuestionRequest = z.infer<typeof streamQuestionRequestSchema>;
 export type StreamQuestionResponse = z.infer<
   typeof streamQuestionResponseSchema
 >;
-
-// streamObject
-export const streamObjectRequestSchema = z.object({
-  userContent: z.string(),
-  assistantContent: z.string(),
-  workflowType: z.enum(["name"]),
-  debounce: z
-    .string()
-    .optional()
-    .default("500")
-    .transform((val) => Number(val)),
-});
-
-export const streamObjectResponseSchema = questionDtoSchema;
-
-export type StreamObjectRequest = z.infer<typeof streamObjectRequestSchema>;
-export type StreamObjectResponse = z.infer<typeof streamObjectResponseSchema>;
