@@ -6,21 +6,19 @@ import {
   Modal,
   NumberInput,
   PasswordInput,
+  Radio,
   Select,
+  Stack,
   Text,
   TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import type { WarehouseCreateRequest } from "@meside/api/warehouse.schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
+import { BiLogoPostgresql } from "react-icons/bi";
 import { z } from "zod";
-import { WarehouseSelect } from "./warehouse-select";
-
-type ChooseWarehouseFormValues = {
-  warehouseId: string | null;
-};
 
 type ChooseWarehouseProps = {
   warehouseId: string | null;
@@ -31,43 +29,56 @@ export const ChooseWarehouse = ({
   warehouseId,
   setWarehouseId,
 }: ChooseWarehouseProps) => {
-  const form = useForm<ChooseWarehouseFormValues>({
-    initialValues: {
-      warehouseId,
-    },
-  });
-
-  const handleSendSystemMessage = useCallback(
-    async ({ warehouseId }: ChooseWarehouseFormValues) => {
-      if (warehouseId) {
-        setWarehouseId(warehouseId);
-      }
-    },
-    [setWarehouseId]
-  );
-
   const [opened, { open, close }] = useDisclosure(false);
+
+  const { data } = useQuery(getWarehouseList());
+
+  const cards = useMemo(
+    () =>
+      data?.warehouses.map((item) => (
+        <Radio.Card
+          p="md"
+          radius="md"
+          value={item.warehouseId}
+          key={item.warehouseId}
+        >
+          <Group wrap="nowrap" align="center">
+            <Radio.Indicator />
+            <Group wrap="nowrap" align="center">
+              <BiLogoPostgresql size={36} />
+              <Box>
+                <Text>{item.name}</Text>
+                <Text>
+                  postgres://{item.username}:***{item.host}:{item.port}/
+                  {item.database}
+                </Text>
+              </Box>
+            </Group>
+          </Group>
+        </Radio.Card>
+      )),
+    [data?.warehouses]
+  );
 
   return (
     <Box>
-      <Text mb={8}>Select a warehouse to start a query</Text>
-      <form onSubmit={form.onSubmit(handleSendSystemMessage)}>
-        <Box mb={8}>
-          <WarehouseSelect
-            value={form.values.warehouseId}
-            onChange={(value) => form.setFieldValue("warehouseId", value)}
-          />
-        </Box>
-        <Group>
-          <Button size="xs" type="submit">
-            Confirm
-          </Button>
-
-          <Button size="xs" variant="subtle" onClick={open}>
-            Add new database
-          </Button>
-        </Group>
-      </form>
+      <Box mb={8}>
+        <Radio.Group
+          label="Pick one warehouse to start a question"
+          description="Choose a warehouse that you will need in your question"
+          value={warehouseId}
+          onChange={setWarehouseId}
+        >
+          <Stack pt="md" gap="xs">
+            {cards}
+          </Stack>
+        </Radio.Group>
+      </Box>
+      <Group>
+        <Button size="xs" variant="subtle" onClick={open}>
+          Add new database
+        </Button>
+      </Group>
 
       <Modal opened={opened} onClose={close} title="Add new data warehouse">
         <AddNewDatabaseForm onClose={close} />

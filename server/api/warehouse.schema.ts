@@ -12,6 +12,7 @@ export const warehouseDtoSchema = warehouseEntitySchema
     type: true,
     host: true,
     port: true,
+    username: true,
     database: true,
     schema: true,
     ownerId: true,

@@ -1,7 +1,8 @@
 import { getWarehouseDetail } from "@/queries/warehouse";
-import { Button, Card, Skeleton, Text } from "@mantine/core";
+import { Box, Button, Card, Skeleton } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { usePreviewContext } from "../preview/preview-context";
+import { WarehouseTitle } from "./warehouse-title";
 
 export type WarehouseCardProps = {
   warehouseId: string;
@@ -22,12 +23,9 @@ export const WarehouseCard = ({ warehouseId }: WarehouseCardProps) => {
         <Skeleton height={100} />
       ) : (
         <>
-          <Text>{data.warehouse.name}</Text>
-          <Text>{data.warehouse.type}</Text>
-          <Text>
-            {data.warehouse.host}:{data.warehouse.port}
-          </Text>
-          <Text>{data.warehouse.database}</Text>
+          <Box mb="md">
+            <WarehouseTitle warehouseId={warehouseId} />
+          </Box>
           <Button
             size="xs"
             variant="light"

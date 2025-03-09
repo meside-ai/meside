@@ -24,6 +24,7 @@ export const getWarehouseDtos = async (
       type: warehouse.type,
       host: warehouse.host,
       port: warehouse.port,
+      username: warehouse.username,
       database: warehouse.database,
       schema: warehouse.schema,
       ownerId: warehouse.ownerId,

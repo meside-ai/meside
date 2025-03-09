@@ -6,17 +6,23 @@ export const useWorkflowButtons = () => {
     () => [
       {
         type: "sql",
-        label: "Data warehouse query",
+        label: "Getting data with SQL",
+        description:
+          "Ask me about this warehouse, for example, explain album has relation with artist",
         quotedType: null,
       },
       {
         type: "echarts",
-        label: "Charts",
+        label: "Visualize data with charts",
+        description:
+          "Ask me about this warehouse, for example, explain album has relation with artist",
         quotedType: ["sql", "echarts"],
       },
       {
         type: "relation",
-        label: "Warehouse explorer",
+        label: "Explore warehouse",
+        description:
+          "Ask me about this warehouse, for example, explain album has relation with artist",
         quotedType: null,
       },
     ],
@@ -30,4 +36,5 @@ type WorkflowButton = {
   type: QuestionDto["payload"]["type"];
   label: string;
   quotedType: QuestionDto["payload"]["type"][] | null;
+  description?: string;
 };

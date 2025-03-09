@@ -1,5 +1,5 @@
 import { getQuestionDetail } from "@/queries/question";
-import { Box, Button } from "@mantine/core";
+import { Box, Group, Radio, Stack, Text } from "@mantine/core";
 import type { QuestionDto } from "@meside/api/question.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -32,22 +32,47 @@ export const StarterPanel = () => {
     );
   }, [quotedQuestionResult.data?.question?.payload.type, workflowButtons]);
 
+  const cards = useMemo(
+    () =>
+      buttons.map((item) => (
+        <Radio.Card p="md" radius="md" value={item.type} key={item.type}>
+          <Group wrap="nowrap" align="center">
+            <Radio.Indicator />
+            <Box>
+              <Text>{item.label}</Text>
+              <Text size="xs">{item.description}</Text>
+            </Box>
+          </Group>
+        </Radio.Card>
+      )),
+    [buttons]
+  );
+
   return (
     <Box p="md">
-      <Box mb="sm">Choose a workflow to get started</Box>
       <Box mb="md">
-        <Button.Group>
-          {buttons.map((button) => (
-            <Button
-              key={button.type}
-              size="xs"
-              variant={workflowType === button.type ? "light" : "outline"}
-              onClick={() => setWorkflowType(button.type)}
-            >
-              {button.label}
-            </Button>
-          ))}
-        </Button.Group>
+        <Radio.Group
+          label="Choose a workflow to get started"
+          description="Choose a workflow that you will need in your question"
+          value={workflowType}
+          onChange={(workflowType) => {
+            setWorkflowType(workflowType as QuestionDto["payload"]["type"]);
+          }}
+        >
+          <Stack pt="md" gap="xs">
+            {cards}
+          </Stack>
+        </Radio.Group>
+        {/* {buttons.map((button) => (
+          <Button
+            key={button.type}
+            size="sm"
+            variant={workflowType === button.type ? "light" : "subtle"}
+            onClick={() => setWorkflowType(button.type)}
+          >
+            {button.label}
+          </Button>
+        ))} */}
       </Box>
       {workflowType && (
         <Box>
