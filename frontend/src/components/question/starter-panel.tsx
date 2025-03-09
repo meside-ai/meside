@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { usePreviewContext } from "../preview/preview-context";
 import { useQuestionContext } from "../question/context";
+import { useWorkflowButtons } from "../workflow/starter-buttons";
 import { StarterFactory } from "../workflow/starter-factory";
 
 export const StarterPanel = () => {
@@ -19,6 +20,8 @@ export const StarterPanel = () => {
     getQuestionDetail({ questionId: quotedQuestionId ?? "" })
   );
 
+  const workflowButtons = useWorkflowButtons();
+
   const buttons = useMemo(() => {
     const type = quotedQuestionResult.data?.question?.payload.type;
     if (!type) {
@@ -27,7 +30,7 @@ export const StarterPanel = () => {
     return workflowButtons.filter((button) =>
       button.quotedType?.includes(type)
     );
-  }, [quotedQuestionResult.data?.question?.payload.type]);
+  }, [quotedQuestionResult.data?.question?.payload.type, workflowButtons]);
 
   return (
     <Box p="md">
@@ -58,20 +61,3 @@ export const StarterPanel = () => {
     </Box>
   );
 };
-
-const workflowButtons: {
-  type: QuestionDto["payload"]["type"];
-  label: string;
-  quotedType: QuestionDto["payload"]["type"][] | null;
-}[] = [
-  {
-    type: "sql",
-    label: "Data warehouse query",
-    quotedType: null,
-  },
-  {
-    type: "echarts",
-    label: "Charts",
-    quotedType: ["sql", "echarts"],
-  },
-];

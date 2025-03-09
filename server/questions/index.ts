@@ -10,6 +10,15 @@ export const sqlQuestionPayloadSchema = z.object({
 
 export type SqlQuestionPayload = z.infer<typeof sqlQuestionPayloadSchema>;
 
+export const relationQuestionPayloadSchema = z.object({
+  type: z.literal("relation"),
+  warehouseId: z.string(),
+});
+
+export type RelationQuestionPayload = z.infer<
+  typeof relationQuestionPayloadSchema
+>;
+
 export const echartsQuestionPayloadSchema = z.object({
   type: z.literal("echarts"),
   warehouseId: z.string(),
@@ -41,6 +50,7 @@ export type ContentQuestionPayload = z.infer<
 
 export const questionPayloadSchema = z.union([
   sqlQuestionPayloadSchema,
+  relationQuestionPayloadSchema,
   echartsQuestionPayloadSchema,
   nameQuestionPayloadSchema,
   contentQuestionPayloadSchema,

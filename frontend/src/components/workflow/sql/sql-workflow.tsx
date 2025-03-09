@@ -80,9 +80,5 @@ export const SqlWorkflow = ({
     renderQuestionLayout,
   ]);
 
-  if (question.payload.type !== "sql") {
-    return null;
-  }
-
   return <>{questionLayout}</>;
 };

@@ -3,6 +3,7 @@ import { BadRequestError } from "@/utils/error";
 import type { Workflow } from "./workflow.interface";
 import { EchartsWorkflow } from "./workflows/echarts-workflow";
 import { NameWorkflow } from "./workflows/name-workflow";
+import { RelationWorkflow } from "./workflows/relation-workflow";
 import { SqlWorkflow } from "./workflows/sql-workflow";
 
 export const getWorkflowFactory = (question: QuestionEntity): Workflow => {
@@ -13,6 +14,8 @@ export const getWorkflowFactory = (question: QuestionEntity): Workflow => {
       return new EchartsWorkflow();
     case "name":
       return new NameWorkflow();
+    case "relation":
+      return new RelationWorkflow();
     default:
       throw new BadRequestError("Invalid system message");
   }
