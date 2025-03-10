@@ -15,7 +15,11 @@ export const streamApi = new Hono().get(
   "question",
   zValidator("query", streamQuestionRequestSchema),
   async (c) => {
-    const body = c.req.valid("query");
+    const {
+      questionId,
+      debounce = 500,
+      language = "en",
+    } = c.req.valid("query");
 
     const authUser = getAuth(c);
 
@@ -27,7 +31,7 @@ export const streamApi = new Hono().get(
       await getDrizzle()
         .select()
         .from(questionTable)
-        .where(eq(questionTable.questionId, body.questionId)),
+        .where(eq(questionTable.questionId, questionId)),
       "Failed to get question",
     );
 
@@ -46,13 +50,14 @@ export const streamApi = new Hono().get(
     const workflow = getWorkflowFactory(question);
     const aiStream = await workflow.stream({
       question,
+      language,
     });
 
     return streamSSE(c, async (stream) => {
       const reader = aiStream.getReader();
       const initial: QuestionDto | Record<string, unknown> = {};
       let lastWriteTime = 0;
-      const DEBOUNCE_INTERVAL = body.debounce;
+      const DEBOUNCE_INTERVAL = debounce;
 
       try {
         while (true) {

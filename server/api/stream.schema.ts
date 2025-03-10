@@ -4,7 +4,8 @@ import { questionDtoSchema } from "./question.schema";
 // streamQuestion
 export const streamQuestionRequestSchema = z.object({
   questionId: z.string(),
-  debounce: z.number().optional().default(500),
+  debounce: z.number().optional(),
+  language: z.string().optional(),
 });
 
 export const streamQuestionResponseSchema = questionDtoSchema;

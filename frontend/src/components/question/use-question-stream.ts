@@ -23,7 +23,10 @@ export const useQuestionStream = () => {
       }
 
       try {
-        const url = getStreamQuestionUrl(questionId);
+        const url = getStreamQuestionUrl({
+          questionId,
+          language: "zh-CN",
+        });
         const eventSource = new EventSource(url);
         eventSourceRef.current = eventSource;
 

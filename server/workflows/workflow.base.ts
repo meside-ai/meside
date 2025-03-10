@@ -10,12 +10,14 @@ import type { Workflow } from "./workflow.interface";
 export class BaseWorkflow implements Workflow {
   async stream(body: {
     question: QuestionEntity;
+    language?: string;
   }): Promise<ReadableStream<QuestionEntity>> {
     throw new Error("Not implemented");
   }
 
   async generate(body: {
     question: QuestionEntity;
+    language?: string;
   }): Promise<QuestionEntity> {
     const aiStream = await this.stream(body);
 

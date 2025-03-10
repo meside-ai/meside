@@ -13,6 +13,7 @@ import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { initI18n } from "./i18n";
 import { getTheme } from "./theme";
 import { queryClient } from "./utils/query-client";
 
@@ -28,6 +29,8 @@ declare module "@tanstack/react-router" {
     isQueryTyped: boolean;
   }
 }
+
+initI18n();
 
 // Render the app
 const rootElement = document.getElementById("root");
