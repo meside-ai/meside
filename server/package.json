@@ -21,6 +21,7 @@
   "dependencies": {
     "@ai-sdk/deepseek": "^0.1.12",
     "@ai-sdk/openai": "^1.2.0",
+    "@google-cloud/bigquery": "^7.9.2",
     "@hono/zod-openapi": "^0.18.4",
     "@hono/zod-validator": "^0.4.3",
     "@paralleldrive/cuid2": "^2.2.2",

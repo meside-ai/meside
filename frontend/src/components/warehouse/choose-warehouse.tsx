@@ -9,7 +9,6 @@ import {
   Radio,
   Select,
   Stack,
-  Text,
   TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
@@ -17,8 +16,8 @@ import { useDisclosure } from "@mantine/hooks";
 import type { WarehouseCreateRequest } from "@meside/api/warehouse.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
-import { BiLogoPostgresql } from "react-icons/bi";
 import { z } from "zod";
+import { WarehouseTitle } from "./warehouse-title";
 
 type ChooseWarehouseProps = {
   warehouseId: string | null;
@@ -44,16 +43,7 @@ export const ChooseWarehouse = ({
         >
           <Group wrap="nowrap" align="center">
             <Radio.Indicator />
-            <Group wrap="nowrap" align="center">
-              <BiLogoPostgresql size={36} />
-              <Box>
-                <Text>{item.name}</Text>
-                <Text>
-                  postgres://{item.username}:***{item.host}:{item.port}/
-                  {item.database}
-                </Text>
-              </Box>
-            </Group>
+            <WarehouseTitle warehouseId={item.warehouseId} />
           </Group>
         </Radio.Card>
       )),
@@ -113,7 +103,7 @@ const AddNewDatabaseForm = ({ onClose }: { onClose: () => void }) => {
     validate: zodResolver(
       z.object({
         name: z.string().min(1, { message: "Name is required" }),
-        type: z.enum(["postgresql"], {
+        type: z.enum(["postgresql", "bigquery"], {
           message: "Type is required",
         }),
         host: z.string().min(1, { message: "Host is required" }),
@@ -149,6 +139,10 @@ const AddNewDatabaseForm = ({ onClose }: { onClose: () => void }) => {
           {
             value: "postgresql",
             label: "PostgreSQL",
+          },
+          {
+            value: "bigquery",
+            label: "BigQuery",
           },
         ]}
         withAsterisk

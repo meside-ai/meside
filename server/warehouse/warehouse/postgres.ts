@@ -2,13 +2,13 @@ import { getLogger } from "@/logger";
 import { cuid } from "@/utils/cuid";
 import pg from "pg";
 import { z } from "zod";
-import type { WarehouseQueryColumn, WarehouseQueryRow } from "./type";
+import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
 import type {
   ConnectionConfig,
   Warehouse,
   WarehouseFactoryCatalog,
   WarehouseFactoryRelation,
-} from "./warehouse.interface";
+} from "../warehouse.interface";
 
 export class PostgresWarehouse implements Warehouse {
   private logger = getLogger();

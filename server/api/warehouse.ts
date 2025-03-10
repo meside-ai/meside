@@ -27,7 +27,7 @@ export const warehouseApi = new OpenAPIHono()
     const body = c.req.valid("json");
     const auth = getAuthOrUnauthorized(c);
 
-    const warehouseFactory = new WarehouseFactory().create("postgresql");
+    const warehouseFactory = new WarehouseFactory().create(body.type);
     const isConnected = await warehouseFactory.testConnection(body);
 
     if (!isConnected) {
@@ -98,7 +98,7 @@ export const warehouseApi = new OpenAPIHono()
       throw new NotFoundError("Warehouse not found");
     }
 
-    const warehouseFactory = new WarehouseFactory().create("postgresql");
+    const warehouseFactory = new WarehouseFactory().create(warehouse.type);
     const warehouseResult = await warehouseFactory.query(warehouse, sql);
 
     return c.json(warehouseResult);
@@ -134,7 +134,7 @@ export const warehouseApi = new OpenAPIHono()
 
     const sql = `SELECT * FROM ${tableName} LIMIT ${limit}`;
 
-    const warehouseFactory = new WarehouseFactory().create("postgresql");
+    const warehouseFactory = new WarehouseFactory().create(warehouse.type);
 
     const warehouseResult = await warehouseFactory.query(warehouse, sql);
 

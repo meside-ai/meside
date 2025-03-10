@@ -37,7 +37,7 @@ export const catalogApi = new OpenAPIHono()
     }
 
     const warehouseFactory = new WarehouseFactory();
-    const warehouseClass = warehouseFactory.create("postgresql");
+    const warehouseClass = warehouseFactory.create(warehouse.type);
 
     const catalogs = await warehouseClass.getCatalogs(warehouse);
     const relations = await warehouseClass.getRelations(warehouse);
