@@ -2,19 +2,20 @@ import type { CatalogDto } from "@/api/catalog.schema";
 import { getDrizzle } from "@/db/db";
 import type { CatalogEntity } from "@/db/schema/catalog";
 import { relationTable } from "@/db/schema/relation";
-import { and, eq, isNull } from "drizzle-orm";
+import { pickUniqueExistingKeys } from "@/utils/toolkit";
+import { and, inArray, isNull } from "drizzle-orm";
 
 export const getCatalogDtos = async (
   catalogs: CatalogEntity[],
 ): Promise<CatalogDto[]> => {
-  const warehouseId = catalogs[0].warehouseId;
+  const warehouseIds = pickUniqueExistingKeys(catalogs, "warehouseId");
 
   const relations = await getDrizzle()
     .select()
     .from(relationTable)
     .where(
       and(
-        eq(relationTable.warehouseId, warehouseId),
+        inArray(relationTable.warehouseId, warehouseIds),
         isNull(relationTable.deletedAt),
       ),
     );

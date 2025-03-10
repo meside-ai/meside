@@ -183,6 +183,7 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
                 warehouseId && catalogLoadMutation.mutateAsync({ warehouseId })
               }
               leftSection={<IconRefresh size={16} />}
+              loading={catalogLoadMutation.isPending}
             >
               refresh columns
             </Button>

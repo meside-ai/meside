@@ -23,10 +23,7 @@ export const StarterPanel = () => {
   const workflowButtons = useWorkflowButtons();
 
   const buttons = useMemo(() => {
-    const type = quotedQuestionResult.data?.question?.payload.type;
-    if (!type) {
-      return workflowButtons.filter((button) => button.quotedType === null);
-    }
+    const type = quotedQuestionResult.data?.question?.payload.type ?? null;
     return workflowButtons.filter((button) =>
       button.quotedType?.includes(type)
     );
