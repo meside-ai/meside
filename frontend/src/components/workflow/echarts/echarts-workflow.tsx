@@ -14,26 +14,28 @@ export const EchartsWorkflow = (props: WorkflowProps) => {
     <InjectedQuestionLayout
       {...props}
       afterAssistantContent={
-        <Box
-          w={MESSAGE_CONTENT_WIDTH}
-          h={300}
-          display="flex"
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        question.assistantStatus === "success" ? (
           <Box
-            w={500}
+            w={MESSAGE_CONTENT_WIDTH}
             h={300}
+            display="flex"
             style={{
-              backgroundColor: "white",
-              borderRadius: "12px",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <EchartsLazyLoader questionId={question.questionId} />
+            <Box
+              w={500}
+              h={300}
+              style={{
+                backgroundColor: "white",
+                borderRadius: "12px",
+              }}
+            >
+              <EchartsLazyLoader questionId={question.questionId} />
+            </Box>
           </Box>
-        </Box>
+        ) : null
       }
     />
   );

@@ -1,5 +1,6 @@
 import { getDrizzle } from "@/db/db";
 import { type QuestionEntity, questionTable } from "@/db/schema/question";
+import { getQuestionDtos } from "@/mappers/question";
 import { getAuth } from "@/utils/auth";
 import { UnauthorizedError } from "@/utils/error";
 import { firstOrNotFound } from "@/utils/toolkit";
@@ -31,7 +32,7 @@ export const streamApi = new Hono().get(
       "Failed to get question",
     );
 
-    if (question.assistantContent) {
+    if (question.assistantStatus !== "none") {
       return streamSSE(c, async (stream) => {
         await stream.writeSSE({
           data: JSON.stringify(question as QuestionDto),
@@ -42,6 +43,8 @@ export const streamApi = new Hono().get(
         await stream.close();
       });
     }
+
+    // TODO: handle assistant status is pending
 
     const workflow = getWorkflowFactory(question);
     const aiStream = await workflow.stream({
@@ -58,7 +61,8 @@ export const streamApi = new Hono().get(
         while (true) {
           const { done, value } = await reader.read();
           if (done) {
-            await updateQuestionAnswer(initial as QuestionDto);
+            const question = await updateQuestionAnswer(initial as QuestionDto);
+            Object.assign(initial, question);
             await stream.writeSSE({
               data: JSON.stringify(initial),
             });
@@ -90,13 +94,21 @@ const updateQuestionAnswer = async (body: {
   assistantContent: QuestionEntity["assistantContent"];
   assistantReason: QuestionEntity["assistantReason"];
   payload: QuestionEntity["payload"];
-}): Promise<void> => {
-  await getDrizzle()
+}): Promise<QuestionDto> => {
+  const questions = await getDrizzle()
     .update(questionTable)
     .set({
       assistantContent: body.assistantContent,
       assistantReason: body.assistantReason,
       payload: body.payload,
+      assistantStatus: "success",
     })
-    .where(eq(questionTable.questionId, body.questionId));
+    .where(eq(questionTable.questionId, body.questionId))
+    .returning();
+
+  const question = firstOrNotFound(questions, "Failed to update question");
+
+  const questionDtos = await getQuestionDtos([question]);
+
+  return questionDtos[0];
 };

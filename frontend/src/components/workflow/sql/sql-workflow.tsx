@@ -27,7 +27,7 @@ export const SqlWorkflow = (props: WorkflowProps) => {
         </Box>
       }
       afterAssistantContent={
-        question.assistantContent && (
+        question.assistantStatus === "success" ? (
           <Box>
             <Box
               w={MESSAGE_CONTENT_WIDTH}
@@ -59,7 +59,7 @@ export const SqlWorkflow = (props: WorkflowProps) => {
               View more data
             </Button>
           </Box>
-        )
+        ) : null
       }
       previewPanel={
         <Box>

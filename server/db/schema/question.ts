@@ -1,9 +1,23 @@
 import { type QuestionPayload, questionPayloadSchema } from "@/questions";
 import { relations } from "drizzle-orm";
-import { boolean, jsonb, pgTable, text, varchar } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  jsonb,
+  pgEnum,
+  pgTable,
+  text,
+  varchar,
+} from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
+
+export const assistantStatusEnum = pgEnum("assistant_status", [
+  "none",
+  "pending",
+  "success",
+  "error",
+]);
 
 export const questionTable = pgTable("question", {
   questionId: primaryKeyCuid("question_id"),
@@ -15,6 +29,9 @@ export const questionTable = pgTable("question", {
   userContent: text("user_content").notNull().default(""),
   assistantReason: text("assistant_reason").notNull(),
   assistantContent: text("assistant_content").notNull(),
+  assistantStatus: assistantStatusEnum("assistant_status")
+    .notNull()
+    .default("none"),
   payload: jsonb("payload").notNull().$type<QuestionPayload>(),
   parentQuestionId: foreignCuid("parent_question_id"),
   ...useTimestamp(),

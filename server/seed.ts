@@ -64,6 +64,7 @@ export async function main() {
       }),
       assistantReason: "OK, I will list all artists for you.",
       assistantContent: "list all artists",
+      assistantStatus: "success",
 
       parentQuestionId: null,
       payload: {
@@ -91,6 +92,7 @@ export async function main() {
       }),
       assistantReason: "OK, I will list all albums for you.",
       assistantContent: "list all albums",
+      assistantStatus: "success",
 
       parentQuestionId: null,
       payload: {
