@@ -37,7 +37,7 @@ export const catalogApi = new OpenAPIHono()
     }
 
     const warehouseFactory = new WarehouseFactory();
-    const warehouseClass = warehouseFactory.create("postgresql");
+    const warehouseClass = warehouseFactory.create(warehouse.type);
 
     const catalogs = await warehouseClass.getCatalogs(warehouse);
     const relations = await warehouseClass.getRelations(warehouse);
@@ -47,16 +47,18 @@ export const catalogApi = new OpenAPIHono()
         .delete(catalogTable)
         .where(eq(catalogTable.warehouseId, warehouseId));
 
-      await tx.insert(catalogTable).values(
-        catalogs.map((catalog) => ({
-          ...catalog,
-          catalogId: cuid(),
-          warehouseId,
-          orgId: auth.orgId,
-          warehouseType: warehouse.type,
-          fullName: `${catalog.schemaName}.${catalog.tableName}.${catalog.columnName}`,
-        })),
-      );
+      if (catalogs.length > 0) {
+        await tx.insert(catalogTable).values(
+          catalogs.map((catalog) => ({
+            ...catalog,
+            catalogId: cuid(),
+            warehouseId,
+            orgId: auth.orgId,
+            warehouseType: warehouse.type,
+            fullName: `${catalog.schemaName}.${catalog.tableName}.${catalog.columnName}`,
+          })),
+        );
+      }
     });
 
     await getDrizzle().transaction(async (tx) => {
@@ -64,17 +66,19 @@ export const catalogApi = new OpenAPIHono()
         .delete(relationTable)
         .where(eq(relationTable.warehouseId, warehouseId));
 
-      await tx.insert(relationTable).values(
-        relations.map((relation) => ({
-          ...relation,
-          relationId: cuid(),
-          warehouseId,
-          orgId: auth.orgId,
-          warehouseType: warehouse.type,
-          fullName: `${relation.schemaName}.${relation.tableName}.${relation.columnName}`,
-          foreignFullName: `${relation.foreignSchemaName}.${relation.foreignTableName}.${relation.foreignColumnName}`,
-        })),
-      );
+      if (relations.length > 0) {
+        await tx.insert(relationTable).values(
+          relations.map((relation) => ({
+            ...relation,
+            relationId: cuid(),
+            warehouseId,
+            orgId: auth.orgId,
+            warehouseType: warehouse.type,
+            fullName: `${relation.schemaName}.${relation.tableName}.${relation.columnName}`,
+            foreignFullName: `${relation.foreignSchemaName}.${relation.foreignTableName}.${relation.foreignColumnName}`,
+          })),
+        );
+      }
     });
 
     return c.json({});

@@ -34,8 +34,9 @@ export const QuestionLayout = ({
   afterUserContent,
   afterUserEdit,
   beforeAssistantReason,
-  beforeAssistantContent,
-  afterAssistantContent,
+  // beforeAssistantContent,
+  // afterAssistantContent,
+  renderAssistantContent,
   afterAssistantAction,
   leftAssistantAction,
   isGettingAnswer,
@@ -135,11 +136,7 @@ export const QuestionLayout = ({
         >
           <EditorJsonMarkdown>{question.assistantReason}</EditorJsonMarkdown>
         </Box>
-        {beforeAssistantContent}
-        <Box style={{ maxWidth: MESSAGE_CONTENT_WIDTH, overflow: "hidden" }}>
-          <EditorJsonMarkdown>{question.assistantContent}</EditorJsonMarkdown>
-        </Box>
-        {afterAssistantContent}
+        {renderAssistantContent}
         <Box>
           <Group mb="xs" gap={0}>
             {leftAssistantAction}

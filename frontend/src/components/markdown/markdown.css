@@ -1,0 +1,8 @@
+.meside-markdown pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  padding: 4px 12px;
+  color: #000;
+}

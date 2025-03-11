@@ -14,6 +14,7 @@
 - [ ] Support BigQuery 👍
 - [ ] Schedule data transformations 👍
 - [ ] Limit table result count (maximum 5K rows)
+- [ ] add mermaid workflow
 
 ## 0.3
 

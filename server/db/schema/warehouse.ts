@@ -3,7 +3,10 @@ import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
 
-export const warehouseType = pgEnum("warehouse_type", ["postgresql"]);
+export const warehouseType = pgEnum("warehouse_type", [
+  "postgresql",
+  "bigquery",
+]);
 
 export const warehouseTable = pgTable("warehouse", {
   warehouseId: primaryKeyCuid("warehouse_id"),

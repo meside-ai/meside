@@ -11,8 +11,9 @@ export type InjectedQuestionLayoutProps = {
   afterUserContent?: JSX.Element | JSX.Element[] | "" | null;
   afterUserEdit?: JSX.Element | JSX.Element[] | "" | null;
   beforeAssistantReason?: JSX.Element | JSX.Element[] | "" | null;
-  beforeAssistantContent?: JSX.Element | JSX.Element[] | "" | null;
-  afterAssistantContent?: JSX.Element | JSX.Element[] | "" | null;
+  // beforeAssistantContent?: JSX.Element | JSX.Element[] | "" | null;
+  renderAssistantContent?: JSX.Element | JSX.Element[] | "" | null;
+  // afterAssistantContent?: JSX.Element | JSX.Element[] | "" | null;
   afterAssistantAction?: JSX.Element | JSX.Element[] | "" | null;
   leftAssistantAction?: JSX.Element | JSX.Element[] | "" | null;
   previewPanel?: JSX.Element | JSX.Element[] | "" | null;
