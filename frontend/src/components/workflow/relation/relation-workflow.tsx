@@ -1,5 +1,6 @@
 import { WarehouseCard } from "@/components/warehouse/warehouse-card";
 import { Box, Text } from "@mantine/core";
+import { MarkdownAssistantContent } from "../common/markdown-assistant-content";
 import type { WorkflowProps } from "../workflow-types";
 
 export const RelationWorkflow = (props: WorkflowProps) => {
@@ -15,6 +16,13 @@ export const RelationWorkflow = (props: WorkflowProps) => {
       beforeUserContent={
         <Box mb="md">
           <WarehouseCard warehouseId={question?.payload?.warehouseId} />
+        </Box>
+      }
+      renderAssistantContent={
+        <Box>
+          <MarkdownAssistantContent
+            assistantContent={question.assistantContent}
+          />
         </Box>
       }
     />

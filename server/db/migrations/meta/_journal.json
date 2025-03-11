@@ -78,6 +78,13 @@
       "when": 1741570285701,
       "tag": "0010_icy_talos",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1741610110541,
+      "tag": "0011_mighty_living_lightning",
+      "breakpoints": true
     }
   ]
 }

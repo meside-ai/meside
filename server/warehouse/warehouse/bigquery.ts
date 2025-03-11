@@ -33,16 +33,20 @@ export class BigqueryWarehouse implements Warehouse {
         // Query INFORMATION_SCHEMA.COLUMNS for the current dataset
         const query = `
           SELECT
-            table_catalog AS projectId,
-            table_schema AS schemaName,
-            table_name AS tableName,
-            column_name AS columnName,
-            data_type AS columnType,
-            description
+            c.table_catalog AS projectId,
+            c.table_schema AS schemaName,
+            c.table_name AS tableName,
+            c.column_name AS columnName,
+            c.data_type AS columnType,
+            cfp.description
           FROM
-            \`${projectId}.${datasetId}.INFORMATION_SCHEMA.COLUMNS\`
+            \`${projectId}.${datasetId}.INFORMATION_SCHEMA.COLUMNS\` c
+          LEFT JOIN
+            \`${projectId}.${datasetId}.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS\` cfp
+            ON cfp.table_name = c.table_name 
+            AND cfp.column_name = c.column_name
           ORDER BY
-            tableName, columnName
+            c.table_name, c.column_name
         `;
 
         const options = {
@@ -52,8 +56,19 @@ export class BigqueryWarehouse implements Warehouse {
 
         const [rows] = await bigquery.query(options);
 
+        const parsedRows: WarehouseFactoryCatalog[] = rows;
+
+        const uniqueRows = parsedRows.filter(
+          (row, index, self) =>
+            self.findIndex(
+              (t) =>
+                `${t.schemaName}.${t.tableName}.${t.columnName}` ===
+                `${row.schemaName}.${row.tableName}.${row.columnName}`,
+            ) === index,
+        );
+
         // Add results to collection
-        allColumns.push(...(rows as WarehouseFactoryCatalog[]));
+        allColumns.push(...uniqueRows);
       } catch (err) {
         console.error(`Error processing dataset ${datasetId}:`, err);
       }
@@ -85,17 +100,19 @@ export class BigqueryWarehouse implements Warehouse {
         try {
           // Query INFORMATION_SCHEMA.KEY_COLUMN_USAGE for the current dataset
           const query = `
-            SELECT
-              k.table_schema AS "schemaName",
-              k.table_name AS "tableName",
-              k.column_name AS "columnName",
-              k.referenced_table_schema AS "foreignSchemaName",
-              k.referenced_table_name AS "foreignTableName",
-              k.referenced_column_name AS "foreignColumnName"
-            FROM
-              \`${projectId}.${datasetId}.INFORMATION_SCHEMA.KEY_COLUMN_USAGE\` k
-            WHERE
-              k.referenced_table_name IS NOT NULL
+            SELECT 
+              ccu.table_schema AS schemaName,
+              ccu.table_name as tableName,
+              ccu.column_name as columnName,
+              kcu.table_schema AS foreignSchemaName,
+              kcu.table_name as foreignTableName,
+              kcu.column_name as foreignColumnName
+            FROM \`${projectId}.${datasetId}.INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE\` ccu 
+            JOIN \`${projectId}.${datasetId}.INFORMATION_SCHEMA.KEY_COLUMN_USAGE\` kcu 
+                ON ccu.constraint_name = kcu.constraint_name
+            JOIN \`${projectId}.${datasetId}.INFORMATION_SCHEMA.TABLE_CONSTRAINTS\` tc
+                ON ccu.constraint_name = tc.constraint_name
+            WHERE tc.constraint_type = 'FOREIGN KEY'
           `;
 
           const options = {

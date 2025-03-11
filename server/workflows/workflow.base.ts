@@ -52,31 +52,6 @@ export class BaseWorkflow implements Workflow {
     return userContent;
   };
 
-  protected async createResult<T extends QuestionEntity>(
-    aiStream: ReadableStream<AIStructureOutput>,
-    immutableInitial: T,
-  ): Promise<T> {
-    const reader = aiStream.getReader();
-    const initial: T = JSON.parse(JSON.stringify(immutableInitial));
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        Object.assign(initial, {
-          reason: value.reason,
-          text: value.text,
-        });
-        Object.assign(initial.payload, value.structure ? value.structure : {});
-      }
-    } finally {
-      reader.releaseLock();
-    }
-
-    return initial;
-  }
-
   protected createStream<T extends QuestionEntity>(
     aiStream: ReadableStream<AIStructureOutput>,
     immutableInitial: T,
@@ -85,10 +60,12 @@ export class BaseWorkflow implements Workflow {
       async start(controller) {
         const reader = aiStream.getReader();
         const initial: T = JSON.parse(JSON.stringify(immutableInitial));
+        Object.assign(initial, getAssistantStatus("pending"));
         try {
           while (true) {
             const { done, value } = await reader.read();
             if (done) {
+              Object.assign(initial, getAssistantStatus("success"));
               controller.close();
               break;
             }
@@ -102,6 +79,10 @@ export class BaseWorkflow implements Workflow {
             );
             controller.enqueue(initial);
           }
+        } catch (error) {
+          Object.assign(initial, getAssistantStatus("error"));
+          controller.enqueue(initial);
+          controller.close();
         } finally {
           reader.releaseLock();
         }
@@ -109,3 +90,11 @@ export class BaseWorkflow implements Workflow {
     });
   }
 }
+
+const getAssistantStatus = (
+  status: QuestionEntity["assistantStatus"],
+): Pick<QuestionEntity, "assistantStatus"> => {
+  return {
+    assistantStatus: status,
+  };
+};
