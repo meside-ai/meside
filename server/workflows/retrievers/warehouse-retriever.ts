@@ -1,16 +1,14 @@
 import { getDrizzle } from "@/db/db";
 import { catalogTable } from "@/db/schema/catalog";
 import { relationTable } from "@/db/schema/relation";
-import { warehouseTable } from "@/db/schema/warehouse";
-import { firstOrNotCreated } from "@/utils/toolkit";
 import { eq, isNull } from "drizzle-orm";
 import { and } from "drizzle-orm";
 
+// TODO refactor to use standard export
 export const retrieveWarehouse = async (props: {
   warehouseId: string;
 }): Promise<{
   warehousePrompt: string;
-  warehouseType: string;
 }> => {
   const catalogs = await getDrizzle()
     .select()
@@ -30,13 +28,6 @@ export const retrieveWarehouse = async (props: {
         isNull(relationTable.deletedAt),
       ),
     );
-  const warehouse = firstOrNotCreated(
-    await getDrizzle()
-      .select()
-      .from(warehouseTable)
-      .where(eq(warehouseTable.warehouseId, props.warehouseId)),
-    "Warehouse not found",
-  );
   const tableMarkdownHeader =
     "| Schema Name | Table Name | Column Name | Column Type | Foreign Key | Description |";
   const tableMarkdownSeparator = "| --- | --- | --- | --- | --- | --- |";
@@ -63,7 +54,5 @@ export const retrieveWarehouse = async (props: {
     catalogTableMarkdown,
   ].join("\n");
 
-  const warehouseType = warehouse.type;
-
-  return { warehousePrompt, warehouseType };
+  return { warehousePrompt };
 };

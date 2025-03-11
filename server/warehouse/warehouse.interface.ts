@@ -39,5 +39,12 @@ export interface Warehouse {
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
   }>;
+  getColumnSample: (
+    connection: ConnectionConfig,
+    schemaName: string,
+    tableName: string,
+    columnName: string,
+    limit: number,
+  ) => Promise<WarehouseQueryRow[]>;
   testConnection: (connection: ConnectionConfig) => Promise<boolean>;
 }

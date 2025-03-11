@@ -11,7 +11,7 @@ import type {
 } from "../warehouse.interface";
 
 export class PostgresWarehouse implements Warehouse {
-  private logger = getLogger();
+  private logger = getLogger(PostgresWarehouse.name);
 
   async getCatalogs(
     connection: ConnectionConfig,
@@ -170,6 +170,26 @@ export class PostgresWarehouse implements Warehouse {
       rows: output.rows,
       fields,
     };
+  }
+
+  async getColumnSample(
+    connection: ConnectionConfig,
+    schemaName: string,
+    tableName: string,
+    columnName: string,
+    limit = 3,
+  ): Promise<WarehouseQueryRow[]> {
+    const dbResult = await this.query(
+      connection,
+      `
+      SELECT "${columnName}" AS sample
+      FROM "${schemaName}"."${tableName}"
+      WHERE "${columnName}" IS NOT NULL
+      LIMIT ${limit}
+      `,
+    );
+
+    return dbResult.rows;
   }
 
   async testConnection(connection: ConnectionConfig): Promise<boolean> {

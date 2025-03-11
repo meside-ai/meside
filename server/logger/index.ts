@@ -1,12 +1,12 @@
 import { environment } from "@/configs/environment";
 import { type Logger, pino } from "pino";
 
-export const getLogger = (): Logger => {
+export const getLogger = (name: string): Logger => {
   const loggerType = "server";
 
   if (environment.NODE_ENV === "production") {
     return pino({
-      name: `${loggerType}`,
+      name: `${loggerType}:${name}`,
       transport: {
         target: "pino-pretty",
         options: {
@@ -25,7 +25,7 @@ export const getLogger = (): Logger => {
   }
 
   return pino({
-    name: `${loggerType}`,
+    name: `${loggerType}:${name}`,
     transport: {
       target: "pino-pretty",
       options: {

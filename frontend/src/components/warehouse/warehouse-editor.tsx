@@ -22,6 +22,7 @@ export type CatalogTree = {
   columnName: string;
   columnType: string;
   foreignFullName: string | null;
+  description: string | null;
   subRows?: CatalogTree[];
 };
 
@@ -66,6 +67,7 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
           columnName: "",
           columnType: "",
           foreignFullName: null,
+          description: null,
           subRows: Object.entries(tables).map(
             ([tableName, columns]): CatalogTree => {
               // Table level
@@ -78,6 +80,7 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
                 columnName: "",
                 columnType: "",
                 foreignFullName: null,
+                description: null,
                 subRows: columns.map((column): CatalogTree => {
                   // Column level (with all real data)
                   return {
@@ -91,6 +94,7 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
                     foreignFullName: column?.foreign?.fullName
                       ? column.foreign.fullName
                       : null,
+                    description: column.description,
                   };
                 }),
               };
@@ -115,10 +119,13 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
         accessorKey: "columnType",
         header: "Column Type",
       },
-
       {
         accessorKey: "foreignFullName",
         header: "Foreign Key",
+      },
+      {
+        accessorKey: "description",
+        header: "Description",
       },
     ],
     []

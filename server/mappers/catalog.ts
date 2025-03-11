@@ -35,6 +35,7 @@ export const getCatalogDtos = async (
       columnName: catalog.columnName,
       warehouseType: catalog.warehouseType,
       columnType: catalog.columnType,
+      description: catalog.description,
       createdAt: catalog.createdAt,
       updatedAt: catalog.updatedAt,
       deletedAt: catalog.deletedAt,
