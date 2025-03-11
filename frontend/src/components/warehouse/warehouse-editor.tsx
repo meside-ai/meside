@@ -21,12 +21,7 @@ export type CatalogTree = {
   tableName: string;
   columnName: string;
   columnType: string;
-  foreign: {
-    fullName: string;
-    schemaName: string;
-    tableName: string;
-    columnName: string;
-  } | null;
+  foreignFullName: string | null;
   subRows?: CatalogTree[];
 };
 
@@ -70,7 +65,7 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
           tableName: "",
           columnName: "",
           columnType: "",
-          foreign: null,
+          foreignFullName: null,
           subRows: Object.entries(tables).map(
             ([tableName, columns]): CatalogTree => {
               // Table level
@@ -82,7 +77,7 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
                 tableName,
                 columnName: "",
                 columnType: "",
-                foreign: null,
+                foreignFullName: null,
                 subRows: columns.map((column): CatalogTree => {
                   // Column level (with all real data)
                   return {
@@ -93,7 +88,9 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
                     tableName: column.tableName,
                     columnName: column.columnName,
                     columnType: column.columnType,
-                    foreign: column.foreign || null,
+                    foreignFullName: column?.foreign?.fullName
+                      ? column.foreign.fullName
+                      : null,
                   };
                 }),
               };
@@ -120,7 +117,7 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
       },
 
       {
-        accessorKey: "foreign.fullName",
+        accessorKey: "foreignFullName",
         header: "Foreign Key",
       },
     ],
@@ -135,6 +132,7 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
   });
 
   const table = useMantineReactTable({
+    debugAll: true,
     initialState: {
       density: "xs",
     },
@@ -146,7 +144,6 @@ export const WarehouseEditor = ({ warehouseId }: WarehouseEditorProps) => {
     enableColumnOrdering: true, //enable a feature for all columns
     enableGlobalFilter: false, //turn off a feature
     enableRowVirtualization: true,
-    enableColumnVirtualization: true,
     enablePagination: false,
     enableDensityToggle: false,
     enableColumnResizing: true,
