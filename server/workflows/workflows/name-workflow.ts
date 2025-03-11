@@ -26,12 +26,7 @@ export class NameWorkflow extends BaseWorkflow implements Workflow {
 
     const aiStream = new AIStructure().streamObject({
       model: environment.AI_MODEL,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      prompt,
       schema: nameQuestionPayloadSchema.pick({
         name: true,
       }),
