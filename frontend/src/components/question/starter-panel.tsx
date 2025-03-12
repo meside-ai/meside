@@ -1,5 +1,5 @@
 import { getQuestionDetail } from "@/queries/question";
-import { Box, Group, Radio, Stack, Text } from "@mantine/core";
+import { Box, Group, Radio, ScrollArea, Stack, Text } from "@mantine/core";
 import type { QuestionDto } from "@meside/api/question.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -46,21 +46,23 @@ export const StarterPanel = () => {
   );
 
   return (
-    <Box p="md">
-      <Box mb="md">
-        <Radio.Group
-          label="Choose a workflow to get started"
-          description="Choose a workflow that you will need in your question"
-          value={workflowType}
-          onChange={(workflowType) => {
-            setWorkflowType(workflowType as QuestionDto["payload"]["type"]);
-          }}
-        >
-          <Stack pt="md" gap="xs">
-            {cards}
-          </Stack>
-        </Radio.Group>
-        {/* {buttons.map((button) => (
+    <Box h="100%">
+      <ScrollArea h="100%" style={{ overflow: "hidden" }}>
+        <Box p="md">
+          <Box mb="md">
+            <Radio.Group
+              label="Choose a workflow to get started"
+              description="Choose a workflow that you will need in your question"
+              value={workflowType}
+              onChange={(workflowType) => {
+                setWorkflowType(workflowType as QuestionDto["payload"]["type"]);
+              }}
+            >
+              <Stack pt="md" gap="xs">
+                {cards}
+              </Stack>
+            </Radio.Group>
+            {/* {buttons.map((button) => (
           <Button
             key={button.type}
             size="sm"
@@ -70,16 +72,18 @@ export const StarterPanel = () => {
             {button.label}
           </Button>
         ))} */}
-      </Box>
-      {workflowType && (
-        <Box>
-          <StarterFactory
-            workflowType={workflowType}
-            quotedQuestion={quotedQuestionResult.data?.question ?? null}
-            openPreview={openPreview}
-          />
+          </Box>
+          {workflowType && (
+            <Box>
+              <StarterFactory
+                workflowType={workflowType}
+                quotedQuestion={quotedQuestionResult.data?.question ?? null}
+                openPreview={openPreview}
+              />
+            </Box>
+          )}
         </Box>
-      )}
+      </ScrollArea>
     </Box>
   );
 };
