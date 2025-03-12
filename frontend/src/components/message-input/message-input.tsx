@@ -1,5 +1,4 @@
 import { Button, Group, Loader, Text as MantineText } from "@mantine/core";
-import CodeBlock from "@tiptap/extension-code-block";
 import Document from "@tiptap/extension-document";
 import Gapcursor from "@tiptap/extension-gapcursor";
 import HardBreak from "@tiptap/extension-hard-break";
@@ -70,7 +69,6 @@ export const MessageInput = ({
 
   const editor = useEditor({
     extensions: [
-      CodeBlock,
       Document,
       Paragraph,
       Text,
