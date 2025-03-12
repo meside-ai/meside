@@ -90,11 +90,10 @@ export const QuestionLayout = ({
             </Tooltip>
             <Box
               style={(theme) => ({
-                maxWidth: 360,
+                minWidth: 200,
                 backgroundColor: theme.colors.gray[8],
                 borderRadius: 20,
-                paddingLeft: 20,
-                paddingRight: 20,
+                padding: 20,
               })}
             >
               <EditorJsonMarkdown>{question.userContent}</EditorJsonMarkdown>
