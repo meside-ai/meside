@@ -78,7 +78,7 @@ export const SqlWorkflow = (props: WorkflowProps) => {
         </Box>
       }
       previewPanel={
-        <Box>
+        <Box h="100%">
           <TableVirtualView questionId={question.questionId} />
         </Box>
       }

@@ -8,10 +8,7 @@ import { AICore } from "./ai-core";
 
 export type AIStructureInput = {
   model: "gpt-4o" | "o1" | "deepseek-reasoner";
-  messages: {
-    role: "system" | "user" | "assistant";
-    content: string;
-  }[];
+  prompt: string;
   schema: z.ZodSchema;
   schemaName: string;
   schemaDescription: string;
@@ -41,7 +38,7 @@ export class AIStructure {
   streamObjectStandard(
     input: AIStructureInput,
   ): ReadableStream<AIStructureOutput> {
-    const prompt = getPrompt(input.messages);
+    const prompt = input.prompt;
 
     const result = streamObject({
       model: getModel(input.model),
@@ -96,7 +93,7 @@ export class AIStructure {
     input: AIStructureInput,
   ): ReadableStream<AIStructureOutput> {
     const prompt = getPromptWithSchema(
-      input.messages,
+      input.prompt,
       input.schema,
       input.schemaName,
     );
@@ -173,24 +170,8 @@ const extractStructureFromAICompletionText = (
   }
 };
 
-const getPrompt = (
-  messages: {
-    role: "system" | "user" | "assistant";
-    content: string;
-  }[],
-): string => {
-  const combinedContent = messages.reduce((acc, message) => {
-    return `${acc}\n${message.content}`;
-  }, "");
-
-  return combinedContent;
-};
-
 const getPromptWithSchema = (
-  messages: {
-    role: "system" | "user" | "assistant";
-    content: string;
-  }[],
+  prompt: string,
   schema: z.ZodSchema,
   name: string,
 ): string => {
@@ -201,25 +182,5 @@ const getPromptWithSchema = (
     JSON.stringify(jsonSchema, null, 2),
   ].join("\n");
 
-  const systemMessage = messages.find((message) => message.role === "system");
-
-  if (!systemMessage) {
-    const message = messages[0];
-    if (!message) {
-      throw new BadRequestError("System message not found");
-    }
-    return `${message.content}\n${formatInstructions}`;
-  }
-
-  const combinedContent = [
-    {
-      role: "user",
-      content: `${systemMessage.content}\n${formatInstructions}`,
-    },
-    ...messages.filter((message) => message.role !== "system"),
-  ].reduce((acc, message) => {
-    return `${acc}\n${message.content}`;
-  }, "");
-
-  return combinedContent;
+  return `${prompt}\n${formatInstructions}`;
 };

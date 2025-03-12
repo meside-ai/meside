@@ -32,12 +32,10 @@ export class AIText {
   }
 
   streamText(input: AITextInput): ReadableStream<AITextOutput> {
-    const prompt = getPrompt(input.messages);
-
     const core = new AICore();
     const coreStream = core.stream({
       model: getModel(input.model),
-      prompt,
+      prompt: input.prompt,
     });
 
     const stream = new ReadableStream<AITextOutput>({
@@ -80,17 +78,4 @@ const getModel = (model: AITextInput["model"]): LanguageModelV1 => {
     case "deepseek-reasoner":
       return deepseek("deepseek-reasoner");
   }
-};
-
-const getPrompt = (
-  messages: {
-    role: "system" | "user" | "assistant";
-    content: string;
-  }[],
-): string => {
-  const combinedContent = messages.reduce((acc, message) => {
-    return `${acc}\n${message.content}`;
-  }, "");
-
-  return combinedContent;
 };

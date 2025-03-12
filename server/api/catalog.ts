@@ -7,6 +7,7 @@ import { getAuthOrUnauthorized } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import { NotFoundError } from "@/utils/error";
 import { WarehouseFactory } from "@/warehouse/warehouse";
+import { LabelAgent } from "@/workflows/agents/label-agent";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { and, asc, eq, ilike, isNull, or } from "drizzle-orm";
 import {
@@ -80,6 +81,32 @@ export const catalogApi = new OpenAPIHono()
         );
       }
     });
+
+    const labelAgent = new LabelAgent();
+    const labels = await labelAgent.getLabelsByAgent({
+      warehouseId,
+    });
+
+    // labels is an array of { schemaName, tableName, columnName, label }
+    // we need to update the catalog description with the label where the schemaName, tableName, columnName matches
+    // foreach label, update the catalog description with the label
+    for (const label of labels) {
+      if (label.label) {
+        await getDrizzle()
+          .update(catalogTable)
+          .set({
+            description: label.label,
+          })
+          .where(
+            and(
+              eq(catalogTable.warehouseId, warehouseId),
+              eq(catalogTable.schemaName, label.schemaName),
+              eq(catalogTable.tableName, label.tableName),
+              eq(catalogTable.columnName, label.columnName),
+            ),
+          );
+      }
+    }
 
     return c.json({});
   })

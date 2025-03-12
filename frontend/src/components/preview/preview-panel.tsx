@@ -14,7 +14,7 @@ export const PreviewPanel = () => {
       }}
       py="sm"
     >
-      <Box style={{ overflow: "hidden" }} mb="sm">
+      <Box style={{ overflow: "hidden", display: "none" }} mb="sm">
         <PreviewTabs />
       </Box>
       <Box

@@ -34,5 +34,5 @@ export const PreviewQuestion = ({ questionId }: PreviewQuestionProps) => {
 const PreviewQuestionLayout = ({
   previewPanel,
 }: InjectedQuestionLayoutProps) => {
-  return <Box>{previewPanel}</Box>;
+  return <Box h="100%">{previewPanel}</Box>;
 };

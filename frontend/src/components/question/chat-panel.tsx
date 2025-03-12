@@ -3,7 +3,7 @@ import {
   getQuestionList,
   getQuestionSummaryName,
 } from "@/queries/question";
-import { Box, ScrollArea, Skeleton } from "@mantine/core";
+import { Box, ScrollArea, Skeleton, Stack } from "@mantine/core";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { usePreviewContext } from "../preview/preview-context";
@@ -95,9 +95,12 @@ export const ChatPanel = () => {
         <ScrollArea h="100%" style={{ overflow: "hidden" }}>
           <Box mt="md" />
           {isLoading && (
-            <Box>
-              <Skeleton h={40} />
-            </Box>
+            <Stack p="md">
+              <Skeleton height={50} circle mb="md" />
+              <Skeleton height={12} radius="xl" w="60%" />
+              <Skeleton height={12} radius="xl" w="100%" />
+              <Skeleton height={12} radius="xl" w="60%" />
+            </Stack>
           )}
           {data?.question && (
             <WorkflowFactory

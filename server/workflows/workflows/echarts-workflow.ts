@@ -72,12 +72,7 @@ export class EchartsWorkflow extends BaseWorkflow implements Workflow {
 
     const aiStream = new AIStructure().streamObject({
       model: environment.AI_MODEL,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      prompt,
       schema: echartsQuestionPayloadSchema.pick({
         echartsOptions: true,
       }),

@@ -10,6 +10,7 @@ export const catalogDtoSchema = catalogEntitySchema
     columnName: true,
     warehouseType: true,
     columnType: true,
+    description: true,
     createdAt: true,
     updatedAt: true,
     deletedAt: true,
