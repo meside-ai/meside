@@ -1,10 +1,10 @@
+import { getModel } from "@/ai/ai-model";
 import { getDrizzle } from "@/db/db";
 import { catalogTable } from "@/db/schema/catalog";
 import { type WarehouseEntity, warehouseTable } from "@/db/schema/warehouse";
 import { getLogger } from "@/logger";
 import { firstOrNotCreated } from "@/utils/toolkit";
 import { WarehouseFactory } from "@/warehouse";
-import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -114,7 +114,7 @@ export class LabelAgent {
       "3. set all properties to optional",
       "4. return like: { thumb_image_url?: string; image_url?: string; video_url?: string | null; width?: number; }",
       "5. return only type definition, no other text",
-      `7. database type is ${props.warehouse.type}`,
+      `6. database type is ${props.warehouse.type}`,
       "sample data:",
       rows
         .filter((row) => row.sample !== null)
@@ -123,7 +123,7 @@ export class LabelAgent {
     ].join("\n");
 
     const result = await generateObject({
-      model: openai("gpt-4o"),
+      model: getModel("gpt-4o"),
       temperature: 0,
       schema: z.object({
         label: z.string(),

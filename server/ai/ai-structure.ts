@@ -1,13 +1,12 @@
 import { BadRequestError } from "@/utils/error";
-import { deepseek } from "@ai-sdk/deepseek";
-import { openai } from "@ai-sdk/openai";
-import { type LanguageModelV1, streamObject } from "ai";
+import { streamObject } from "ai";
 import type { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 import { AICore } from "./ai-core";
+import { type SupportedModel, getModel } from "./ai-model";
 
 export type AIStructureInput = {
-  model: "gpt-4o" | "o1" | "deepseek-reasoner";
+  model: SupportedModel;
   prompt: string;
   schema: z.ZodSchema;
   schemaName: string;
@@ -39,6 +38,7 @@ export class AIStructure {
     input: AIStructureInput,
   ): ReadableStream<AIStructureOutput> {
     const prompt = input.prompt;
+    console.log("prompt22", prompt);
 
     const result = streamObject({
       model: getModel(input.model),
@@ -141,17 +141,6 @@ export class AIStructure {
     return stream;
   }
 }
-
-const getModel = (model: AIStructureInput["model"]): LanguageModelV1 => {
-  switch (model) {
-    case "gpt-4o":
-      return openai("gpt-4o");
-    case "o1":
-      return openai("o1");
-    case "deepseek-reasoner":
-      return deepseek("deepseek-reasoner");
-  }
-};
 
 const extractStructureFromAICompletionText = (
   text: string,

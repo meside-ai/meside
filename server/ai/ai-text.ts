@@ -1,9 +1,7 @@
 import { BadRequestError } from "@/utils/error";
-import { deepseek } from "@ai-sdk/deepseek";
-import { openai } from "@ai-sdk/openai";
-import type { LanguageModelV1 } from "ai";
 import type { z } from "zod";
 import { AICore } from "./ai-core";
+import { getModel } from "./ai-model";
 import type { AIStructureInput } from "./ai-structure";
 
 export type AITextInput = Omit<
@@ -68,14 +66,3 @@ export class AIText {
     return stream;
   }
 }
-
-const getModel = (model: AITextInput["model"]): LanguageModelV1 => {
-  switch (model) {
-    case "gpt-4o":
-      return openai("gpt-4o");
-    case "o1":
-      return openai("o1");
-    case "deepseek-reasoner":
-      return deepseek("deepseek-reasoner");
-  }
-};
