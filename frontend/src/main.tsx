@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/dates/styles.css";
-import "mantine-react-table/styles.css";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 
 // Import the generated route tree
@@ -15,6 +14,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { getTheme } from "./theme";
 import { queryClient } from "./utils/query-client";
+import "./utils/ag-grid";
 
 // Create a new router instance
 const router = createRouter({ routeTree });
