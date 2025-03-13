@@ -90,6 +90,7 @@ export const QuestionLayout = ({
             </Tooltip>
             <Box
               style={(theme) => ({
+                maxWidth: 450,
                 minWidth: 200,
                 backgroundColor: theme.colors.gray[8],
                 borderRadius: 20,

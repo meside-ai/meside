@@ -37,7 +37,12 @@ export const Markdown = ({ children }: MarkdownProps) => {
             const match = /language-(\w+)/.exec(className || "");
             return match ? (
               <Box style={{ borderRadius: "12px", overflow: "hidden" }}>
-                <SyntaxHighlighter PreTag="div" language={match[1]}>
+                <SyntaxHighlighter
+                  PreTag="div"
+                  language={match[1]}
+                  wrapLines={true}
+                  wrapLongLines={true}
+                >
                   {String(children)}
                 </SyntaxHighlighter>
               </Box>
