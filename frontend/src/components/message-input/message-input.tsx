@@ -196,7 +196,6 @@ export const MessageInput = ({
           Tips: Use / to search table columns
         </MantineText>
         <Button
-          variant="light"
           size="xs"
           onClick={() => {
             if (loading) {

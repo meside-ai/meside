@@ -64,7 +64,6 @@ export const QuestionLayout = ({
             />
             <Box display="flex" style={{ justifyContent: "flex-end" }} pt="xs">
               <Button
-                variant="light"
                 size="xs"
                 onClick={() => setIsEditing(false)}
                 leftSection={<IconX size={14} />}
@@ -89,10 +88,9 @@ export const QuestionLayout = ({
               </Button>
             </Tooltip>
             <Box
-              style={(theme) => ({
+              style={() => ({
                 maxWidth: 450,
                 minWidth: 200,
-                backgroundColor: theme.colors.gray[8],
                 borderRadius: 20,
                 padding: 20,
               })}
@@ -130,7 +128,7 @@ export const QuestionLayout = ({
           ml="md"
           pl="md"
           style={(theme) => ({
-            borderLeft: `3px solid ${theme.colors.gray[8]}`,
+            borderLeft: `3px solid ${theme.colors.gray[2]}`,
             maxWidth: MESSAGE_CONTENT_WIDTH - 40,
           })}
         >
@@ -156,7 +154,6 @@ export const QuestionLayout = ({
         <Box>
           <Button
             size="xs"
-            variant="light"
             onClick={() => {
               setQuotedQuestionId(question.questionId);
             }}
@@ -264,7 +261,7 @@ const AssistantHeader = ({ question }: { question: QuestionDto }) => {
         style={(theme) => ({
           alignItems: "center",
           gap: 12,
-          border: `1px solid ${theme.colors.gray[8]}`,
+          border: `1px solid ${theme.colors.gray[3]}`,
           padding: 4,
           paddingLeft: 12,
           paddingRight: 12,

@@ -5,10 +5,10 @@ import {
   Button,
   Card,
   Group,
-  NavLink,
   ScrollArea,
   Text,
   Title,
+  UnstyledButton,
 } from "@mantine/core";
 import { IconMessageCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -42,24 +42,29 @@ const StartPanel = () => {
   const { setQuestionId } = useQuestionContext();
 
   return (
-    <Box mx="md" pt="md">
+    <Box
+      mx="md"
+      pt="md"
+      display="flex"
+      style={{ flexDirection: "column", alignItems: "center" }}
+    >
       <Title
         order={1}
         mb="md"
         style={{
           fontFamily: "Assistant",
           fontOpticalSizing: "auto",
-          fontWeight: 500,
+          fontWeight: 600,
           fontStyle: "normal",
-          color: "#fff",
-          letterSpacing: "-0.5px",
+          color: "#000",
+          letterSpacing: "0px",
+          textAlign: "center",
         }}
       >
         meside
       </Title>
       <Button
         size="md"
-        variant="light"
         onClick={() => {
           setQuestionId(null);
         }}
@@ -81,15 +86,30 @@ export const ThreadPanel = () => {
       <ScrollArea h="100%" scrollbars="y">
         <Box mx="md">
           {data?.questions.map((question) => (
-            <NavLink
+            <UnstyledButton
               key={question.questionId}
-              active={question.questionId === activeQuestionId}
-              label={question.shortName}
+              // active={question.questionId === activeQuestionId}
+              // label={question.shortName}
+              bg={
+                question.questionId === activeQuestionId ? "dark.5" : undefined
+              }
+              c={question.questionId === activeQuestionId ? "white" : undefined}
+              fz={14}
+              px="md"
+              py="xs"
               onClick={() => setQuestionId(question.questionId)}
-              style={{
+              style={() => ({
+                display: "block",
+                width: "100%",
                 borderRadius: 8,
-              }}
-            />
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: 200 - 16 * 2,
+              })}
+            >
+              {question.shortName}
+            </UnstyledButton>
           ))}
         </Box>
       </ScrollArea>
@@ -102,7 +122,9 @@ const MyProfile = () => {
     <Box mx="md">
       <Card p="xs" style={{ cursor: "pointer" }}>
         <Group gap="xs">
-          <Avatar size="sm">CW</Avatar>
+          <Avatar size="sm" color="blue">
+            CW
+          </Avatar>
           <Text size="sm">My profile</Text>
         </Group>
       </Card>

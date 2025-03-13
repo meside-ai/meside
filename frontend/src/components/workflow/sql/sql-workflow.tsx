@@ -50,7 +50,7 @@ export const SqlWorkflow = (props: WorkflowProps) => {
                 mb="sm"
                 style={(theme) => ({
                   border: "solid 1px",
-                  borderColor: theme.colors.gray[7],
+                  borderColor: theme.colors.brown[2],
                   borderRadius: 6,
                   overflow: "hidden",
                 })}

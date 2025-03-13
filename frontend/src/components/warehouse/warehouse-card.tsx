@@ -1,5 +1,5 @@
 import { getWarehouseDetail } from "@/queries/warehouse";
-import { Box, Button, Card, Skeleton } from "@mantine/core";
+import { Box, Button, Card, Skeleton, Stack } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { usePreviewContext } from "../preview/preview-context";
 import { WarehouseTitle } from "./warehouse-title";
@@ -18,17 +18,17 @@ export const WarehouseCard = ({ warehouseId }: WarehouseCardProps) => {
   );
 
   return (
-    <Card>
+    <Card withBorder>
       {!data?.warehouse ? (
         <Skeleton height={100} />
       ) : (
-        <>
+        <Stack align="center" gap={0}>
           <Box mb="md">
             <WarehouseTitle warehouseId={warehouseId} />
           </Box>
           <Button
             size="xs"
-            variant="light"
+            variant="outline"
             onClick={() => {
               openPreview({
                 name: "Warehouse",
@@ -38,7 +38,7 @@ export const WarehouseCard = ({ warehouseId }: WarehouseCardProps) => {
           >
             View
           </Button>
-        </>
+        </Stack>
       )}
     </Card>
   );

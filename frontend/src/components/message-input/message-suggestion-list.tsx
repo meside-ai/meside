@@ -1,4 +1,4 @@
-import { Box } from "@mantine/core";
+import { Box, Card } from "@mantine/core";
 // import { List, ListItem, ListItemButton, Paper } from "@mui/material";
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
@@ -100,11 +100,11 @@ const SuggestionList = forwardRef<SuggestionListRef, SuggestionListProps>(
     }));
 
     return (
-      <Box
-        style={(theme) => ({
-          background: theme.colors.dark[6],
-          border: `1px solid ${theme.colors.gray[8]}`,
-          borderRadius: 4,
+      <Card
+        withBorder
+        shadow="sm"
+        p="xs"
+        style={() => ({
           overflow: "hidden",
         })}
       >
@@ -117,11 +117,12 @@ const SuggestionList = forwardRef<SuggestionListRef, SuggestionListProps>(
               style={(theme) => ({
                 textAlign: "left",
                 background:
-                  index === selectedIndex
-                    ? theme.colors.dark[7]
-                    : "transparent",
+                  index === selectedIndex ? theme.primaryColor : "transparent",
+                color: index === selectedIndex ? "white" : undefined,
                 padding: "2px 6px",
                 cursor: "pointer",
+                fontSize: 12,
+                borderRadius: 6,
               })}
             >
               {item.mentionLabel}
@@ -130,7 +131,7 @@ const SuggestionList = forwardRef<SuggestionListRef, SuggestionListProps>(
         ) : (
           <Box>No result</Box>
         )}
-      </Box>
+      </Card>
     );
   }
 );

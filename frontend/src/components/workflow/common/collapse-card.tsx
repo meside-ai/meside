@@ -13,7 +13,7 @@ export const CollapseCard = ({ defaultOpened, children }: CollapseProps) => {
   return (
     <Box>
       <Group justify="center" mb={5}>
-        <Button onClick={toggle} variant="subtle">
+        <Button onClick={toggle} variant="white">
           {opened ? "Hide" : "Show"}
         </Button>
       </Group>

@@ -65,7 +65,7 @@ export const ChooseWarehouse = ({
         </Radio.Group>
       </Box>
       <Group>
-        <Button size="xs" variant="subtle" onClick={open}>
+        <Button size="xs" variant="white" onClick={open}>
           Add new database
         </Button>
       </Group>

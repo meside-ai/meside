@@ -38,7 +38,7 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
-        <MantineProvider theme={getTheme()} forceColorScheme="dark">
+        <MantineProvider theme={getTheme()}>
           <Notifications />
           <RouterProvider router={router} />
         </MantineProvider>
