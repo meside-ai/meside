@@ -2,13 +2,13 @@ import type { WarehouseDto } from "@/api/warehouse.schema";
 import { getDrizzle } from "@/db/db";
 import { userTable } from "@/db/schema/user";
 import type { WarehouseEntity } from "@/db/schema/warehouse";
-import { pickUniqueExistingKeys } from "@/utils/toolkit";
 import { inArray } from "drizzle-orm";
+import { uniq } from "es-toolkit/compat";
 
 export const getWarehouseDtos = async (
   warehouses: WarehouseEntity[],
 ): Promise<WarehouseDto[]> => {
-  const userIds = pickUniqueExistingKeys(warehouses, "ownerId");
+  const userIds = uniq(warehouses.map((x) => x.ownerId).filter((x) => x));
 
   const users = await getDrizzle()
     .select()

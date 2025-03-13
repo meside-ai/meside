@@ -34,7 +34,7 @@ export const Question = () => {
             <Box w={600} h="100%" style={{ overflow: "hidden" }}>
               <MainChatPanel />
             </Box>
-            <Box flex={1} h="100%" style={{ overflow: "hidden" }}>
+            <Box flex={1} h="100%" style={{ overflow: "hidden" }} mr="md">
               <PreviewPanel />
             </Box>
           </Box>

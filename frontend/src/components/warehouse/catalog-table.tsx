@@ -3,8 +3,9 @@ import {
   getCatalogList,
   getCatalogLoad,
 } from "@/queries/catalog";
+import { getLabelLoad } from "@/queries/label";
 import { agGridDarkTheme } from "@/utils/ag-grid";
-import { Box, Button } from "@mantine/core";
+import { Box, Button, Group } from "@mantine/core";
 import { IconRefresh } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ColDef } from "ag-grid-community";
@@ -22,6 +23,13 @@ export const CatalogTable = ({ warehouseId }: CatalogTableProps) => {
 
   const catalogLoadMutation = useMutation({
     ...getCatalogLoad(),
+    onSuccess: () => {
+      queryClient.invalidateQueries(getCatalogList({ warehouseId }));
+    },
+  });
+
+  const labelLoadMutation = useMutation({
+    ...getLabelLoad(),
     onSuccess: () => {
       queryClient.invalidateQueries(getCatalogList({ warehouseId }));
     },
@@ -57,21 +65,32 @@ export const CatalogTable = ({ warehouseId }: CatalogTableProps) => {
       display="flex"
       style={{ flexDirection: "column", overflow: "hidden" }}
     >
-      <Box display="flex" style={{ justifyContent: "flex-start" }} mb="xs">
-        {!catalogListResult.isFetching && (
-          <Button
-            variant="light"
-            size="xs"
-            onClick={() =>
-              warehouseId && catalogLoadMutation.mutateAsync({ warehouseId })
-            }
-            leftSection={<IconRefresh size={16} />}
-            loading={catalogLoadMutation.isPending}
-          >
-            refresh columns
-          </Button>
-        )}
-      </Box>
+      <Group mb="xs">
+        <Button
+          variant="light"
+          size="xs"
+          onClick={() =>
+            warehouseId && catalogLoadMutation.mutateAsync({ warehouseId })
+          }
+          leftSection={<IconRefresh size={16} />}
+          loading={catalogLoadMutation.isPending}
+          disabled={catalogListResult.isFetching}
+        >
+          reload columns
+        </Button>
+        <Button
+          variant="light"
+          size="xs"
+          onClick={() =>
+            warehouseId && labelLoadMutation.mutateAsync({ warehouseId })
+          }
+          leftSection={<IconRefresh size={16} />}
+          loading={labelLoadMutation.isPending}
+          disabled={catalogListResult.isFetching}
+        >
+          re-label columns
+        </Button>
+      </Group>
       <Box style={{ flexGrow: 1, overflow: "hidden" }}>
         <AgGridReact<CatalogDto>
           rowData={rowData}

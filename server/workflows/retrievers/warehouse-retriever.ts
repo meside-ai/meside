@@ -1,5 +1,6 @@
 import { getDrizzle } from "@/db/db";
 import { catalogTable } from "@/db/schema/catalog";
+import { labelTable } from "@/db/schema/label";
 import { relationTable } from "@/db/schema/relation";
 import { eq, isNull } from "drizzle-orm";
 import { and } from "drizzle-orm";
@@ -28,11 +29,19 @@ export const retrieveWarehouse = async (props: {
         isNull(relationTable.deletedAt),
       ),
     );
+  const labels = await getDrizzle()
+    .select()
+    .from(labelTable)
+    .where(eq(labelTable.warehouseId, props.warehouseId));
+
   const tableMarkdownHeader =
     "| Schema Name | Table Name | Column Name | Column Type | Foreign Key | Description |";
   const tableMarkdownSeparator = "| --- | --- | --- | --- | --- | --- |";
   const catalogTableMarkdown = catalogs
     .map((catalog) => {
+      const jsonLabel =
+        labels.find((label) => label.catalogFullName === catalog.fullName)
+          ?.jsonLabel ?? "";
       const description = catalog.description ?? "";
       const foreign = relations.find(
         (relation) =>
@@ -43,7 +52,8 @@ export const retrieveWarehouse = async (props: {
       const foreignKey = foreign
         ? `${foreign?.foreignSchemaName}.${foreign?.foreignTableName}.${foreign?.foreignColumnName}`
         : "";
-      return `| ${catalog.schemaName} | ${catalog.tableName} | ${catalog.columnName} | ${catalog.columnType} | ${foreignKey} | ${description} |`;
+      const composedDescription = [description, jsonLabel].join("/");
+      return `| ${catalog.schemaName} | ${catalog.tableName} | ${catalog.columnName} | ${catalog.columnType} | ${foreignKey} | ${composedDescription} |`;
     })
     .join("\n");
 

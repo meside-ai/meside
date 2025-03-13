@@ -1,4 +1,4 @@
-import { first, isEmpty, pick, uniq } from "es-toolkit/compat";
+import { first } from "es-toolkit/compat";
 import { NotFoundError } from "./error";
 import { InternalServerError } from "./error";
 
@@ -24,19 +24,4 @@ export const firstOrNull = <T>(array: T[]) => {
     return null;
   }
   return item;
-};
-
-export const filterNonEmptyElements = <T>(array: T[]): NonNullable<T>[] => {
-  const nonEmptyArray = array.filter((x) => !isEmpty(x));
-  return nonEmptyArray as NonNullable<T>[];
-};
-
-// TODO: not only string[]
-export const pickUniqueExistingKeys = <T>(
-  array: T[],
-  key: keyof T,
-): string[] => {
-  return uniq(
-    filterNonEmptyElements(array.map((x) => pick(x, key))),
-  ) as string[];
 };

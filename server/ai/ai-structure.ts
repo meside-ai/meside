@@ -34,6 +34,34 @@ export class AIStructure {
     }
   }
 
+  async generate(input: AIStructureInput): Promise<AIStructureOutput> {
+    const aiStream = this.streamObject(input);
+
+    const reader = aiStream.getReader();
+    let initial: AIStructureOutput | null = null;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        if (initial === null) {
+          initial = value;
+        } else {
+          Object.assign(initial, value);
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+
+    if (initial === null) {
+      throw new Error("Initial message not found");
+    }
+
+    return initial;
+  }
+
   streamObjectStandard(
     input: AIStructureInput,
   ): ReadableStream<AIStructureOutput> {

@@ -1,11 +1,10 @@
-import { getModel } from "@/ai/ai-model";
+import { AIStructure } from "@/ai/ai-structure";
+import { environment } from "@/configs/environment";
 import { getDrizzle } from "@/db/db";
-import { catalogTable } from "@/db/schema/catalog";
 import { type WarehouseEntity, warehouseTable } from "@/db/schema/warehouse";
 import { getLogger } from "@/logger";
-import { firstOrNotCreated } from "@/utils/toolkit";
+import { firstOrNotFound } from "@/utils/toolkit";
 import { WarehouseFactory } from "@/warehouse";
-import { generateObject } from "ai";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -21,10 +20,17 @@ const logger = getLogger("label-agent");
 export class LabelAgent {
   async getLabelsByAgent({
     warehouseId,
+    catalogs,
   }: {
     warehouseId: string;
+    catalogs: {
+      schemaName: string;
+      tableName: string;
+      columnName: string;
+      columnType: string;
+    }[];
   }): Promise<Label[]> {
-    const warehouse = firstOrNotCreated(
+    const warehouse = firstOrNotFound(
       await getDrizzle()
         .select()
         .from(warehouseTable)
@@ -32,24 +38,12 @@ export class LabelAgent {
       "Warehouse not found",
     );
 
-    if (!warehouse) {
-      throw new Error("Warehouse not found");
-    }
-
-    const catalogs = await getDrizzle()
-      .select()
-      .from(catalogTable)
-      .where(eq(catalogTable.warehouseId, warehouseId));
-
     const labelMaps: Label[] = [];
 
     logger.info("start label agent");
 
     for (const catalog of catalogs) {
-      if (
-        catalog.columnType.toLowerCase().startsWith("json") &&
-        catalog.description === null
-      ) {
+      if (catalog.columnType.toLowerCase().startsWith("json")) {
         const labelMap = await this.runLabelAgent({
           warehouse,
           catalog,
@@ -122,18 +116,22 @@ export class LabelAgent {
         .join("\n"),
     ].join("\n");
 
-    const result = await generateObject({
-      model: getModel("gpt-4o"),
-      temperature: 0,
-      schema: z.object({
-        label: z.string(),
-      }),
+    const ai = new AIStructure();
+    const result = await ai.generate({
+      model: environment.AI_MODEL,
       prompt,
+      schema: z.object({
+        label: z
+          .string()
+          .describe("a typescript type definition from the sample data"),
+      }),
+      schemaName: "a typescript type definition",
+      schemaDescription: "typescript type definition from the sample data",
     });
 
     logger
       .child({
-        object: JSON.stringify(result.object, null, 2),
+        object: JSON.stringify(result.structure, null, 2),
       })
       .info("runLabelAgent AI result");
 
@@ -141,7 +139,7 @@ export class LabelAgent {
       schemaName: props.catalog.schemaName,
       tableName: props.catalog.tableName,
       columnName: props.catalog.columnName,
-      label: result.object.label,
+      label: result.structure.label,
     };
   }
 }

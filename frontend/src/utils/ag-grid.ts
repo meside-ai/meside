@@ -8,8 +8,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 export const agGridDarkTheme = themeQuartz.withParams({
   accentColor: "#064DB9",
-  backgroundColor: "#FFDEB4",
-  borderColor: "#E9CBA4",
+  borderColor: "#d2c9c6",
   borderRadius: 0,
   browserColorScheme: "light",
   cellHorizontalPaddingScale: 1,
@@ -31,6 +30,6 @@ export const agGridDarkTheme = themeQuartz.withParams({
   rowVerticalPaddingScale: 1,
   sidePanelBorder: true,
   spacing: 5,
-  wrapperBorder: false,
+  wrapperBorder: true,
   wrapperBorderRadius: 8,
 });

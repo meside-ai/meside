@@ -1,6 +1,7 @@
 import { reset } from "drizzle-seed";
 import { getDrizzle } from "./db/db";
 import { catalogTable } from "./db/schema/catalog";
+import { labelTable } from "./db/schema/label";
 import { orgTable } from "./db/schema/org";
 import { questionTable } from "./db/schema/question";
 import { usageTable } from "./db/schema/usage";
@@ -17,6 +18,7 @@ export async function resetDb() {
     catalogTable,
     usageTable,
     questionTable,
+    labelTable,
   });
 }
 
