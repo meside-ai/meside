@@ -66,7 +66,6 @@ export class AIStructure {
     input: AIStructureInput,
   ): ReadableStream<AIStructureOutput> {
     const prompt = input.prompt;
-    console.log("prompt22", prompt);
 
     const result = streamObject({
       model: getModel(input.model),

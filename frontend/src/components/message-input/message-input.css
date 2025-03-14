@@ -120,7 +120,7 @@
 
 .tiptap table td,
 .tiptap table th {
-  border: 1px solid #fff;
+  border: 1px solid #eee;
   box-sizing: border-box;
   min-width: 1em;
   padding: 6px 8px;
@@ -133,7 +133,6 @@
 }
 
 .tiptap table th {
-  background-color: #000;
   font-weight: bold;
   text-align: left;
 }

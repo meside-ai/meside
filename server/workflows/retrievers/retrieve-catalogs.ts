@@ -6,10 +6,10 @@ import { eq, isNull } from "drizzle-orm";
 import { and } from "drizzle-orm";
 
 // TODO refactor to use standard export
-export const retrieveWarehouse = async (props: {
+export const retrieveCatalogs = async (props: {
   warehouseId: string;
 }): Promise<{
-  warehousePrompt: string;
+  prompt: string;
 }> => {
   const catalogs = await getDrizzle()
     .select()
@@ -64,5 +64,5 @@ export const retrieveWarehouse = async (props: {
     catalogTableMarkdown,
   ].join("\n");
 
-  return { warehousePrompt };
+  return { prompt: warehousePrompt };
 };
