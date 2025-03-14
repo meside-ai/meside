@@ -29,6 +29,8 @@ export class AIStructure {
         return this.streamObjectStandard(input);
       case "deepseek-reasoner":
         return this.streamObjectCustom(input);
+      case "o3-mini":
+        return this.streamObjectStandard(input);
       default:
         throw new BadRequestError("Invalid model");
     }

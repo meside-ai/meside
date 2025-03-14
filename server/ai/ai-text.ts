@@ -22,6 +22,7 @@ export class AIText {
     switch (input.model) {
       case "gpt-4o":
       case "o1":
+      case "o3-mini":
       case "deepseek-reasoner":
         return this.streamText(input);
       default:

@@ -67,7 +67,7 @@ Follow the installation and setup instructions in the [README.md](README.md) to 
    ```bash  
    cd ./server  
    cp .env.default .env
-   echo 'AI_MODEL=gpt-4o' >> .env
+   echo 'AI_MODEL=o3-mini' >> .env
    echo 'OPENAI_API_KEY=<your-api-key>' >> .env
    # if you want to use DeepSeek-R1, but currently only support DeepSeek official platform
    # echo 'AI_MODEL=deepseek-reasoner' >> .env
