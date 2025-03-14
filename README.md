@@ -1,7 +1,9 @@
 # meside  
 **AI-First Data Transformation Tool**  
 
-[![License: Apache-2.0](https://img.shields.io/github/license/meside-ai/meside)](/LICENSE)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)]
+
 *Note: Meside is under active development. Expect breaking changes in early versions.*  
 
 Meside is an open-source, AI-driven data transformation tool designed to streamline complex data workflows. By integrating machine learning models, Meside automates schema inference, format conversion, and data normalization, reducing manual effort in ETL (Extract, Transform, Load) processes. Built for flexibility, it supports structured and semi-structured data formats like JSON, CSV, and XML, with plans to expand to unstructured data.
