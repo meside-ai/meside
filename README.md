@@ -1,8 +1,8 @@
 # meside  
-**AI-First Data Transformation Tool**  
+**AI multi-agent for data transformation**  
 
+![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)]
 
 *Note: Meside is under active development. Expect breaking changes in early versions.*  
 
