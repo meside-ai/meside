@@ -1,4 +1,3 @@
-import { WarehouseType } from "@prisma/client";
 import { environment } from "./configs/environment";
 import { getDrizzle } from "./db/db";
 import { catalogTable } from "./db/schema/catalog";
@@ -134,7 +133,7 @@ export async function main() {
   await db.insert(warehouseTable).values({
     warehouseId,
     name: "Chinook",
-    type: WarehouseType.postgresql,
+    type: "postgresql",
     host: environment.SEED_WAREHOUSE_HOST ?? "localhost",
     port: environment.SEED_WAREHOUSE_PORT ?? 25435,
     database: environment.SEED_WAREHOUSE_DATABASE ?? "chinook",
@@ -148,7 +147,7 @@ export async function main() {
     {
       catalogId: cuid(),
       warehouseId,
-      warehouseType: WarehouseType.postgresql,
+      warehouseType: "postgresql",
       fullName: "public.album.album_id",
       schemaName: "public",
       tableName: "album",
@@ -160,7 +159,7 @@ export async function main() {
     {
       catalogId: cuid(),
       warehouseId,
-      warehouseType: WarehouseType.postgresql,
+      warehouseType: "postgresql",
       fullName: "public.album.title",
       schemaName: "public",
       tableName: "album",
@@ -172,7 +171,7 @@ export async function main() {
     {
       catalogId: cuid(),
       warehouseId,
-      warehouseType: WarehouseType.postgresql,
+      warehouseType: "postgresql",
       fullName: "public.album.artist_id",
       schemaName: "public",
       tableName: "album",
@@ -184,7 +183,7 @@ export async function main() {
     {
       catalogId: cuid(),
       warehouseId,
-      warehouseType: WarehouseType.postgresql,
+      warehouseType: "postgresql",
       fullName: "public.artist.artist_id",
       schemaName: "public",
       tableName: "artist",
@@ -196,7 +195,7 @@ export async function main() {
     {
       catalogId: cuid(),
       warehouseId,
-      warehouseType: WarehouseType.postgresql,
+      warehouseType: "postgresql",
       fullName: "public.artist.name",
       schemaName: "public",
       tableName: "artist",
