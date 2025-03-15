@@ -6,6 +6,7 @@ import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
 export const warehouseType = pgEnum("warehouse_type", [
   "postgresql",
   "bigquery",
+  "mysql",
 ]);
 
 export const warehouseTable = pgTable("warehouse", {
