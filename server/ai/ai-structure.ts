@@ -29,6 +29,8 @@ export class AIStructure {
         return this.streamObjectStandard(input);
       case "deepseek-reasoner":
         return this.streamObjectCustom(input);
+      case "o3-mini":
+        return this.streamObjectStandard(input);
       default:
         throw new BadRequestError("Invalid model");
     }
@@ -66,7 +68,6 @@ export class AIStructure {
     input: AIStructureInput,
   ): ReadableStream<AIStructureOutput> {
     const prompt = input.prompt;
-    console.log("prompt22", prompt);
 
     const result = streamObject({
       model: getModel(input.model),

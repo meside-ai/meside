@@ -19,6 +19,7 @@
     "check": "bunx biome check --write ../"
   },
   "dependencies": {
+    "mysql2": "^3.13.0",
     "@ai-sdk/deepseek": "^0.1.12",
     "@ai-sdk/openai": "^1.2.0",
     "@google-cloud/bigquery": "^7.9.2",

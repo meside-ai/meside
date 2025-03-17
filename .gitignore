@@ -1,4 +1,3 @@
 **/*.tsbuildinfo
 **/*.DS_Store
 *.dtmp
-server/.env.default

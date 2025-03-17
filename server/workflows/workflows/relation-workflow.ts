@@ -1,7 +1,8 @@
 import { AIText } from "@/ai/ai-text";
 import { environment } from "@/configs/environment";
 import type { QuestionEntity } from "@/db/schema/question";
-import { retrieveWarehouse } from "../retrievers/warehouse-retriever";
+import { retrieveCatalogs } from "../retrievers/retrieve-catalogs";
+import { retrieveWarehouseAssistant } from "../retrievers/retrieve-warehouse-assistant";
 import { BaseWorkflow } from "../workflow.base";
 import type { Workflow } from "../workflow.interface";
 
@@ -15,15 +16,22 @@ export class RelationWorkflow extends BaseWorkflow implements Workflow {
       throw new Error("question payload is not relation");
     }
 
-    const { warehousePrompt, warehouseType } = await retrieveWarehouse({
+    const { prompt: warehouseAssistantPrompt } =
+      await retrieveWarehouseAssistant({
+        warehouseId: question.payload.warehouseId,
+      });
+
+    const { prompt: catalogPrompt } = await retrieveCatalogs({
       warehouseId: question.payload.warehouseId,
     });
 
     const userQuestion = this.convertUserContentToPrompt(question.userContent);
 
     const prompt = [
-      `You are a ${warehouseType} expert. answer question to help user to explore or understand the warehouse.`,
-      warehousePrompt,
+      warehouseAssistantPrompt,
+      "# Rules:",
+      "1. answer question to help user to explore or understand the warehouse.",
+      catalogPrompt,
       "# Question:",
       userQuestion,
     ].join("\n");
