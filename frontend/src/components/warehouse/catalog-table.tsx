@@ -70,10 +70,10 @@ export const CatalogTable = ({ warehouseId }: CatalogTableProps) => {
           variant="light"
           size="xs"
           onClick={() =>
-            warehouseId && catalogLoadMutation.mutateAsync({ warehouseId })
+            warehouseId && labelLoadMutation.mutateAsync({ warehouseId })
           }
           leftSection={<IconRefresh size={16} />}
-          loading={catalogLoadMutation.isPending}
+          loading={labelLoadMutation.isPending}
           disabled={catalogListResult.isFetching}
         >
           reload columns
@@ -82,10 +82,10 @@ export const CatalogTable = ({ warehouseId }: CatalogTableProps) => {
           variant="light"
           size="xs"
           onClick={() =>
-            warehouseId && labelLoadMutation.mutateAsync({ warehouseId })
+            warehouseId && catalogLoadMutation.mutateAsync({ warehouseId })
           }
           leftSection={<IconRefresh size={16} />}
-          loading={labelLoadMutation.isPending}
+          loading={catalogLoadMutation.isPending}
           disabled={catalogListResult.isFetching}
         >
           re-label columns

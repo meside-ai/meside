@@ -103,7 +103,7 @@ const AddNewDatabaseForm = ({ onClose }: { onClose: () => void }) => {
     validate: zodResolver(
       z.object({
         name: z.string().min(1, { message: "Name is required" }),
-        type: z.enum(["postgresql", "bigquery", "mysql"], {
+        type: z.enum(["postgresql", "bigquery", "mysql", "oracle"], {
           message: "Type is required",
         }),
         host: z.string().min(1, { message: "Host is required" }),
@@ -143,6 +143,10 @@ const AddNewDatabaseForm = ({ onClose }: { onClose: () => void }) => {
           {
             value: "mysql",
             label: "MySql",
+          },
+          {
+            value: "oracle",
+            label: "Oracle",
           },
           {
             value: "bigquery",
