@@ -1,6 +1,6 @@
 import { Box, Table, Text } from "@mantine/core";
 import BaseMarkdown from "react-markdown";
-import SyntaxHighlighter from "react-syntax-highlighter";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import remarkGfm from "remark-gfm";
 
 export type MarkdownProps = {
