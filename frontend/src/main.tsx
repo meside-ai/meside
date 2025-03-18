@@ -43,7 +43,7 @@ if (rootElement && !rootElement.innerHTML) {
           <RouterProvider router={router} />
         </MantineProvider>
       </QueryClientProvider>
-    </StrictMode>
+    </StrictMode>,
   );
 } else {
   console.error("rootElement already has content");

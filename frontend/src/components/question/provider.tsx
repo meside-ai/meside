@@ -23,7 +23,7 @@ export const QuestionProvider = ({
             : prev,
       });
     },
-    [navigate]
+    [navigate],
   );
 
   const { quotedQuestionId = null } = Route.useSearch();
@@ -37,7 +37,7 @@ export const QuestionProvider = ({
             : prev,
       });
     },
-    [navigate]
+    [navigate],
   );
 
   const [questionCache, setQuestionCache] = useState<QuestionDto | null>(null);

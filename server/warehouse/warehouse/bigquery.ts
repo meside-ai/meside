@@ -10,6 +10,13 @@ import type {
 } from "../warehouse.interface";
 
 export class BigqueryWarehouse implements Warehouse {
+  getColumnSample: (
+    connection: ConnectionConfig,
+    schemaName: string,
+    tableName: string,
+    columnName: string,
+    limit: number,
+  ) => Promise<WarehouseQueryRow[]>;
   private logger = getLogger();
 
   async getCatalogs(
@@ -123,6 +130,7 @@ export class BigqueryWarehouse implements Warehouse {
 
           // Add results to collection
           allRelations.push(
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             ...rows.map((row: any) => ({
               schemaName: row.schemaName,
               tableName: row.tableName,
@@ -176,6 +184,7 @@ export class BigqueryWarehouse implements Warehouse {
 
       // Map BigQuery schema fields to our expected format
       const fields: WarehouseQueryColumn[] =
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         schema?.fields?.map((field: any) => ({
           tableName: cuid(),
           columnName: field.name,

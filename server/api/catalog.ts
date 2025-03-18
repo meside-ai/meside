@@ -84,7 +84,7 @@ export const catalogApi = new OpenAPIHono()
     const labelAgent = new LabelAgent();
     const labels = await labelAgent.getLabelsByAgent({
       warehouseId,
-      catalogs
+      catalogs,
     });
 
     // labels is an array of { schemaName, tableName, columnName, label }

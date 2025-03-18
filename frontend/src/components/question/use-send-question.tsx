@@ -22,7 +22,7 @@ export const useSendQuestion = ({
       ...getQuestionCreate(),
       onSuccess: (data) => {
         queryClient.invalidateQueries(
-          getQuestionDetail({ questionId: data.question.questionId })
+          getQuestionDetail({ questionId: data.question.questionId }),
         );
       },
     });
@@ -48,7 +48,7 @@ export const useSendQuestion = ({
       setQuestionCache,
       setQuestionId,
       versionId,
-    ]
+    ],
   );
 
   return {

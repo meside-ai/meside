@@ -26,7 +26,7 @@ export const useWorkflowButtons = () => {
         quotedType: [null, "relation"],
       },
     ],
-    []
+    [],
   );
 
   return workflowButtons;

@@ -47,7 +47,7 @@ export const ChooseWarehouse = ({
           </Group>
         </Radio.Card>
       )),
-    [data?.warehouses]
+    [data?.warehouses],
   );
 
   return (
@@ -109,7 +109,7 @@ const AddNewDatabaseForm = ({ onClose }: { onClose: () => void }) => {
         host: z.string().min(1, { message: "Host is required" }),
         port: z.number().min(1, { message: "Port is required" }),
         database: z.string().min(1, { message: "Database is required" }),
-      })
+      }),
     ),
   });
 
@@ -126,7 +126,7 @@ const AddNewDatabaseForm = ({ onClose }: { onClose: () => void }) => {
     async (values: AddNewDatabaseFormValues) => {
       await createWarehouse(values);
     },
-    [createWarehouse]
+    [createWarehouse],
   );
 
   return (

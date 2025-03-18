@@ -25,7 +25,7 @@ export const PreviewProvider = ({
       setPreviews((prev) => {
         return produce(prev, (draft) => {
           const existingPreview = draft.find(
-            (preview) => preview.previewId === newPreviewId
+            (preview) => preview.previewId === newPreviewId,
           );
           if (existingPreview) {
             draft.splice(draft.indexOf(existingPreview), 1);
@@ -35,7 +35,7 @@ export const PreviewProvider = ({
       });
       setActivePreviewId(newPreviewId);
     },
-    []
+    [],
   );
 
   const closePreview = useCallback(
@@ -43,7 +43,7 @@ export const PreviewProvider = ({
       setPreviews((prev) => {
         return produce(prev, (draft) => {
           const index = draft.findIndex(
-            (preview) => preview.previewId === previewId
+            (preview) => preview.previewId === previewId,
           );
           if (index !== -1) {
             draft.splice(index, 1);
@@ -54,14 +54,14 @@ export const PreviewProvider = ({
         });
       });
     },
-    [activePreviewId]
+    [activePreviewId],
   );
 
   const movePreview = useCallback((previewId: string) => {
     setPreviews((prev) => {
       return produce(prev, (draft) => {
         const index = draft.findIndex(
-          (preview) => preview.previewId === previewId
+          (preview) => preview.previewId === previewId,
         );
         if (index !== -1) {
           draft.splice(index, 1);

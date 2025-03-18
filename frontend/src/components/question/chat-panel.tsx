@@ -20,7 +20,7 @@ export const ChatPanel = () => {
   const { data, isLoading } = useQuery(
     getQuestionDetail({
       questionId: questionId ?? "",
-    })
+    }),
   );
 
   const { mutateAsync: questionSummaryName } = useMutation({
@@ -60,7 +60,7 @@ export const ChatPanel = () => {
         queryClient.invalidateQueries(
           getQuestionDetail({
             questionId: questionId ?? "",
-          })
+          }),
         );
 
         if (data.questionId) {

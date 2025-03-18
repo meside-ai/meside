@@ -39,6 +39,7 @@ export class MysqlWarehouse implements Warehouse {
         ORDER BY
             TABLE_NAME, ORDINAL_POSITION
       `);
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       return (rows as any[]).map((row) => ({
         schemaName: row.schemaName,
         tableName: row.tableName,
@@ -81,6 +82,7 @@ export class MysqlWarehouse implements Warehouse {
             AND TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
       `);
 
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       return (rows as any[]).map((row) => ({
         schemaName: row.schemaName,
         tableName: row.tableName,
@@ -112,6 +114,7 @@ export class MysqlWarehouse implements Warehouse {
       password: connection.password,
     });
 
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     let result: any;
 
     try {

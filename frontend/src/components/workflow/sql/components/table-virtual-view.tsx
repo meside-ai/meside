@@ -17,6 +17,7 @@ export const TableVirtualView = ({ questionId }: TableVirtualViewProps) => {
     })
   );
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const rowData = useMemo<any[]>(() => {
     if (!data?.rows) {
       return [];
@@ -27,6 +28,7 @@ export const TableVirtualView = ({ questionId }: TableVirtualViewProps) => {
     }));
   }, [data?.rows]);
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const columnDefs = useMemo<ColDef<any>[]>(() => {
     const fields =
       data?.fields.map((field) => ({
@@ -67,6 +69,7 @@ export const TableVirtualView = ({ questionId }: TableVirtualViewProps) => {
 
   return (
     <Box w="100%" h="100%">
+      {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
       <AgGridReact<any>
         rowData={rowData}
         columnDefs={columnDefs}

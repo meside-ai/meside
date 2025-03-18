@@ -46,6 +46,7 @@ export class OracleWarehouse implements Warehouse {
             table_name, column_id
       `);
       return (
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         res.rows?.map((row: any) => ({
           schemaName: row[0],
           tableName: row[1],
@@ -92,6 +93,7 @@ export class OracleWarehouse implements Warehouse {
       `);
 
       return (
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         res.rows?.map((row: any) => ({
           schemaName: row[0],
           tableName: row[1],
@@ -117,6 +119,7 @@ export class OracleWarehouse implements Warehouse {
     fields: WarehouseQueryColumn[];
   }> {
     const conn = await this.getConnection(connection);
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     let res: oracledb.Result<any>;
 
     try {
