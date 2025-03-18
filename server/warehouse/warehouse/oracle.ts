@@ -45,13 +45,15 @@ export class OracleWarehouse implements Warehouse {
         ORDER BY
             table_name, column_id
       `);
-      return res.rows?.map((row: any) => ({
-        schemaName: row[0],
-        tableName: row[1],
-        columnName: row[2],
-        columnType: row[3],
-        description: row[4] || undefined,
-      })) || [];
+      return (
+        res.rows?.map((row: any) => ({
+          schemaName: row[0],
+          tableName: row[1],
+          columnName: row[2],
+          columnType: row[3],
+          description: row[4] || undefined,
+        })) || []
+      );
     } catch (error) {
       this.logger.error(error);
       throw error;
@@ -89,14 +91,16 @@ export class OracleWarehouse implements Warehouse {
             c.constraint_type = 'R'
       `);
 
-      return res.rows?.map((row: any) => ({
-        schemaName: row[0],
-        tableName: row[1],
-        columnName: row[2],
-        foreignSchemaName: row[3],
-        foreignTableName: row[4],
-        foreignColumnName: row[5],
-      })) || [];
+      return (
+        res.rows?.map((row: any) => ({
+          schemaName: row[0],
+          tableName: row[1],
+          columnName: row[2],
+          foreignSchemaName: row[3],
+          foreignTableName: row[4],
+          foreignColumnName: row[5],
+        })) || []
+      );
     } catch (error) {
       this.logger.error(error);
       throw error;
@@ -116,7 +120,9 @@ export class OracleWarehouse implements Warehouse {
     let res: oracledb.Result<any>;
 
     try {
-      res = await conn.execute(sql, [], { outFormat: oracledb.OUT_FORMAT_OBJECT });
+      res = await conn.execute(sql, [], {
+        outFormat: oracledb.OUT_FORMAT_OBJECT,
+      });
     } catch (error) {
       this.logger.error(error);
       throw error;
@@ -197,16 +203,16 @@ export enum OracleTypes {
 }
 
 const mapOracleFieldType = (
-  typeName: string
+  typeName: string,
 ): WarehouseQueryColumn["columnType"] => {
   typeName = typeName.toUpperCase();
-  
+
   if (typeName.startsWith("TIMESTAMP")) {
     return "timestamp";
   }
 
   switch (typeName) {
-   case OracleTypes.NUMBER:
+    case OracleTypes.NUMBER:
       return "number";
     case OracleTypes.DATE:
     case OracleTypes.TIMESTAMP:
