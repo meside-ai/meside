@@ -1,0 +1,17 @@
+{
+  "name": "meside",
+  "version": "0.2.0",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": ["frontend", "server", "website"],
+  "scripts": {
+    "lint": "bunx biome check .",
+    "lint:fix": "bunx biome check --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

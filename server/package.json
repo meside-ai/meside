@@ -7,16 +7,12 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
+    "dev": "bun run --watch server.ts",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "seed": "bun run seed.ts",
     "reset": "bun run reset.ts",
-    "studio": "drizzle-kit studio --port=5183",
-    "dev": "bun run --watch server.ts",
-    "build": "bunx --bun vite build",
-    "lint": "bunx biome check ../",
-    "preview": "vite preview",
-    "lint:fix": "bunx biome check --write ../"
+    "studio": "drizzle-kit studio --port=5183"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^0.1.12",
