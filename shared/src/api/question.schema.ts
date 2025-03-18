@@ -1,10 +1,25 @@
-import { questionEntitySchema } from "@/db/schema/question";
-import { questionPayloadSchema } from "@/questions";
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
+import { questionPayloadSchema } from "./question.type";
 import { userDtoSchema } from "./user.schema";
 
-export const questionDtoSchema = questionEntitySchema.extend({
+// main
+export const questionDtoSchema = z.object({
+  questionId: z.string(),
+  versionId: z.string(),
+  activeVersion: z.boolean(),
+  ownerId: z.string(),
+  orgId: z.string(),
+  shortName: z.string(),
+  userContent: z.string(),
+  assistantReason: z.string(),
+  assistantContent: z.string(),
+  assistantStatus: z.string(),
+  payload: z.any(),
+  parentQuestionId: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  deletedAt: z.string().nullable(),
   owner: userDtoSchema.optional(),
   siblingIds: z.array(z.string()).optional(),
 });

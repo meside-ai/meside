@@ -1,32 +1,24 @@
-import { userEntitySchema } from "@/db/schema/user";
-import { warehouseEntitySchema } from "@/db/schema/warehouse";
-import { warehouseQueryRowSchema } from "@/warehouse/type";
-import { warehouseQueryColumnSchema } from "@/warehouse/type";
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
+import { userDtoSchema } from "./user.schema";
+import {
+  warehouseQueryColumnSchema,
+  warehouseQueryRowSchema,
+} from "./warehouse.type";
 
-export const warehouseDtoSchema = warehouseEntitySchema
-  .pick({
-    warehouseId: true,
-    name: true,
-    type: true,
-    host: true,
-    port: true,
-    username: true,
-    database: true,
-    schema: true,
-    ownerId: true,
-    orgId: true,
-  })
-  .extend({
-    owner: userEntitySchema
-      .pick({
-        userId: true,
-        name: true,
-        avatar: true,
-      })
-      .optional(),
-  });
+export const warehouseDtoSchema = z.object({
+  warehouseId: z.string(),
+  name: z.string(),
+  type: z.string(),
+  host: z.string(),
+  port: z.string(),
+  username: z.string(),
+  database: z.string(),
+  schema: z.string().nullable(),
+  ownerId: z.string(),
+  orgId: z.string(),
+  owner: userDtoSchema.optional(),
+});
 
 export type WarehouseDto = z.infer<typeof warehouseDtoSchema>;
 

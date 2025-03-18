@@ -2,8 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@meside/shared/*": ["../shared/src/*"]
+      "@/*": ["./*"]
     },
     // Enable latest features
     "lib": ["ESNext", "DOM"],
@@ -20,8 +19,9 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+    "composite": true
   },
   "include": ["."],
-  "exclude": ["node_modules", "build"]
+  "exclude": ["node_modules"]
 }

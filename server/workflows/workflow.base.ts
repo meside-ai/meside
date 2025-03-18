@@ -3,8 +3,8 @@ import type { QuestionEntity } from "@/db/schema/question";
 import {
   type EditorJSONContent,
   editorJsonToMarkdown,
-} from "@/shared/editor-json-to-markdown";
-import { parseJsonOrNull } from "@/shared/json";
+} from "@meside/shared/editor/editor-json-to-markdown";
+import { parseJsonOrNull } from "@meside/shared/utils/json";
 import type { Workflow } from "./workflow.interface";
 
 export class BaseWorkflow implements Workflow {

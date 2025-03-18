@@ -1,0 +1,11 @@
+{
+  "name": "@meside/shared",
+  "module": "shared/shared.ts",
+  "type": "module",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {}
+}
