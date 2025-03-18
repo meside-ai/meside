@@ -24,9 +24,9 @@
     "@google-cloud/bigquery": "^7.9.2",
     "@hono/zod-openapi": "^0.18.4",
     "@hono/zod-validator": "^0.4.3",
+    "@modelcontextprotocol/sdk": "^1.7.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "^6.3.1",
-    "@types/oracledb": "^6.5.3",
     "ai": "^4.1.51",
     "drizzle-orm": "^0.39.3",
     "drizzle-seed": "^0.3.1",
@@ -48,6 +48,7 @@
     "@biomejs/biome": "1.9.4",
     "@types/bun": "latest",
     "@types/pg": "^8.11.11",
+    "@types/oracledb": "^6.5.3",
     "drizzle-kit": "^0.30.4",
     "prisma": "^6.3.1"
   }

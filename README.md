@@ -1,10 +1,13 @@
 # meside  
-**AI multi-agent for data transformation**  
+**The better AI Agent for Database (multi agents and model context protocol)**
 
 ![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE)
 
 *Note: Meside is under active development. Expect breaking changes in early versions.*  
+
+* Supported databases: PostgreSQL, BigQuery, MySQL, OracleDB
+* Databases to be supported: Clickhouse, Snowflake, SQLite, SQLServer
 
 Meside is an open-source, AI-driven data transformation tool designed to streamline complex data workflows. By integrating machine learning models, Meside automates schema inference, format conversion, and data normalization, reducing manual effort in ETL (Extract, Transform, Load) processes. Built for flexibility, it supports structured and semi-structured data formats like JSON, CSV, and XML, with plans to expand to unstructured data.
 
@@ -42,6 +45,22 @@ Meside is an open-source, AI-driven data transformation tool designed to streaml
    bun install  
    bun run dev      # Launch development client  
    ```  
+
+### How to use MCP
+
+We only support SSE MCP currently, the Claude Desktop is not support SSE, the Cursor or other IDE support it.
+
+* [Cursor docs](https://docs.cursor.com/context/model-context-protocol)
+
+``` json
+{
+  "mcpServers": {
+    "database": {
+      "url": "http://localhost:6333/meside/api/mcp-server/sse",
+    }
+  }
+}
+```
 
 ### Contributing  
 We welcome contributions! Check out our [roadmap](docs/ROADMAP.md) and [issue tracker](https://github.com/meside-ai/meside/issues). Follow these steps:  
