@@ -19,11 +19,7 @@ jobs:
 
       - name: Install Dependencies (Frontend)
         working-directory: ./frontend
-        run: bun install
-
-      - name: Install Dependencies (Server)
-        working-directory: ./server
-        run: bun install
+        run: bun install --frozen-lockfile
 
       - name: TypeScript Build Check (Frontend)
         working-directory: ./frontend
@@ -32,3 +28,7 @@ jobs:
       - name: TypeScript Build Check (Server)
         working-directory: ./server
         run: bunx tsc -b
+
+      - name: Install Dependencies (Server)
+        working-directory: ./server
+        run: bun install --frozen-lockfile
