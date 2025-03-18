@@ -6,11 +6,11 @@ import { UnauthorizedError } from "@/utils/error";
 import { firstOrNotFound } from "@/utils/toolkit";
 import { getWorkflowFactory } from "@/workflows/workflow.factory";
 import { zValidator } from "@hono/zod-validator";
+import type { QuestionDto } from "@meside/shared/api/question.schema";
+import { streamQuestionRequestSchema } from "@meside/shared/api/stream.schema";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
-import type { QuestionDto } from "./question.schema";
-import { streamQuestionRequestSchema } from "./stream.schema";
 
 export const streamApi = new Hono().get(
   "question",

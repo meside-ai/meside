@@ -5,8 +5,8 @@ import { getAuthOrUnauthorized } from "@/utils/auth";
 import { cuid } from "@/utils/cuid";
 import { LabelAgent } from "@/workflows/agents/label-agent";
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { labelLoadRoute } from "@meside/shared/api/label.schema";
 import { and, eq } from "drizzle-orm";
-import { labelLoadRoute } from "./label.schema";
 
 export const labelApi = new OpenAPIHono().openapi(labelLoadRoute, async (c) => {
   const { warehouseId } = c.req.valid("json");

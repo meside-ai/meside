@@ -9,12 +9,12 @@ import { NotFoundError } from "@/utils/error";
 import { WarehouseFactory } from "@/warehouse/warehouse";
 import { LabelAgent } from "@/workflows/agents/label-agent";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { and, asc, eq, ilike, isNull, or } from "drizzle-orm";
 import {
   catalogListRoute,
   catalogLoadRoute,
   catalogSuggestionRoute,
-} from "./catalog.schema";
+} from "@meside/shared/api/catalog.schema";
+import { and, asc, eq, ilike, isNull, or } from "drizzle-orm";
 
 export const catalogApi = new OpenAPIHono()
   .openapi(catalogLoadRoute, async (c) => {

@@ -1,5 +1,5 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { healthHeartbeatRoute } from "./health.schema";
+import { healthHeartbeatRoute } from "@meside/shared/api/health.schema";
 
 export const healthApi = new OpenAPIHono().openapi(
   healthHeartbeatRoute,

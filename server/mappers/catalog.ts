@@ -1,7 +1,7 @@
-import type { CatalogDto } from "@/api/catalog.schema";
 import { getDrizzle } from "@/db/db";
 import type { CatalogEntity } from "@/db/schema/catalog";
 import { relationTable } from "@/db/schema/relation";
+import type { CatalogDto } from "@meside/shared/api/catalog.schema";
 import { and, inArray, isNull } from "drizzle-orm";
 import { uniq } from "es-toolkit/compat";
 
@@ -48,7 +48,7 @@ export const getCatalogDtos = async (
             columnName: relation.foreignColumnName,
           }
         : undefined,
-    };
+    } as CatalogDto;
   });
 
   return catalogsDto;

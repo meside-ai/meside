@@ -1,7 +1,7 @@
-import type { WarehouseDto } from "@/api/warehouse.schema";
 import { getDrizzle } from "@/db/db";
 import { userTable } from "@/db/schema/user";
 import type { WarehouseEntity } from "@/db/schema/warehouse";
+import type { WarehouseDto } from "@meside/shared/api/warehouse.schema";
 import { inArray } from "drizzle-orm";
 import { uniq } from "es-toolkit/compat";
 

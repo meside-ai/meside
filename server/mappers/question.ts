@@ -1,7 +1,7 @@
-import type { QuestionDto } from "@/api/question.schema";
 import { getDrizzle } from "@/db/db";
 import { type QuestionEntity, questionTable } from "@/db/schema/question";
 import { userTable } from "@/db/schema/user";
+import type { QuestionDto } from "@meside/shared/api/question.schema";
 import { and, asc, inArray, isNull } from "drizzle-orm";
 import { uniq } from "es-toolkit/compat";
 import { getUserDtos } from "./user";

@@ -11,13 +11,13 @@ import {
 } from "@/utils/toolkit";
 import { getWorkflowFactory } from "@/workflows/workflow.factory";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { type SQL, and, desc, eq, isNull } from "drizzle-orm";
 import {
   questionCreateRoute,
   questionDetailRoute,
   questionListRoute,
   questionSummaryNameRoute,
-} from "./question.schema";
+} from "@meside/shared/api/question.schema";
+import { type SQL, and, desc, eq, isNull } from "drizzle-orm";
 
 export const questionApi = new OpenAPIHono()
   .openapi(questionListRoute, async (c) => {

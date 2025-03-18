@@ -13,14 +13,14 @@ import {
 } from "@/utils/toolkit";
 import { WarehouseFactory } from "@/warehouse/warehouse";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { and, eq, isNull } from "drizzle-orm";
 import {
   warehouseCreateRoute,
   warehouseDetailRoute,
   warehouseExecuteRoute,
   warehouseListRoute,
   warehouseTableRoute,
-} from "./warehouse.schema";
+} from "@meside/shared/api/warehouse.schema";
+import { and, eq, isNull } from "drizzle-orm";
 
 export const warehouseApi = new OpenAPIHono()
   .openapi(warehouseCreateRoute, async (c) => {

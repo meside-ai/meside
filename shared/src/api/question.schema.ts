@@ -15,7 +15,7 @@ export const questionDtoSchema = z.object({
   assistantReason: z.string(),
   assistantContent: z.string(),
   assistantStatus: z.string(),
-  payload: z.any(),
+  payload: questionPayloadSchema,
   parentQuestionId: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),

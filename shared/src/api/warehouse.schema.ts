@@ -9,9 +9,9 @@ import {
 export const warehouseDtoSchema = z.object({
   warehouseId: z.string(),
   name: z.string(),
-  type: z.string(),
+  type: z.enum(["postgresql", "bigquery", "mysql", "oracle"]),
   host: z.string(),
-  port: z.string(),
+  port: z.number(),
   username: z.string(),
   database: z.string(),
   schema: z.string().nullable(),

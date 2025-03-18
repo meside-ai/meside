@@ -31,6 +31,10 @@ cp server/warehouse/warehouse/postgres.ts server/warehouse/warehouse/mysql.ts
 
 > server/warehouse/warehouse.ts
 
+7. Update api schema
+
+> shared/src/api/warehouse.schema.ts
+
 7. update frontend to add the new warehouse type
 
 > frontend/src/components/warehouse/choose-warehouse.tsx
