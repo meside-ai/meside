@@ -14,7 +14,7 @@ export const WarehouseCard = ({ warehouseId }: WarehouseCardProps) => {
   const { data } = useQuery(
     getWarehouseDetail({
       warehouseId,
-    })
+    }),
   );
 
   return (

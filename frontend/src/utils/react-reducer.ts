@@ -3,10 +3,13 @@ interface DevTools<Action> {
   send(action: Action, state: unknown): void;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 let devTools: DevTools<any> | null = null;
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 let previousDevToolState: any | undefined = undefined;
 
 if (typeof window !== "undefined") {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const extension = (window as any).__REDUX_DEVTOOLS_EXTENSION__;
   if (extension) {
     devTools = extension.connect({});

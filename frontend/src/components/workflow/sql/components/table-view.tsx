@@ -11,7 +11,7 @@ export const TableView = ({ questionId }: TableViewProps) => {
   const { data } = useQuery(
     getWarehouseExecute({
       questionId,
-    })
+    }),
   );
 
   const rows = useMemo(() => {
@@ -53,6 +53,7 @@ export const TableView = ({ questionId }: TableViewProps) => {
                     whiteSpace: "nowrap",
                   }}
                 >
+                  {/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
                   {(row as any)[field.columnName]}
                 </Table.Td>
               ))}

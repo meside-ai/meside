@@ -17,7 +17,7 @@ export const StarterPanel = () => {
   >(null);
 
   const quotedQuestionResult = useQuery(
-    getQuestionDetail({ questionId: quotedQuestionId ?? "" })
+    getQuestionDetail({ questionId: quotedQuestionId ?? "" }),
   );
 
   const workflowButtons = useWorkflowButtons();
@@ -25,7 +25,7 @@ export const StarterPanel = () => {
   const buttons = useMemo(() => {
     const type = quotedQuestionResult.data?.question?.payload.type ?? null;
     return workflowButtons.filter((button) =>
-      button.quotedType?.includes(type)
+      button.quotedType?.includes(type),
     );
   }, [quotedQuestionResult.data?.question?.payload.type, workflowButtons]);
 
@@ -42,7 +42,7 @@ export const StarterPanel = () => {
           </Group>
         </Radio.Card>
       )),
-    [buttons]
+    [buttons],
   );
 
   return (

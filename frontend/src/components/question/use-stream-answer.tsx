@@ -48,12 +48,12 @@ export const useStreamAnswer = () => {
                   payload: messageChunk.payload,
                 },
               } as QuestionDetailResponse;
-            }
+            },
           );
         });
       });
     },
-    [queryClient, stream]
+    [queryClient, stream],
   );
 
   return {

@@ -14,9 +14,9 @@
     "studio": "drizzle-kit studio --port=5183",
     "dev": "bun run --watch server.ts",
     "build": "bunx --bun vite build",
-    "lint": "eslint .",
+    "lint": "bunx biome check ../",
     "preview": "vite preview",
-    "check": "bunx biome check --write ../"
+    "lint:fix": "bunx biome check --write ../"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^0.1.12",

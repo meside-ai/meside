@@ -29,6 +29,7 @@ export const getOptions = (): ClientRequestOptions => {
   };
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const api = <T extends HonoBase<any, any, any>>(
   url: string,
   options?: {

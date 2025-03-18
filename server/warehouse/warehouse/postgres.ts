@@ -129,6 +129,7 @@ export class PostgresWarehouse implements Warehouse {
       password: connection.password,
     });
 
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     let res: pg.QueryResult<any>;
 
     try {

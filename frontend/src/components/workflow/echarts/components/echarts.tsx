@@ -16,7 +16,7 @@ export const Echarts = ({ questionId }: EchartsProps) => {
   const { data } = useQuery(
     getWarehouseExecute({
       questionId,
-    })
+    }),
   );
 
   const options = useMemo<echarts.EChartsOption | null>(() => {
