@@ -1,3 +1,3 @@
 #!/bin/sh
-bunx tsc -b server
-bunx tsc -b frontend
+cd server && bunx tsc --noEmit && cd ..
+cd frontend && bunx tsc --noEmit && cd ..

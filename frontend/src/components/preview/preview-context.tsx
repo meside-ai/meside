@@ -1,10 +1,9 @@
-import type { EntitiesState } from "@/utils/use-entity";
 import { createContext, useContext } from "react";
 import type { PreviewEntity } from "./types";
 
 export type PreviewContextType = {
   preview: PreviewEntity | null;
-  previews: EntitiesState<PreviewEntity>;
+  previews: PreviewEntity[];
   openPreview: (preview: Omit<PreviewEntity, "previewId">) => void;
   closePreview: (previewId: string) => void;
   movePreview: (previewId: string, index: number) => void;
