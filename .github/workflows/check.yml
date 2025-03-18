@@ -18,10 +18,12 @@ jobs:
           bun-version: latest
 
       - name: Install Dependencies (Frontend)
+        working-directory: ./frontend
         run: bun install
 
-      - name: Lint check
-        run: bun run lint
+      - name: Install Dependencies (Server)
+        working-directory: ./server
+        run: bun install
 
       - name: TypeScript Build Check (Frontend)
         working-directory: ./frontend
