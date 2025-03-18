@@ -14,7 +14,7 @@ export const TableVirtualView = ({ questionId }: TableVirtualViewProps) => {
   const { data } = useQuery(
     getWarehouseExecute({
       questionId,
-    })
+    }),
   );
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
