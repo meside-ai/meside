@@ -39,7 +39,6 @@ export class MysqlWarehouse implements Warehouse {
         ORDER BY
             TABLE_NAME, ORDINAL_POSITION
       `);
-
       return (rows as any[]).map((row) => ({
         schemaName: row.schemaName,
         tableName: row.tableName,

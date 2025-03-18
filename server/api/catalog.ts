@@ -39,7 +39,6 @@ export const catalogApi = new OpenAPIHono()
 
     const warehouseFactory = new WarehouseFactory();
     const warehouseClass = warehouseFactory.create(warehouse.type);
-
     const catalogs = await warehouseClass.getCatalogs(warehouse);
     const relations = await warehouseClass.getRelations(warehouse);
 
@@ -85,6 +84,7 @@ export const catalogApi = new OpenAPIHono()
     const labelAgent = new LabelAgent();
     const labels = await labelAgent.getLabelsByAgent({
       warehouseId,
+      catalogs
     });
 
     // labels is an array of { schemaName, tableName, columnName, label }

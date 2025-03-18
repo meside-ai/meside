@@ -7,6 +7,7 @@ export const warehouseType = pgEnum("warehouse_type", [
   "postgresql",
   "bigquery",
   "mysql",
+  "oracle",
 ]);
 
 export const warehouseTable = pgTable("warehouse", {
