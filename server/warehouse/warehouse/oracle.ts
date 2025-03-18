@@ -24,9 +24,7 @@ export class OracleWarehouse implements Warehouse {
   async getCatalogs(
     connection: ConnectionConfig,
   ): Promise<WarehouseFactoryCatalog[]> {
-    console.log('1111')
     const conn = await this.getConnection(connection);
-    this.logger.info('res.rows');
     try {
       const res = await conn.execute(`
         SELECT
@@ -42,15 +40,17 @@ export class OracleWarehouse implements Warehouse {
             USING (owner, table_name, column_name)
         WHERE
             owner NOT IN ('SYS', 'SYSTEM')
+        AND 
+            owner = '${connection.username.toUpperCase()}'
         ORDER BY
             table_name, column_id
       `);
       return res.rows?.map((row: any) => ({
-        schemaName: row.schemaName,
-        tableName: row.tableName,
-        columnName: row.columnName,
-        columnType: row.columnType,
-        description: row.description || undefined,
+        schemaName: row[0],
+        tableName: row[1],
+        columnName: row[2],
+        columnType: row[3],
+        description: row[4] || undefined,
       })) || [];
     } catch (error) {
       this.logger.error(error);
@@ -90,12 +90,12 @@ export class OracleWarehouse implements Warehouse {
       `);
 
       return res.rows?.map((row: any) => ({
-        schemaName: row.schemaName,
-        tableName: row.tableName,
-        columnName: row.columnName,
-        foreignSchemaName: row.foreignSchemaName,
-        foreignTableName: row.foreignTableName,
-        foreignColumnName: row.foreignColumnName,
+        schemaName: row[0],
+        tableName: row[1],
+        columnName: row[2],
+        foreignSchemaName: row[3],
+        foreignTableName: row[4],
+        foreignColumnName: row[5],
       })) || [];
     } catch (error) {
       this.logger.error(error);
@@ -129,7 +129,6 @@ export class OracleWarehouse implements Warehouse {
       metaData: z.array(
         z.object({
           name: z.string(),
-          dbType: z.number(),
           dbTypeName: z.string(),
         }),
       ),

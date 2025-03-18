@@ -39,7 +39,6 @@ export const catalogApi = new OpenAPIHono()
 
     const warehouseFactory = new WarehouseFactory();
     const warehouseClass = warehouseFactory.create(warehouse.type);
-    console.log('111')
     const catalogs = await warehouseClass.getCatalogs(warehouse);
     const relations = await warehouseClass.getRelations(warehouse);
 
