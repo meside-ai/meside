@@ -10,14 +10,7 @@ import type {
 } from "../warehouse.interface";
 
 export class BigqueryWarehouse implements Warehouse {
-  getColumnSample: (
-    connection: ConnectionConfig,
-    schemaName: string,
-    tableName: string,
-    columnName: string,
-    limit: number,
-  ) => Promise<WarehouseQueryRow[]>;
-  private logger = getLogger();
+  private logger = getLogger("bigquery");
 
   async getCatalogs(
     connection: ConnectionConfig,
@@ -218,6 +211,35 @@ export class BigqueryWarehouse implements Warehouse {
     } catch (error) {
       this.logger.error(error);
       return false;
+    }
+  }
+
+  async getColumnSample(
+    connection: ConnectionConfig,
+    schemaName: string,
+    tableName: string,
+    columnName: string,
+    limit = 3,
+  ): Promise<WarehouseQueryRow[]> {
+    const projectId = connection.database;
+
+    try {
+      // In BigQuery, the format is `project.dataset.table`
+      // schemaName in this context refers to the dataset
+      const dbResult = await this.query(
+        connection,
+        `
+        SELECT \`${columnName}\` AS sample
+        FROM \`${projectId}.${schemaName}.${tableName}\`
+        WHERE \`${columnName}\` IS NOT NULL
+        LIMIT ${limit}
+        `,
+      );
+
+      return dbResult.rows;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
     }
   }
 }
