@@ -18,7 +18,7 @@ import {
 } from "@tiptap/react";
 import "./message-input.css";
 import { ActionIcon, Box } from "@mantine/core";
-import type { EditorJSONContent } from "@meside/shared/editor-json-to-markdown";
+import type { EditorJSONContent } from "@meside/shared/editor/editor-json-to-markdown";
 import {
   IconArrowUp,
   IconColumnInsertLeft,

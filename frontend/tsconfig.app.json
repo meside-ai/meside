@@ -22,10 +22,5 @@
     "noUnusedLocals": true,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true
-  },
-  "references": [
-    {
-      "path": "../server/tsconfig.json"
-    }
-  ]
+  }
 }
