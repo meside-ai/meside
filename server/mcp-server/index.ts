@@ -15,11 +15,14 @@ server.tool("get-warehouses", {}, async () => {
     const content: {
       type: "text";
       text: string;
-      dbType: string;
     }[] = warehouses.map((warehouse) => ({
       type: "text",
-      text: warehouse.name,
-      dbType: warehouse.type,
+      text: [
+        `warehouse name: ${warehouse.name}`,
+        `warehouse type: ${warehouse.type}`,
+      ]
+        .filter(Boolean)
+        .join("\n"),
     }));
 
     return {
@@ -38,6 +41,25 @@ server.tool("get-warehouses", {}, async () => {
   }
 });
 
+server.tool(
+  "get-all-columns",
+  {
+    warehouseName: z.string(),
+  },
+  async ({ warehouseName }) => {
+    const catalogs = await warehouseService.getCatalogs(warehouseName);
+    console.log("catalogs", catalogs);
+    return {
+      content: [
+        {
+          type: "text",
+          text: catalogs,
+        },
+      ],
+    };
+  },
+);
+
 // Tool to list all tables in a specific warehouse
 server.tool(
   "get-tables",
@@ -52,7 +74,9 @@ server.tool(
         text: string;
       }[] = tables.map((table) => ({
         type: "text",
-        text: `${table.schemaName}.${table.tableName}`,
+        text: [`table name: ${table.schemaName}.${table.tableName}`]
+          .filter(Boolean)
+          .join("\n"),
       }));
 
       return {
@@ -88,13 +112,16 @@ server.tool(
       const content: {
         type: "text";
         text: string;
-        columnDescription: string;
-        foreign: string | null;
       }[] = columns.map((column) => ({
         type: "text",
-        text: column.columnName,
-        columnDescription: column.description ?? "",
-        foreign: column.foreign ?? "",
+        text: [
+          `column name: ${column.columnName}`,
+          `column type: ${column.columnType}`,
+          column.foreign ? `foreign: ${column.foreign}` : null,
+          column.description ? `description: ${column.description}` : null,
+        ]
+          .filter(Boolean)
+          .join("\n"),
       }));
       return {
         content,
@@ -127,7 +154,7 @@ server.tool(
         content: [
           {
             type: "text",
-            text: JSON.stringify(results, null, 2),
+            text: JSON.stringify(results.rows, null, 2),
           },
         ],
       };
