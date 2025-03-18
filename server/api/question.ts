@@ -12,16 +12,24 @@ import {
 import { getWorkflowFactory } from "@/workflows/workflow.factory";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import {
+  type QuestionCreateResponse,
+  type QuestionDetailResponse,
+  type QuestionListResponse,
+  type QuestionSummaryNameResponse,
+  questionCreateRequestSchema,
   questionCreateRoute,
+  questionDetailRequestSchema,
   questionDetailRoute,
+  questionListRequestSchema,
   questionListRoute,
+  questionSummaryNameRequestSchema,
   questionSummaryNameRoute,
 } from "@meside/shared/api/question.schema";
 import { type SQL, and, desc, eq, isNull } from "drizzle-orm";
 
 export const questionApi = new OpenAPIHono()
   .openapi(questionListRoute, async (c) => {
-    const body = c.req.valid("json");
+    const body = questionListRequestSchema.parse(await c.req.json());
 
     const filter: SQL[] = [];
 
@@ -42,10 +50,12 @@ export const questionApi = new OpenAPIHono()
 
     const questionDtos = await getQuestionDtos(questions);
 
-    return c.json({ questions: questionDtos });
+    return c.json({ questions: questionDtos } as QuestionListResponse);
   })
   .openapi(questionDetailRoute, async (c) => {
-    const { questionId } = c.req.valid("json");
+    const { questionId } = questionDetailRequestSchema.parse(
+      await c.req.json(),
+    );
     const question = firstOrNull(
       await getDrizzle()
         .select()
@@ -65,10 +75,10 @@ export const questionApi = new OpenAPIHono()
 
     const questionDtos = await getQuestionDtos([question]);
 
-    return c.json({ question: questionDtos[0] });
+    return c.json({ question: questionDtos[0] } as QuestionDetailResponse);
   })
   .openapi(questionCreateRoute, async (c) => {
-    const body = c.req.valid("json");
+    const body = questionCreateRequestSchema.parse(await c.req.json());
 
     const auth = getAuthOrUnauthorized(c);
 
@@ -124,10 +134,10 @@ export const questionApi = new OpenAPIHono()
 
     const questionDto = await getQuestionDtos([question]);
 
-    return c.json({ question: questionDto[0] });
+    return c.json({ question: questionDto[0] } as QuestionCreateResponse);
   })
   .openapi(questionSummaryNameRoute, async (c) => {
-    const body = c.req.valid("json");
+    const body = questionSummaryNameRequestSchema.parse(await c.req.json());
 
     const question = firstOrNotFound(
       await getDrizzle()
@@ -163,7 +173,9 @@ export const questionApi = new OpenAPIHono()
       })
       .where(eq(questionTable.questionId, body.questionId));
 
-    return c.json({ shortName: newQuestion.payload.name });
+    return c.json({
+      shortName: newQuestion.payload.name,
+    } as QuestionSummaryNameResponse);
   });
 
 export type QuestionApiType = typeof questionApi;

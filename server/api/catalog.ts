@@ -10,15 +10,18 @@ import { WarehouseFactory } from "@/warehouse/warehouse";
 import { LabelAgent } from "@/workflows/agents/label-agent";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import {
+  catalogListRequestSchema,
   catalogListRoute,
+  catalogLoadRequestSchema,
   catalogLoadRoute,
+  catalogSuggestionRequestSchema,
   catalogSuggestionRoute,
 } from "@meside/shared/api/catalog.schema";
 import { and, asc, eq, ilike, isNull, or } from "drizzle-orm";
 
 export const catalogApi = new OpenAPIHono()
   .openapi(catalogLoadRoute, async (c) => {
-    const { warehouseId } = c.req.valid("json");
+    const { warehouseId } = catalogLoadRequestSchema.parse(await c.req.json());
     const auth = getAuthOrUnauthorized(c);
 
     const warehouses = await getDrizzle()
@@ -111,7 +114,7 @@ export const catalogApi = new OpenAPIHono()
     return c.json({});
   })
   .openapi(catalogListRoute, async (c) => {
-    const { warehouseId } = c.req.valid("json");
+    const { warehouseId } = catalogListRequestSchema.parse(await c.req.json());
     const catalogs = await getDrizzle()
       .select()
       .from(catalogTable)
@@ -130,7 +133,9 @@ export const catalogApi = new OpenAPIHono()
     });
   })
   .openapi(catalogSuggestionRoute, async (c) => {
-    const { warehouseId, keyword } = c.req.valid("json");
+    const { warehouseId, keyword } = catalogSuggestionRequestSchema.parse(
+      await c.req.json(),
+    );
 
     const keywords = keyword.split(".");
 
