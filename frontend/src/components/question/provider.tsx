@@ -1,5 +1,5 @@
 import { Route } from "@/routes/question";
-import type { QuestionDto } from "@meside/api/question.schema";
+import type { QuestionDto } from "@meside/shared/api/question.schema";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useCallback } from "react";

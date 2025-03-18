@@ -1,6 +1,6 @@
 import { getQuestionDetail } from "@/queries/question";
 import { Box, Group, Radio, ScrollArea, Stack, Text } from "@mantine/core";
-import type { QuestionDto } from "@meside/api/question.schema";
+import type { QuestionDto } from "@meside/shared/api/question.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { usePreviewContext } from "../preview/preview-context";

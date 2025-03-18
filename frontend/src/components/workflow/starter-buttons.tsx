@@ -1,4 +1,4 @@
-import type { QuestionDto } from "@meside/api/question.schema";
+import type { QuestionDto } from "@meside/shared/api/question.schema";
 import { useMemo } from "react";
 
 export const useWorkflowButtons = () => {

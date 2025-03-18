@@ -1,6 +1,6 @@
 import { getQuestionDetail } from "@/queries/question";
-import type { QuestionDetailResponse } from "@meside/api/question.schema";
-import type { StreamQuestionResponse } from "@meside/api/stream.schema";
+import type { QuestionDetailResponse } from "@meside/shared/api/question.schema";
+import type { StreamQuestionResponse } from "@meside/shared/api/stream.schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useQuestionStream } from "./use-question-stream";

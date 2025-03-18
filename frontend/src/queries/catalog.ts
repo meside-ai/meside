@@ -1,19 +1,22 @@
-import { catalogApi } from "@/api";
 import type { QueryClientError } from "@/utils/query-client";
-import type {
-  CatalogListRequest,
-  CatalogListResponse,
-  CatalogLoadRequest,
-  CatalogLoadResponse,
-  CatalogSuggestionRequest,
-  CatalogSuggestionResponse,
-} from "@meside/api/catalog.schema";
+import { createPost } from "@/utils/request";
+import {
+  type CatalogListRequest,
+  type CatalogListResponse,
+  type CatalogLoadRequest,
+  type CatalogLoadResponse,
+  type CatalogSuggestionRequest,
+  type CatalogSuggestionResponse,
+  catalogListRoute,
+  catalogLoadRoute,
+  catalogSuggestionRoute,
+} from "@meside/shared/api/catalog.schema";
 import type {
   UseMutationOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
 
-export type { CatalogDto } from "@meside/api/catalog.schema";
+export type { CatalogDto } from "@meside/shared/api/catalog.schema";
 
 export const getCatalogList = ({
   warehouseId,
@@ -21,8 +24,9 @@ export const getCatalogList = ({
   enabled: !!warehouseId,
   queryKey: [getCatalogList.name, warehouseId],
   queryFn: async () => {
-    const res = await catalogApi.list.$post({ json: { warehouseId } });
-    const json = await res.json();
+    const json = await createPost<CatalogListRequest, CatalogListResponse>(
+      catalogListRoute.path,
+    )({ warehouseId });
     return json;
   },
 });
@@ -34,12 +38,9 @@ export const getCatalogLoad = (): UseMutationOptions<
 > => ({
   mutationKey: [getCatalogLoad.name],
   mutationFn: async ({ warehouseId }) => {
-    const response = await catalogApi.load.$post({
-      json: {
-        warehouseId,
-      },
-    });
-    const json = await response.json();
+    const json = await createPost<CatalogLoadRequest, CatalogLoadResponse>(
+      `/catalog${catalogLoadRoute.path}`,
+    )({ warehouseId });
     return json;
   },
 });
@@ -51,10 +52,10 @@ export const getCatalogSuggestion = ({
   enabled: !!warehouseId && !!keyword,
   queryKey: [getCatalogSuggestion.name, warehouseId, keyword],
   queryFn: async () => {
-    const res = await catalogApi.suggestion.$post({
-      json: { warehouseId, keyword },
-    });
-    const json = await res.json();
+    const json = await createPost<
+      CatalogSuggestionRequest,
+      CatalogSuggestionResponse
+    >(`/catalog${catalogSuggestionRoute.path}`)({ warehouseId, keyword });
     return json;
   },
 });

@@ -1,6 +1,6 @@
 import { getQuestionCreate, getQuestionDetail } from "@/queries/question";
-import type { QuestionCreateRequest } from "@meside/api/question.schema";
-import type { EditorJSONContent } from "@meside/shared/editor-json-to-markdown";
+import type { QuestionCreateRequest } from "@meside/shared/api/question.schema";
+import type { EditorJSONContent } from "@meside/shared/editor/editor-json-to-markdown";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useQuestionContext } from "./context";

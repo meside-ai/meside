@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import type { WarehouseCreateRequest } from "@meside/api/warehouse.schema";
+import type { WarehouseCreateRequest } from "@meside/shared/api/warehouse.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { z } from "zod";
