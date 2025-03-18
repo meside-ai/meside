@@ -205,13 +205,13 @@ export enum OracleTypes {
 const mapOracleFieldType = (
   typeName: string,
 ): WarehouseQueryColumn["columnType"] => {
-  typeName = typeName.toUpperCase();
+  const UppercaseTypeName = typeName.toUpperCase();
 
-  if (typeName.startsWith("TIMESTAMP")) {
+  if (UppercaseTypeName.startsWith("TIMESTAMP")) {
     return "timestamp";
   }
 
-  switch (typeName) {
+  switch (UppercaseTypeName) {
     case OracleTypes.NUMBER:
       return "number";
     case OracleTypes.DATE:
