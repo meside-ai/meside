@@ -1,5 +1,5 @@
 import { getStreamQuestionUrl } from "@/api";
-import type { StreamQuestionResponse } from "@meside/api/stream.schema";
+import type { StreamQuestionResponse } from "@meside/shared/api/stream.schema";
 import { useCallback, useRef, useState } from "react";
 
 export const useQuestionStream = () => {

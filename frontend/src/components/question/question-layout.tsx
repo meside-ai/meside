@@ -10,9 +10,9 @@ import {
   Text,
   Tooltip,
 } from "@mantine/core";
-import type { QuestionDto } from "@meside/api/question.schema";
-import type { EditorJSONContent } from "@meside/shared/editor-json-to-markdown";
-import { parseJsonOrNull } from "@meside/shared/json";
+import type { QuestionDto } from "@meside/shared/api/question.schema";
+import type { EditorJSONContent } from "@meside/shared/editor/editor-json-to-markdown";
+import { parseJsonOrNull } from "@meside/shared/utils/json";
 import {
   IconChevronLeft,
   IconChevronRight,

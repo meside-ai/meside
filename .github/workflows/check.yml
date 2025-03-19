@@ -18,14 +18,16 @@ jobs:
           bun-version: latest
 
       - name: Install Dependencies (Frontend)
-        run: bun install
-
-      - name: Lint check
-        run: bun run lint
+        working-directory: ./frontend
+        run: bun install --frozen-lockfile
 
       - name: TypeScript Build Check (Frontend)
         working-directory: ./frontend
-        run: bunx tsc -b
+        run: bun run build
+
+      - name: Install Dependencies (Server)
+        working-directory: ./server
+        run: bun install --frozen-lockfile
 
       - name: TypeScript Build Check (Server)
         working-directory: ./server

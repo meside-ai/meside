@@ -1,14 +1,19 @@
-import { warehouseApi } from "@/api";
 import type { QueryClientError } from "@/utils/query-client";
-import type {
-  WarehouseCreateRequest,
-  WarehouseCreateResponse,
-  WarehouseDetailRequest,
-  WarehouseDetailResponse,
-  WarehouseExecuteRequest,
-  WarehouseExecuteResponse,
-  WarehouseListResponse,
-} from "@meside/api/warehouse.schema";
+import { createPost } from "@/utils/request";
+import {
+  type WarehouseCreateRequest,
+  type WarehouseCreateResponse,
+  type WarehouseDetailRequest,
+  type WarehouseDetailResponse,
+  type WarehouseExecuteRequest,
+  type WarehouseExecuteResponse,
+  type WarehouseListRequest,
+  type WarehouseListResponse,
+  warehouseCreateRoute,
+  warehouseDetailRoute,
+  warehouseExecuteRoute,
+  warehouseListRoute,
+} from "@meside/shared/api/warehouse.schema";
 import type {
   UseMutationOptions,
   UseQueryOptions,
@@ -23,12 +28,10 @@ export const getWarehouseExecute = ({
   enabled: !!questionId,
   queryKey: [getWarehouseExecute.name, questionId],
   queryFn: async () => {
-    const res = await warehouseApi.execute.$post({
-      json: {
-        questionId,
-      },
-    });
-    const json = await res.json();
+    const json = await createPost<
+      WarehouseExecuteRequest,
+      WarehouseExecuteResponse
+    >(`/warehouse${warehouseExecuteRoute.path}`)({ questionId });
     return json;
   },
 });
@@ -37,10 +40,9 @@ export const getWarehouseList = (): UseQueryOptions<WarehouseListResponse> => ({
   enabled: true,
   queryKey: [getWarehouseList.name],
   queryFn: async () => {
-    const res = await warehouseApi.list.$post({
-      json: {},
-    });
-    const json = await res.json();
+    const json = await createPost<WarehouseListRequest, WarehouseListResponse>(
+      `/warehouse${warehouseListRoute.path}`,
+    )({});
     return json;
   },
 });
@@ -51,12 +53,10 @@ export const getWarehouseDetail = ({
   enabled: !!warehouseId,
   queryKey: [getWarehouseDetail.name, warehouseId],
   queryFn: async () => {
-    const res = await warehouseApi.detail.$post({
-      json: {
-        warehouseId,
-      },
-    });
-    const json = await res.json();
+    const json = await createPost<
+      WarehouseDetailRequest,
+      WarehouseDetailResponse
+    >(`/warehouse${warehouseDetailRoute.path}`)({ warehouseId });
     return json;
   },
 });
@@ -68,10 +68,10 @@ export const getWarehouseCreate = (): UseMutationOptions<
 > => ({
   mutationKey: [getWarehouseCreate.name],
   mutationFn: async (body) => {
-    const response = await warehouseApi.create.$post({
-      json: body,
-    });
-    const json = await response.json();
+    const json = await createPost<
+      WarehouseCreateRequest,
+      WarehouseCreateResponse
+    >(`/warehouse${warehouseCreateRoute.path}`)(body);
     return json;
   },
 });

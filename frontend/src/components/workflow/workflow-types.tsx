@@ -1,4 +1,4 @@
-import type { QuestionDto } from "@meside/api/question.schema";
+import type { QuestionDto } from "@meside/shared/api/question.schema";
 import type { ReactNode } from "react";
 import type { PreviewEntity } from "../preview/types";
 

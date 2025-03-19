@@ -1,8 +1,16 @@
-import { labelEntitySchema } from "@/db/schema/label";
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
 
-export const labelDtoSchema = labelEntitySchema;
+export const labelDtoSchema = z.object({
+  labelId: z.string(),
+  warehouseId: z.string(),
+  catalogFullName: z.string(),
+  jsonLabel: z.string().nullable(),
+  orgId: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  deletedAt: z.string().nullable(),
+});
 
 export type LabelDto = z.infer<typeof labelDtoSchema>;
 

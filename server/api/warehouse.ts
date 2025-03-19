@@ -13,18 +13,27 @@ import {
 } from "@/utils/toolkit";
 import { WarehouseFactory } from "@/warehouse/warehouse";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { and, eq, isNull } from "drizzle-orm";
 import {
+  type WarehouseCreateResponse,
+  type WarehouseDetailResponse,
+  type WarehouseExecuteResponse,
+  type WarehouseListResponse,
+  type WarehouseTableResponse,
+  warehouseCreateRequestSchema,
   warehouseCreateRoute,
+  warehouseDetailRequestSchema,
   warehouseDetailRoute,
+  warehouseExecuteRequestSchema,
   warehouseExecuteRoute,
   warehouseListRoute,
+  warehouseTableRequestSchema,
   warehouseTableRoute,
-} from "./warehouse.schema";
+} from "@meside/shared/api/warehouse.schema";
+import { and, eq, isNull } from "drizzle-orm";
 
 export const warehouseApi = new OpenAPIHono()
   .openapi(warehouseCreateRoute, async (c) => {
-    const body = c.req.valid("json");
+    const body = warehouseCreateRequestSchema.parse(await c.req.json());
     const auth = getAuthOrUnauthorized(c);
 
     const warehouseFactory = new WarehouseFactory().create(body.type);
@@ -51,7 +60,7 @@ export const warehouseApi = new OpenAPIHono()
 
     return c.json({
       warehouseId: warehouse.warehouseId,
-    });
+    } as WarehouseCreateResponse);
   })
   .openapi(warehouseListRoute, async (c) => {
     const warehouses = await getDrizzle()
@@ -61,10 +70,12 @@ export const warehouseApi = new OpenAPIHono()
 
     const warehouseDtos = await getWarehouseDtos(warehouses);
 
-    return c.json({ warehouses: warehouseDtos });
+    return c.json({ warehouses: warehouseDtos } as WarehouseListResponse);
   })
   .openapi(warehouseExecuteRoute, async (c) => {
-    const { questionId } = c.req.valid("json");
+    const { questionId } = warehouseExecuteRequestSchema.parse(
+      await c.req.json(),
+    );
 
     const question = firstOrNotFound(
       await getDrizzle()
@@ -101,10 +112,12 @@ export const warehouseApi = new OpenAPIHono()
     const warehouseFactory = new WarehouseFactory().create(warehouse.type);
     const warehouseResult = await warehouseFactory.query(warehouse, sql);
 
-    return c.json(warehouseResult);
+    return c.json(warehouseResult as WarehouseExecuteResponse);
   })
   .openapi(warehouseTableRoute, async (c) => {
-    const { tableName, warehouseId, limit } = c.req.valid("json");
+    const { tableName, warehouseId, limit } = warehouseTableRequestSchema.parse(
+      await c.req.json(),
+    );
 
     const warehouse = firstOrNotFound(
       await getDrizzle()
@@ -138,10 +151,10 @@ export const warehouseApi = new OpenAPIHono()
 
     const warehouseResult = await warehouseFactory.query(warehouse, sql);
 
-    return c.json(warehouseResult);
+    return c.json(warehouseResult as WarehouseTableResponse);
   })
   .openapi(warehouseDetailRoute, async (c) => {
-    const body = c.req.valid("json");
+    const body = warehouseDetailRequestSchema.parse(await c.req.json());
 
     const warehouse = firstOrNull(
       await getDrizzle()
@@ -162,7 +175,7 @@ export const warehouseApi = new OpenAPIHono()
 
     const warehouseDto = await getWarehouseDtos([warehouse]);
 
-    return c.json({ warehouse: warehouseDto[0] });
+    return c.json({ warehouse: warehouseDto[0] } as WarehouseDetailResponse);
   });
 
 export type WarehouseApiType = typeof warehouseApi;

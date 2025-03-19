@@ -1,10 +1,13 @@
-import { labelApi } from "@/api";
 import type { QueryClientError } from "@/utils/query-client";
-import type { LabelLoadResponse } from "@meside/api/label.schema";
-import type { LabelLoadRequest } from "@meside/api/label.schema";
+import { createPost } from "@/utils/request";
+import {
+  type LabelLoadRequest,
+  type LabelLoadResponse,
+  labelLoadRoute,
+} from "@meside/shared/api/label.schema";
 import type { UseMutationOptions } from "@tanstack/react-query";
 
-export type { CatalogDto } from "@meside/api/catalog.schema";
+export type { LabelDto } from "@meside/shared/api/label.schema";
 
 export const getLabelLoad = (): UseMutationOptions<
   LabelLoadResponse,
@@ -13,12 +16,9 @@ export const getLabelLoad = (): UseMutationOptions<
 > => ({
   mutationKey: [getLabelLoad.name],
   mutationFn: async ({ warehouseId }) => {
-    const response = await labelApi.load.$post({
-      json: {
-        warehouseId,
-      },
-    });
-    const json = await response.json();
+    const json = await createPost<LabelLoadRequest, LabelLoadResponse>(
+      `/label${labelLoadRoute.path}`,
+    )({ warehouseId });
     return json;
   },
 });

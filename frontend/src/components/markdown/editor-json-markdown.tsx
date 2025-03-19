@@ -1,8 +1,8 @@
 import {
   type EditorJSONContent,
   editorJsonToMarkdown,
-} from "@meside/shared/editor-json-to-markdown";
-import { parseJsonOrNull } from "@meside/shared/json";
+} from "@meside/shared/editor/editor-json-to-markdown";
+import { parseJsonOrNull } from "@meside/shared/utils/json";
 import { useMemo } from "react";
 import { Markdown } from "../markdown/markdown";
 

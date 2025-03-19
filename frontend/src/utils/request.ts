@@ -1,7 +1,4 @@
-import { type ClientRequestOptions, hc } from "hono/client";
-import type { HonoBase } from "hono/hono-base";
-
-export const getOptions = (): ClientRequestOptions => {
+export const getOptions = () => {
   return {
     fetch: async (
       url: Parameters<typeof fetch>[0],
@@ -29,8 +26,7 @@ export const getOptions = (): ClientRequestOptions => {
   };
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export const api = <T extends HonoBase<any, any, any>>(
+export const createPost = <PostRequest, PostResponse>(
   url: string,
   options?: {
     baseUrl: string;
@@ -38,5 +34,17 @@ export const api = <T extends HonoBase<any, any, any>>(
 ) => {
   const baseUrl = options?.baseUrl ?? "/meside/api";
   const defaultOptions = getOptions();
-  return hc<T>(`${baseUrl}${url}`, defaultOptions);
+  const fetch = defaultOptions.fetch;
+
+  return async (request: PostRequest): Promise<PostResponse> => {
+    console.log("request", request, JSON.stringify(request));
+    const response = await fetch(`${baseUrl}${url}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: request ? JSON.stringify(request) : undefined,
+    });
+    return await response.json();
+  };
 };

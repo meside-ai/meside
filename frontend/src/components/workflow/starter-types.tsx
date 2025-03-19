@@ -1,4 +1,4 @@
-import type { QuestionDto } from "@meside/api/question.schema";
+import type { QuestionDto } from "@meside/shared/api/question.schema";
 import type { PreviewEntity } from "../preview/types";
 
 export type StarterProps = {
