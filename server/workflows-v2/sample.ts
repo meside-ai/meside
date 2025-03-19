@@ -7,7 +7,7 @@ import type {
 
 import readline from "node:readline/promises";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { SSEClientTransport } from "./sse";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 if (!OPENAI_API_KEY) {
@@ -17,7 +17,7 @@ if (!OPENAI_API_KEY) {
 class MCPClient {
   private mcp: Client;
   private openai: OpenAI;
-  private transport: StdioClientTransport | null = null;
+  private transport: SSEClientTransport | null = null;
   private tools: ChatCompletionTool[] = [];
 
   constructor() {
@@ -28,30 +28,17 @@ class MCPClient {
     this.mcp = new Client({ name: "mcp-client-cli", version: "1.0.0" });
   }
 
-  async connectToServer(serverScriptPath: string) {
+  async connectToServer() {
     /**
      * Connect to an MCP server
      *
      * @param serverScriptPath - Path to the server script (.py or .js)
      */
     try {
-      // Determine script type and appropriate command
-      const isJs = serverScriptPath.endsWith(".js");
-      const isPy = serverScriptPath.endsWith(".py");
-      if (!isJs && !isPy) {
-        throw new Error("Server script must be a .js or .py file");
-      }
-      const command = isPy
-        ? process.platform === "win32"
-          ? "python"
-          : "python3"
-        : process.execPath;
-
       // Initialize transport and connect to server
-      this.transport = new StdioClientTransport({
-        command,
-        args: [serverScriptPath],
-      });
+      this.transport = new SSEClientTransport(
+        new URL("http://localhost:6333/meside/api/mcp-server/sse"),
+      );
       this.mcp.connect(this.transport);
 
       // List available tools
@@ -185,13 +172,9 @@ class MCPClient {
 }
 
 async function main() {
-  if (process.argv.length < 3) {
-    console.log("Usage: node build/index.js <path_to_server_script>");
-    return;
-  }
   const mcpClient = new MCPClient();
   try {
-    await mcpClient.connectToServer(process.argv[2]);
+    await mcpClient.connectToServer();
     await mcpClient.chatLoop();
   } finally {
     await mcpClient.cleanup();

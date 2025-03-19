@@ -3,10 +3,12 @@ import { server } from "@/mcp-server/index.js";
 import { Hono } from "hono";
 import { SSEServerTransport } from "../mcp-server/common/sse.js";
 
-let transport: SSEServerTransport | null = null;
+const transportMap = new Map<string, SSEServerTransport>();
 
 export const mcpServerApi = new Hono()
   .get("/sse", async (c) => {
+    console.log("see", JSON.stringify(c.req.raw));
+    console.log("transportMap", Array.from(transportMap.keys()));
     const { readable, writable } = new TransformStream();
     const writer = writable.getWriter();
 
@@ -36,10 +38,12 @@ export const mcpServerApi = new Hono()
 
     const serverRes = res as unknown as ServerResponse;
 
-    transport = new SSEServerTransport(
+    const transport = new SSEServerTransport(
       "/meside/api/mcp-server/message",
       serverRes,
     );
+    const sessionId = transport.sessionId;
+    transportMap.set(sessionId, transport);
     await server.connect(transport);
 
     return new Response(readable, {
@@ -57,6 +61,9 @@ export const mcpServerApi = new Hono()
     if (!sessionId) {
       return c.json({ error: "Missing sessionId parameter" }, 400);
     }
+    console.log("sessionId", sessionId);
+    const transport = transportMap.get(sessionId);
+
     if (!transport) {
       return c.json({ error: "Session not found" }, 404);
     }
