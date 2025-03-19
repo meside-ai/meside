@@ -23,12 +23,12 @@ jobs:
 
       - name: TypeScript Build Check (Frontend)
         working-directory: ./frontend
-        run: bunx tsc -b
-
-      - name: TypeScript Build Check (Server)
-        working-directory: ./server
-        run: bunx tsc -b
+        run: bun run build
 
       - name: Install Dependencies (Server)
         working-directory: ./server
         run: bun install --frozen-lockfile
+
+      - name: TypeScript Build Check (Server)
+        working-directory: ./server
+        run: bunx tsc -b
