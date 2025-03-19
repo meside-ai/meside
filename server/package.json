@@ -19,7 +19,6 @@
     "check": "bunx biome check --write ../"
   },
   "dependencies": {
-    "mysql2": "^3.13.0",
     "@ai-sdk/deepseek": "^0.1.12",
     "@ai-sdk/openai": "^1.2.0",
     "@google-cloud/bigquery": "^7.9.2",
@@ -27,12 +26,15 @@
     "@hono/zod-validator": "^0.4.3",
     "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "^6.3.1",
+    "@types/mssql": "^9.1.7",
     "ai": "^4.1.51",
     "drizzle-orm": "^0.39.3",
     "drizzle-seed": "^0.3.1",
     "drizzle-zod": "^0.7.0",
     "es-toolkit": "^1.32.0",
     "hono": "^4.7.1",
+    "mssql": "^11.0.1",
+    "mysql2": "^3.13.0",
     "pg": "^8.13.3",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",

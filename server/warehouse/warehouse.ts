@@ -3,6 +3,7 @@ import type { Warehouse } from "./warehouse.interface";
 import { BigqueryWarehouse } from "./warehouse/bigquery";
 import { PostgresWarehouse } from "./warehouse/postgres";
 import { MysqlWarehouse } from "./warehouse/mysql";
+import { SqlServerWarehouse } from "./warehouse/sqlserver";
 
 export class WarehouseFactory {
   create(type: WarehouseEntity["type"]): Warehouse {
@@ -13,6 +14,8 @@ export class WarehouseFactory {
         return new BigqueryWarehouse();
       case "mysql":
         return new MysqlWarehouse();
+      case "sqlserver":
+        return new SqlServerWarehouse();
       default:
         throw new Error(`Unsupported warehouse type: ${type}`);
     }
