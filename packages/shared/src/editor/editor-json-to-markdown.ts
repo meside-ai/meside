@@ -53,7 +53,7 @@ const processTable = (rows: EditorJSONContent[]): string => {
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    const cells = row.content || [];
+    const cells = row?.content || [];
 
     if (!cells.length) continue;
 
