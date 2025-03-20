@@ -22,6 +22,7 @@ Meside is an open-source, AI-driven data transformation tool designed to streaml
 1. **Prerequisites**: Ensure [Bun](https://bun.sh/) (v1.0+) and [Docker](https://www.docker.com/) are installed.  
 2. **Database Setup**:  
    ```bash 
+   sh ./dev-docker-clean.sh
    sh ./dev-docker-start.sh
    ```
 3. **Backend Setup**:  
