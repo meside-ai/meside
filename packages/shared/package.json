@@ -6,7 +6,6 @@
     "./*": "./src/*.ts"
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
     "@repo/typescript-config": "*"
   },
   "dependencies": {

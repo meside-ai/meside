@@ -7,7 +7,6 @@
     "dev": "next dev --turbopack --port 3002",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --max-warnings 0",
     "check-types": "tsc --noEmit",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
@@ -36,7 +35,6 @@
     "zod-to-json-schema": "^3.24.4"
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@types/oracledb": "^6.5.3",
     "@types/pg": "^8.11.11",
