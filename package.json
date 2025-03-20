@@ -1,23 +1,24 @@
 {
   "name": "meside",
-  "version": "0.2.0",
-  "license": "MIT",
-  "type": "module",
-  "workspaces": ["frontend", "server", "website"],
+  "private": true,
   "scripts": {
-    "lint": "bunx biome check .",
-    "lint:fix": "bunx biome check --write .",
-    "prepare": "husky"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.5.0"
+    "prettier": "^3.5.3",
+    "turbo": "^2.4.4",
+    "typescript": "5.8.2"
   },
   "engines": {
-    "bun": ">=1.0.0"
+    "node": ">=18"
   },
-  "lint-staged": {
-    "*": ["biome check --no-errors-on-unmatched --files-ignore-unknown=true"]
-  }
+  "packageManager": "bun@1.2.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }

@@ -1,7 +1,7 @@
 # meside  
 **The better AI Agent for Database (multi agents and model context protocol)**
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE)
 
 *Note: Meside is under active development. Expect breaking changes in early versions.*  

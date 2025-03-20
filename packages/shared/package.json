@@ -1,0 +1,16 @@
+{
+  "name": "@meside/shared",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "^0.19.2",
+    "hono": "^4.7.5"
+  }
+}
