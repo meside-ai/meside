@@ -1,7 +1,7 @@
-import { getLogger } from "../../logger";
-import { cuid } from "../../utils/cuid";
 import oracledb from "oracledb";
 import { z } from "zod";
+import { getLogger } from "../../logger";
+import { cuid } from "../../utils/cuid";
 import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
 import type {
   ConnectionConfig,
@@ -22,7 +22,7 @@ export class OracleWarehouse implements Warehouse {
   }
 
   async getCatalogs(
-    connection: ConnectionConfig
+    connection: ConnectionConfig,
   ): Promise<WarehouseFactoryCatalog[]> {
     const conn = await this.getConnection(connection);
     try {
@@ -64,7 +64,7 @@ export class OracleWarehouse implements Warehouse {
   }
 
   async getRelations(
-    connection: ConnectionConfig
+    connection: ConnectionConfig,
   ): Promise<WarehouseFactoryRelation[]> {
     const conn = await this.getConnection(connection);
     try {
@@ -113,7 +113,7 @@ export class OracleWarehouse implements Warehouse {
 
   async query(
     connection: ConnectionConfig,
-    sql: string
+    sql: string,
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
@@ -139,7 +139,7 @@ export class OracleWarehouse implements Warehouse {
         z.object({
           name: z.string(),
           dbTypeName: z.string(),
-        })
+        }),
       ),
     });
 
@@ -163,7 +163,7 @@ export class OracleWarehouse implements Warehouse {
     schemaName: string,
     tableName: string,
     columnName: string,
-    limit = 3
+    limit = 3,
   ): Promise<WarehouseQueryRow[]> {
     const dbResult = await this.query(
       connection,
@@ -172,7 +172,7 @@ export class OracleWarehouse implements Warehouse {
       FROM ${schemaName}.${tableName}
       WHERE ${columnName} IS NOT NULL
       FETCH FIRST ${limit} ROWS ONLY
-      `
+      `,
     );
 
     return dbResult.rows;
@@ -206,7 +206,7 @@ export enum OracleTypes {
 }
 
 const mapOracleFieldType = (
-  typeName: string
+  typeName: string,
 ): WarehouseQueryColumn["columnType"] => {
   const UppercaseTypeName = typeName.toUpperCase();
 

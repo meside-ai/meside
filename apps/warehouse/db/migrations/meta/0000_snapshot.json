@@ -97,9 +97,7 @@
         "catalog_full_name_unique": {
           "name": "catalog_full_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "full_name"
-          ]
+          "columns": ["full_name"]
         }
       },
       "policies": {},
@@ -274,10 +272,7 @@
         "relation_full_name_foreign_full_name_unique": {
           "name": "relation_full_name_foreign_full_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "full_name",
-            "foreign_full_name"
-          ]
+          "columns": ["full_name", "foreign_full_name"]
         }
       },
       "policies": {},
@@ -389,12 +384,7 @@
     "public.warehouse_type": {
       "name": "warehouse_type",
       "schema": "public",
-      "values": [
-        "postgresql",
-        "bigquery",
-        "mysql",
-        "oracle"
-      ]
+      "values": ["postgresql", "bigquery", "mysql", "oracle"]
     }
   },
   "schemas": {},

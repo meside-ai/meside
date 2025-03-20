@@ -1,6 +1,6 @@
 import type { ServerResponse } from "node:http";
-import { server } from "./mcp-server";
 import { SSEServerTransport } from "../../../../mcp/sse";
+import { server } from "./mcp-server";
 
 let transport: SSEServerTransport | null = null;
 
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       JSON.stringify({ error: "Missing sessionId parameter" }),
       {
         status: 400,
-      }
+      },
     );
   }
   if (!transport) {

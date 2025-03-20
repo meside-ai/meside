@@ -2,8 +2,8 @@ import { reset } from "drizzle-seed";
 import { getDrizzle } from "./db/db";
 import { catalogTable } from "./db/schema/catalog";
 import { labelTable } from "./db/schema/label";
-import { warehouseTable } from "./db/schema/warehouse";
 import { relationTable } from "./db/schema/relation";
+import { warehouseTable } from "./db/schema/warehouse";
 
 export async function resetDb() {
   const db = getDrizzle();

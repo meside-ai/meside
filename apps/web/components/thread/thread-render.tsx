@@ -1,4 +1,4 @@
-import { ToolInvocationUIPart, UIMessage } from "@ai-sdk/ui-utils";
+import type { ToolInvocationUIPart, UIMessage } from "@ai-sdk/ui-utils";
 import {
   ActionIcon,
   Avatar,
@@ -9,19 +9,19 @@ import {
   ScrollArea,
   Text,
 } from "@mantine/core";
-import { AssistantHeader } from "./assistant-header";
-import { MarkdownPart } from "./markdown-part";
-import { useMemo, useState } from "react";
-import { useThreadContext } from "../chat/context";
 import {
   IconChevronLeft,
   IconChevronRight,
   IconPencil,
   IconTool,
 } from "@tabler/icons-react";
-import { getThreadDetail } from "../../queries/thread";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { getThreadDetail } from "../../queries/thread";
+import { useThreadContext } from "../chat/context";
+import { AssistantHeader } from "./assistant-header";
 import { EditThreadInput } from "./edit-thread-input";
+import { MarkdownPart } from "./markdown-part";
 
 export const ThreadRender = ({
   messages,

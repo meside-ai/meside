@@ -24,7 +24,7 @@ export class SSEServerTransport implements Transport {
    */
   constructor(
     private _endpoint: string,
-    private res: ServerResponse
+    private res: ServerResponse,
   ) {
     this._sessionId = randomUUID();
   }
@@ -37,7 +37,7 @@ export class SSEServerTransport implements Transport {
   async start(): Promise<void> {
     if (this._sseResponse) {
       throw new Error(
-        "SSEServerTransport already started! If using Server class, note that connect() calls start() automatically."
+        "SSEServerTransport already started! If using Server class, note that connect() calls start() automatically.",
       );
     }
 
@@ -49,7 +49,7 @@ export class SSEServerTransport implements Transport {
 
     // Send the endpoint event
     this.res.write(
-      `event: endpoint\ndata: ${encodeURI(this._endpoint)}?sessionId=${this._sessionId}\n\n`
+      `event: endpoint\ndata: ${encodeURI(this._endpoint)}?sessionId=${this._sessionId}\n\n`,
     );
 
     this._sseResponse = this.res;
@@ -108,7 +108,7 @@ export class SSEServerTransport implements Transport {
     }
 
     this._sseResponse.write(
-      `event: message\ndata: ${JSON.stringify(message)}\n\n`
+      `event: message\ndata: ${JSON.stringify(message)}\n\n`,
     );
   }
 

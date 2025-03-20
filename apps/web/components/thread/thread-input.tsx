@@ -1,6 +1,6 @@
 import { Box, Button, Group, Loader, Textarea } from "@mantine/core";
 import { IconArrowUp } from "@tabler/icons-react";
-import { ReactNode, useCallback, useState } from "react";
+import { type ReactNode, useCallback, useState } from "react";
 
 export const ThreadInput = ({
   handleSubmit,
@@ -22,7 +22,7 @@ export const ThreadInput = ({
       handleSubmit(input);
       setInput("");
     },
-    [handleSubmit, input]
+    [handleSubmit, input],
   );
 
   return (

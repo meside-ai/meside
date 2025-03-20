@@ -2,7 +2,6 @@ import type { WarehouseEntity } from "../db/schema/warehouse";
 import type { Warehouse } from "./warehouse.interface";
 import { BigqueryWarehouse } from "./warehouse/bigquery";
 import { MysqlWarehouse } from "./warehouse/mysql";
-import { OracleWarehouse } from "./warehouse/oracle";
 import { PostgresWarehouse } from "./warehouse/postgres";
 
 export class WarehouseFactory {

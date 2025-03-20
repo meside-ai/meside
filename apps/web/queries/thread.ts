@@ -1,5 +1,3 @@
-import type { QueryClientError } from "../utils/query-client";
-import { createPost } from "@meside/shared/request/index";
 import {
   type ThreadCreateRequest,
   type ThreadCreateResponse,
@@ -7,17 +5,19 @@ import {
   type ThreadDetailResponse,
   type ThreadListRequest,
   type ThreadListResponse,
-  ThreadUpdateRequest,
-  ThreadUpdateResponse,
+  type ThreadUpdateRequest,
+  type ThreadUpdateResponse,
   threadCreateRoute,
   threadDetailRoute,
   threadListRoute,
   threadUpdateRoute,
 } from "@meside/shared/api/thread.schema";
+import { createPost } from "@meside/shared/request/index";
 import type {
   UseMutationOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
+import type { QueryClientError } from "../utils/query-client";
 
 export const getThreadList = ({
   parentThreadId,
@@ -26,7 +26,7 @@ export const getThreadList = ({
   queryKey: [getThreadList.name, parentThreadId],
   queryFn: async () => {
     const json = await createPost<ThreadListRequest, ThreadListResponse>(
-      `${threadListRoute.path}`
+      `${threadListRoute.path}`,
     )({ parentThreadId });
     return json;
   },
@@ -39,7 +39,7 @@ export const getThreadDetail = ({
   queryKey: [getThreadDetail.name, threadId],
   queryFn: async () => {
     const json = await createPost<ThreadDetailRequest, ThreadDetailResponse>(
-      `${threadDetailRoute.path}`
+      `${threadDetailRoute.path}`,
     )({ threadId });
     return json;
   },
@@ -53,7 +53,7 @@ export const getThreadCreate = (): UseMutationOptions<
   mutationKey: [getThreadCreate.name],
   mutationFn: async (body) => {
     const json = await createPost<ThreadCreateRequest, ThreadCreateResponse>(
-      `${threadCreateRoute.path}`
+      `${threadCreateRoute.path}`,
     )(body);
     return json;
   },
@@ -67,7 +67,7 @@ export const getThreadUpdate = (): UseMutationOptions<
   mutationKey: [getThreadCreate.name],
   mutationFn: async (body) => {
     const json = await createPost<ThreadUpdateRequest, ThreadUpdateResponse>(
-      `${threadUpdateRoute.path}`
+      `${threadUpdateRoute.path}`,
     )(body);
     return json;
   },

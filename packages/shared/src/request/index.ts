@@ -2,7 +2,7 @@ export const getOptions = () => {
   return {
     fetch: async (
       url: Parameters<typeof fetch>[0],
-      options: Parameters<typeof fetch>[1]
+      options: Parameters<typeof fetch>[1],
     ) => {
       console.log("url", url);
       const response = await fetch(url, options);
@@ -31,7 +31,7 @@ export const createPost = <PostRequest, PostResponse>(
   url: string,
   options?: {
     baseUrl: string;
-  }
+  },
 ) => {
   const baseUrl = options?.baseUrl ?? "/meside/server";
   const defaultOptions = getOptions();

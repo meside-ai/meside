@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { experimental_createMCPClient as createMCPClient, Tool } from "ai";
+import { type Tool, experimental_createMCPClient as createMCPClient } from "ai";
 import { streamText } from "ai";
 
 let warehouseMcp: Awaited<ReturnType<typeof createMCPClient>> | null = null;

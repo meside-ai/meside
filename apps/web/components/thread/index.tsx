@@ -1,16 +1,16 @@
 import { Box } from "@mantine/core";
-import { useThreadContext } from "../chat/context";
 import { useQuery } from "@tanstack/react-query";
 import { getThreadDetail } from "../../queries/thread";
-import { ThreadRender } from "./thread-render";
-import { NewThreadMessage } from "./new-thread-message";
+import { useThreadContext } from "../chat/context";
 import { NewThreadInput } from "./new-thread-input";
+import { NewThreadMessage } from "./new-thread-message";
+import { ThreadRender } from "./thread-render";
 
 export const Thread = () => {
   const { threadId, setThreadId } = useThreadContext();
 
   const { data, isLoading } = useQuery(
-    getThreadDetail({ threadId: threadId ?? "" })
+    getThreadDetail({ threadId: threadId ?? "" }),
   );
 
   if (isLoading) {

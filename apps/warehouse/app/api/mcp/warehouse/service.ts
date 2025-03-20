@@ -1,19 +1,19 @@
+import { and, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../../../../db/db";
 import { catalogTable } from "../../../../db/schema/catalog";
 import { labelTable } from "../../../../db/schema/label";
 import { relationTable } from "../../../../db/schema/relation";
 import {
-  WarehouseEntity,
+  type WarehouseEntity,
   warehouseTable,
 } from "../../../../db/schema/warehouse";
-import { and, eq, isNull } from "drizzle-orm";
+import { firstOrNotFound } from "../../../../utils/toolkit";
 import type {
   WarehouseQueryColumn,
   WarehouseQueryRow,
 } from "../../../../warehouse/type";
 import { WarehouseFactory } from "../../../../warehouse/warehouse";
 import type { ConnectionConfig } from "../../../../warehouse/warehouse.interface";
-import { firstOrNotFound } from "../../../../utils/toolkit";
 
 class WarehouseService {
   private warehouseFactory = new WarehouseFactory();
@@ -50,7 +50,7 @@ class WarehouseService {
 
     const warehouse = firstOrNotFound(
       warehouses,
-      `Warehouse with name ${warehouseName} not found`
+      `Warehouse with name ${warehouseName} not found`,
     );
 
     return warehouse;
@@ -86,14 +86,14 @@ class WarehouseService {
           }
           return acc;
         },
-        {} as Record<string, { schemaName: string; tableName: string }>
+        {} as Record<string, { schemaName: string; tableName: string }>,
       );
 
       return Object.values(tables);
     } catch (error) {
       console.error(
         `Error fetching tables for warehouse ${warehouseName}:`,
-        error
+        error,
       );
       throw new Error(`Failed to fetch tables for warehouse ${warehouseName}`);
     }
@@ -136,13 +136,13 @@ class WarehouseService {
           const label = labels.find(
             (label) =>
               label.catalogFullName ===
-              `${catalog.schemaName}.${catalog.tableName}.${catalog.columnName}`
+              `${catalog.schemaName}.${catalog.tableName}.${catalog.columnName}`,
           );
           const foreign = relations.find(
             (relation) =>
               relation.schemaName === catalog.schemaName &&
               relation.tableName === catalog.tableName &&
-              relation.columnName === catalog.columnName
+              relation.columnName === catalog.columnName,
           );
           return {
             ...catalog,
@@ -157,10 +157,10 @@ class WarehouseService {
     } catch (error) {
       console.error(
         `Error fetching columns for warehouse ${warehouseName}, table ${schemaTableName}:`,
-        error
+        error,
       );
       throw new Error(
-        `Failed to fetch columns for warehouse ${warehouseName}, table ${schemaTableName}`
+        `Failed to fetch columns for warehouse ${warehouseName}, table ${schemaTableName}`,
       );
     }
   }
@@ -170,7 +170,7 @@ class WarehouseService {
    */
   async runQuery(
     warehouseId: string,
-    sql: string
+    sql: string,
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
@@ -191,7 +191,7 @@ class WarehouseService {
     } catch (error) {
       console.error(`Error running query on warehouse ${warehouseId}:`, error);
       throw new Error(
-        `Failed to run query on warehouse ${warehouseId}: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to run query on warehouse ${warehouseId}: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
@@ -205,8 +205,8 @@ class WarehouseService {
       .where(
         and(
           eq(catalogTable.warehouseId, warehouse.warehouseId),
-          isNull(catalogTable.deletedAt)
-        )
+          isNull(catalogTable.deletedAt),
+        ),
       );
     const relations = await getDrizzle()
       .select()
@@ -214,8 +214,8 @@ class WarehouseService {
       .where(
         and(
           eq(relationTable.warehouseId, warehouse.warehouseId),
-          isNull(relationTable.deletedAt)
-        )
+          isNull(relationTable.deletedAt),
+        ),
       );
     const labels = await getDrizzle()
       .select()
@@ -235,7 +235,7 @@ class WarehouseService {
           (relation) =>
             relation.foreignSchemaName === catalog.schemaName &&
             relation.foreignTableName === catalog.tableName &&
-            relation.foreignColumnName === catalog.columnName
+            relation.foreignColumnName === catalog.columnName,
         );
         const foreignKey = foreign
           ? `${foreign?.foreignSchemaName}.${foreign?.foreignTableName}.${foreign?.foreignColumnName}`

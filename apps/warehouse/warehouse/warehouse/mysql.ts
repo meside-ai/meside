@@ -1,7 +1,7 @@
-import { getLogger } from "../../logger";
-import { cuid } from "../../utils/cuid";
 import mysql from "mysql2/promise";
 import { z } from "zod";
+import { getLogger } from "../../logger";
+import { cuid } from "../../utils/cuid";
 import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
 import type {
   ConnectionConfig,
@@ -14,7 +14,7 @@ export class MysqlWarehouse implements Warehouse {
   private logger = getLogger(MysqlWarehouse.name);
 
   async getCatalogs(
-    connection: ConnectionConfig
+    connection: ConnectionConfig,
   ): Promise<WarehouseFactoryCatalog[]> {
     const conn = await mysql.createConnection({
       host: connection.host,
@@ -56,7 +56,7 @@ export class MysqlWarehouse implements Warehouse {
   }
 
   async getRelations(
-    connection: ConnectionConfig
+    connection: ConnectionConfig,
   ): Promise<WarehouseFactoryRelation[]> {
     const conn = await mysql.createConnection({
       host: connection.host,
@@ -101,7 +101,7 @@ export class MysqlWarehouse implements Warehouse {
 
   async query(
     connection: ConnectionConfig,
-    sql: string
+    sql: string,
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
@@ -143,7 +143,7 @@ export class MysqlWarehouse implements Warehouse {
           columnLength: z.number(),
           columnType: z.number(),
           decimals: z.number(),
-        })
+        }),
       ),
     });
 
@@ -167,7 +167,7 @@ export class MysqlWarehouse implements Warehouse {
     schemaName: string,
     tableName: string,
     columnName: string,
-    limit = 3
+    limit = 3,
   ): Promise<WarehouseQueryRow[]> {
     const dbResult = await this.query(
       connection,
@@ -176,7 +176,7 @@ export class MysqlWarehouse implements Warehouse {
       FROM \`${schemaName}\`.\`${tableName}\`
       WHERE \`${columnName}\` IS NOT NULL
       LIMIT ${limit}
-      `
+      `,
     );
 
     return dbResult.rows;

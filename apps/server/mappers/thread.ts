@@ -1,21 +1,21 @@
-import { getDrizzle } from "../db/db";
-import { userTable } from "../db/schema/user";
 import type { ThreadDto } from "@meside/shared/api/thread.schema";
 import { and, asc, inArray, isNull } from "drizzle-orm";
 import { uniq } from "es-toolkit/compat";
-import { getUserDtos } from "./user";
+import { getDrizzle } from "../db/db";
 import { type ThreadEntity, threadTable } from "../db/schema/thread";
+import { userTable } from "../db/schema/user";
+import { getUserDtos } from "./user";
 
 export const getThreadDtos = async (
-  threads: ThreadEntity[]
+  threads: ThreadEntity[],
 ): Promise<ThreadDto[]> => {
   const userIds = uniq(
     threads
       .map((thread) => thread.ownerId)
-      .filter((ownerId) => ownerId !== null)
+      .filter((ownerId) => ownerId !== null),
   );
   const versionIds = uniq(
-    threads.map((thread) => thread.versionId).filter(Boolean)
+    threads.map((thread) => thread.versionId).filter(Boolean),
   );
 
   const [userDtos, threadSiblings] = await Promise.all([
@@ -23,7 +23,7 @@ export const getThreadDtos = async (
       await getDrizzle()
         .select()
         .from(userTable)
-        .where(inArray(userTable.userId, userIds))
+        .where(inArray(userTable.userId, userIds)),
     ),
     await getDrizzle()
       .select({
@@ -34,8 +34,8 @@ export const getThreadDtos = async (
       .where(
         and(
           inArray(threadTable.versionId, versionIds),
-          isNull(threadTable.deletedAt)
-        )
+          isNull(threadTable.deletedAt),
+        ),
       )
       .orderBy(asc(threadTable.createdAt)),
   ]);

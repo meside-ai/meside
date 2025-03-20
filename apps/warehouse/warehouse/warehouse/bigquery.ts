@@ -1,6 +1,6 @@
+import { BigQuery } from "@google-cloud/bigquery";
 import { getLogger } from "../../logger";
 import { cuid } from "../../utils/cuid";
-import { BigQuery } from "@google-cloud/bigquery";
 import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
 import type {
   ConnectionConfig,
@@ -13,7 +13,7 @@ export class BigqueryWarehouse implements Warehouse {
   private logger = getLogger("bigquery");
 
   async getCatalogs(
-    connection: ConnectionConfig
+    connection: ConnectionConfig,
   ): Promise<WarehouseFactoryCatalog[]> {
     const projectId = connection.database;
     const bigquery = new BigQuery({ projectId });
@@ -63,8 +63,8 @@ export class BigqueryWarehouse implements Warehouse {
             self.findIndex(
               (t) =>
                 `${t.schemaName}.${t.tableName}.${t.columnName}` ===
-                `${row.schemaName}.${row.tableName}.${row.columnName}`
-            ) === index
+                `${row.schemaName}.${row.tableName}.${row.columnName}`,
+            ) === index,
         );
 
         // Add results to collection
@@ -78,7 +78,7 @@ export class BigqueryWarehouse implements Warehouse {
   }
 
   async getRelations(
-    connection: ConnectionConfig
+    connection: ConnectionConfig,
   ): Promise<WarehouseFactoryRelation[]> {
     const projectId = connection.database;
     const bigquery = new BigQuery({ projectId });
@@ -131,12 +131,12 @@ export class BigqueryWarehouse implements Warehouse {
               foreignSchemaName: row.foreignSchemaName,
               foreignTableName: row.foreignTableName,
               foreignColumnName: row.foreignColumnName,
-            }))
+            })),
           );
         } catch (err) {
           this.logger.error(
             `Error processing dataset ${datasetId} for relations:`,
-            err
+            err,
           );
         }
       }
@@ -150,7 +150,7 @@ export class BigqueryWarehouse implements Warehouse {
 
   async query(
     connection: ConnectionConfig,
-    sql: string
+    sql: string,
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
@@ -219,7 +219,7 @@ export class BigqueryWarehouse implements Warehouse {
     schemaName: string,
     tableName: string,
     columnName: string,
-    limit = 3
+    limit = 3,
   ): Promise<WarehouseQueryRow[]> {
     const projectId = connection.database;
 
@@ -233,7 +233,7 @@ export class BigqueryWarehouse implements Warehouse {
         FROM \`${projectId}.${schemaName}.${tableName}\`
         WHERE \`${columnName}\` IS NOT NULL
         LIMIT ${limit}
-        `
+        `,
       );
 
       return dbResult.rows;

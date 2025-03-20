@@ -1,7 +1,7 @@
-import { getLogger } from "../../logger";
-import { cuid } from "../../utils/cuid";
 import pg from "pg";
 import { z } from "zod";
+import { getLogger } from "../../logger";
+import { cuid } from "../../utils/cuid";
 import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
 import type {
   ConnectionConfig,
@@ -14,7 +14,7 @@ export class PostgresWarehouse implements Warehouse {
   private logger = getLogger(PostgresWarehouse.name);
 
   async getCatalogs(
-    connection: ConnectionConfig
+    connection: ConnectionConfig,
   ): Promise<WarehouseFactoryCatalog[]> {
     const { Client } = pg;
     const client = new Client({
@@ -66,7 +66,7 @@ export class PostgresWarehouse implements Warehouse {
   }
 
   async getRelations(
-    connection: ConnectionConfig
+    connection: ConnectionConfig,
   ): Promise<WarehouseFactoryRelation[]> {
     const { Client } = pg;
     const client = new Client({
@@ -115,7 +115,7 @@ export class PostgresWarehouse implements Warehouse {
 
   async query(
     connection: ConnectionConfig,
-    sql: string
+    sql: string,
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
@@ -154,7 +154,7 @@ export class PostgresWarehouse implements Warehouse {
           dataTypeSize: z.number(),
           dataTypeModifier: z.number(),
           format: z.string().transform(mapFieldType),
-        })
+        }),
       ),
     });
 
@@ -178,7 +178,7 @@ export class PostgresWarehouse implements Warehouse {
     schemaName: string,
     tableName: string,
     columnName: string,
-    limit = 3
+    limit = 3,
   ): Promise<WarehouseQueryRow[]> {
     const dbResult = await this.query(
       connection,
@@ -187,7 +187,7 @@ export class PostgresWarehouse implements Warehouse {
       FROM "${schemaName}"."${tableName}"
       WHERE "${columnName}" IS NOT NULL
       LIMIT ${limit}
-      `
+      `,
     );
 
     return dbResult.rows;

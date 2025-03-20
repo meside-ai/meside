@@ -36,7 +36,7 @@ const DOM_RECT_FALLBACK: DOMRect = {
 export const createMentionSuggestionOptions = (
   stateRef: React.RefObject<{
     warehouseId: string | null;
-  } | null>
+  } | null>,
 ): MentionOptions["suggestion"] => ({
   char: "/",
   // Replace this `items` code with a call to your API that returns suggestions

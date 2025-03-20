@@ -1,9 +1,3 @@
-import { getDrizzle } from "../db/db";
-import { ThreadEntity, threadTable } from "../db/schema/thread";
-import { getThreadDtos } from "../mappers/thread";
-import { getAuthOrUnauthorized } from "../utils/auth";
-import { cuid } from "../utils/cuid";
-import { firstOrNotCreated, firstOrNull } from "../utils/toolkit";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import {
   type ThreadCreateResponse,
@@ -20,6 +14,12 @@ import {
   threadUpdateRoute,
 } from "@meside/shared/api/thread.schema";
 import { type SQL, and, desc, eq, isNull } from "drizzle-orm";
+import { getDrizzle } from "../db/db";
+import { type ThreadEntity, threadTable } from "../db/schema/thread";
+import { getThreadDtos } from "../mappers/thread";
+import { getAuthOrUnauthorized } from "../utils/auth";
+import { cuid } from "../utils/cuid";
+import { firstOrNotCreated, firstOrNull } from "../utils/toolkit";
 
 export const threadApi = new OpenAPIHono();
 
@@ -55,9 +55,9 @@ threadApi.openapi(threadDetailRoute, async (c) => {
       .select()
       .from(threadTable)
       .where(
-        and(eq(threadTable.threadId, threadId), isNull(threadTable.deletedAt))
+        and(eq(threadTable.threadId, threadId), isNull(threadTable.deletedAt)),
       )
-      .limit(1)
+      .limit(1),
   );
 
   if (!thread) {
@@ -81,7 +81,7 @@ threadApi.openapi(threadCreateRoute, async (c) => {
       await getDrizzle()
         .select()
         .from(threadTable)
-        .where(eq(threadTable.threadId, body.parentThreadId))
+        .where(eq(threadTable.threadId, body.parentThreadId)),
     );
   } else {
     parentThread = null;
@@ -99,8 +99,8 @@ threadApi.openapi(threadCreateRoute, async (c) => {
         .where(
           and(
             eq(threadTable.versionId, body.versionId ?? threadId),
-            eq(threadTable.activeVersion, true)
-          )
+            eq(threadTable.activeVersion, true),
+          ),
         );
 
       const threads = await tx
@@ -120,7 +120,7 @@ threadApi.openapi(threadCreateRoute, async (c) => {
         .returning();
       return threads;
     }),
-    "Failed to create thread"
+    "Failed to create thread",
   );
 
   const threadDto = await getThreadDtos([thread]);

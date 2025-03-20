@@ -1,9 +1,9 @@
 import { Box } from "@mantine/core";
 import { PreviewPanel } from "../preview/preview-panel";
 import { PreviewProvider } from "../preview/preview-provider";
+import { Thread } from "../thread";
 import { MenuPanel } from "./menu-panel";
 import { ThreadProvider } from "./provider";
-import { Thread } from "../thread";
 
 export const Chat = () => {
   return (

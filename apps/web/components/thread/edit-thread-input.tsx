@@ -1,9 +1,9 @@
-import { Box, Button, Loader, Paper } from "@mantine/core";
+import { Button, Loader, Paper } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
-import { ThreadInput } from "./thread-input";
-import { useThreadContext } from "../chat/context";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getThreadCreate, getThreadDetail } from "../../queries/thread";
+import { useThreadContext } from "../chat/context";
+import { ThreadInput } from "./thread-input";
 
 export type EditThreadInputProps = {
   isEditing: boolean;

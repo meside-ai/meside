@@ -57,7 +57,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 // Tool to list all tables in a specific warehouse
@@ -93,7 +93,7 @@ server.tool(
         isError: true,
       };
     }
-  }
+  },
 );
 
 // Tool to list all columns in a specific warehouse and table
@@ -107,7 +107,7 @@ server.tool(
     try {
       const columns = await warehouseService.getColumns(
         warehouseName,
-        tableName
+        tableName,
       );
       const content: {
         type: "text";
@@ -137,7 +137,7 @@ server.tool(
         isError: true,
       };
     }
-  }
+  },
 );
 
 // Tool to run a query in a specific warehouse
@@ -169,5 +169,5 @@ server.tool(
         isError: true,
       };
     }
-  }
+  },
 );

@@ -1,4 +1,4 @@
-import { TextUIPart } from "@ai-sdk/ui-utils";
+import type { TextUIPart } from "@ai-sdk/ui-utils";
 import { Box, Table, Text } from "@mantine/core";
 import BaseMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";

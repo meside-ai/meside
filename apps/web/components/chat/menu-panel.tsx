@@ -1,4 +1,3 @@
-import { getThreadList } from "../../queries/thread";
 import {
   Avatar,
   Box,
@@ -12,6 +11,7 @@ import {
 } from "@mantine/core";
 import { IconMessageCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import { getThreadList } from "../../queries/thread";
 import { useThreadContext } from "./context";
 
 export const MenuPanel = () => {

@@ -1,8 +1,8 @@
 import { useChat } from "@ai-sdk/react";
 import { Box } from "@mantine/core";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getThreadDetail, getThreadUpdate } from "../../queries/thread";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getThreadDetail, getThreadUpdate } from "../../queries/thread";
 import { ThreadRender } from "./thread-render";
 
 export const NewThreadMessage = ({
