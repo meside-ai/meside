@@ -202,11 +202,7 @@ class WarehouseService {
 
     const warehouseInstance = this.warehouseFactory.create(warehouse.type);
     const result = await warehouseInstance.query(connectionConfig, sql);
-    const query = await this.createQuery(
-      warehouse.warehouseId,
-      sql,
-      result.fields,
-    );
+    const query = await this.createQuery(warehouse, sql, result.fields);
     const queryUrl = `https://p.meside.com/meside/warehouse/query/${query.queryId}`;
 
     return {
@@ -239,11 +235,10 @@ class WarehouseService {
   }
 
   async createQuery(
-    warehouseName: string,
+    warehouse: WarehouseEntity,
     sql: string,
     fields: WarehouseQueryColumn[],
   ): Promise<{ queryId: string }> {
-    const warehouse = await this.getWarehouseByName(warehouseName);
     const query = await getDrizzle()
       .insert(queryTable)
       .values({

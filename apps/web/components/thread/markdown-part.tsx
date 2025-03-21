@@ -18,8 +18,9 @@ export const MarkdownPart = ({ part }: { part: TextUIPart }) => {
           if (href?.startsWith("https://p.meside.com")) {
             return (
               <Button
-                variant="outline"
+                variant="light"
                 size="xs"
+                radius="lg"
                 onClick={() => {
                   openPreview({
                     name: "Preview",

@@ -32,29 +32,21 @@ export async function POST(req: Request) {
   const result = streamText({
     model: openai("gpt-4o"),
     system: [
+      "# Background",
+      "You are a helpful assistant that can help with SQL queries.",
       "# Instructions",
-      "1. you excel at sql",
-      "2. first get all warehouses, then get all tables, then get all columns in the specific table, then run query to validate the question",
-      "3. if the question is not valid, return the error message",
-      "4. if validate is ok, must return the query url in the response, dont return sql query code in the response",
-      "5. final response must be the markdown format",
+      "1. first get all warehouses, then get all tables, then get all columns in the specific table, then run query to validate the question",
+      "# Output",
+      "1. if validate is ok, must return the query url in the response, dont return sql query code in the response",
+      "2. if validate is not ok, return the human readable error message",
+      "3. final response must be the markdown format",
     ].join("\n"),
     messages,
     tools,
     maxSteps: 10,
+    temperature: 0,
     experimental_telemetry: { isEnabled: true },
   });
 
   return result.toDataStreamResponse();
 }
-
-// const createHandleFinish =
-//   (threadId: string): StreamTextOnFinishCallback<any> =>
-//   async (result) => {
-//     await createPost<ThreadUpdateRequest, ThreadUpdateResponse>(
-//       `${threadUpdateRoute.path}`
-//     )({
-//       threadId: threadId,
-//       messages: result.response.messages,
-//     });
-//   };

@@ -129,7 +129,7 @@ const ToolInvocationRender = ({ part }: { part: ToolInvocationUIPart }) => {
   return (
     <Box mb="sm">
       <Button
-        variant="gradient"
+        variant="outline"
         size="sm"
         radius="lg"
         leftSection={<IconSettingsSpark size={12} />}
