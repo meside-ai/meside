@@ -2,11 +2,13 @@ import { and, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../../../../db/db";
 import { catalogTable } from "../../../../db/schema/catalog";
 import { labelTable } from "../../../../db/schema/label";
+import { queryTable } from "../../../../db/schema/query";
 import { relationTable } from "../../../../db/schema/relation";
 import {
   type WarehouseEntity,
   warehouseTable,
 } from "../../../../db/schema/warehouse";
+import { cuid } from "../../../../utils/cuid";
 import { firstOrNotFound } from "../../../../utils/toolkit";
 import type {
   WarehouseQueryColumn,
@@ -174,26 +176,49 @@ class WarehouseService {
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
+    queryUrl: string;
   }> {
-    try {
-      const warehouse = await this.getWarehouse(warehouseId);
+    const warehouse = await this.getWarehouse(warehouseId);
 
-      const connectionConfig: ConnectionConfig = {
-        host: warehouse.host,
-        port: warehouse.port,
-        database: warehouse.database,
-        username: warehouse.username,
-        password: warehouse.password,
-      };
+    const connectionConfig: ConnectionConfig = {
+      host: warehouse.host,
+      port: warehouse.port,
+      database: warehouse.database,
+      username: warehouse.username,
+      password: warehouse.password,
+    };
 
-      const warehouseInstance = this.warehouseFactory.create(warehouse.type);
-      return await warehouseInstance.query(connectionConfig, sql);
-    } catch (error) {
-      console.error(`Error running query on warehouse ${warehouseId}:`, error);
-      throw new Error(
-        `Failed to run query on warehouse ${warehouseId}: ${error instanceof Error ? error.message : String(error)}`,
-      );
-    }
+    const warehouseInstance = this.warehouseFactory.create(warehouse.type);
+    const result = await warehouseInstance.query(connectionConfig, sql);
+    const query = await this.createQuery(warehouseId, sql, result.fields);
+    const queryUrl = `/meside/warehouse/query/${query.queryId}`;
+
+    return {
+      ...result,
+      queryUrl,
+    };
+  }
+
+  async createQuery(
+    warehouseName: string,
+    sql: string,
+    fields: WarehouseQueryColumn[],
+  ): Promise<{ queryId: string }> {
+    const warehouse = await this.getWarehouse(warehouseName);
+    const query = await getDrizzle()
+      .insert(queryTable)
+      .values({
+        queryId: cuid(),
+        warehouseId: warehouse.warehouseId,
+        warehouseType: warehouse.type,
+        sql,
+        fields,
+      })
+      .returning({
+        queryId: queryTable.queryId,
+      });
+
+    return firstOrNotFound(query, "Failed to create query");
   }
 
   async getCatalogs(warehouseName: string) {

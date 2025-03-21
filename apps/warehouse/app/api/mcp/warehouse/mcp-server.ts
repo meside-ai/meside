@@ -154,7 +154,27 @@ server.tool(
         content: [
           {
             type: "text",
-            text: JSON.stringify(results.rows, null, 2),
+            text: `Query URL: ${results.queryUrl}`,
+            description:
+              "The URL to the query results, return this url to user",
+          },
+          {
+            type: "text",
+            text: `SQL: ${sql}`,
+            description:
+              "The SQL query that was run, dont return this sql to user",
+          },
+          {
+            type: "text",
+            text: `Rows: ${JSON.stringify(results.rows, null, 2)}`,
+            description:
+              "The rows that were returned from the query, dont return this rows to user",
+          },
+          {
+            type: "text",
+            text: `Fields: ${JSON.stringify(results.fields, null, 2)}`,
+            description:
+              "The fields that were returned from the query, dont return this fields to user",
           },
         ],
       };
