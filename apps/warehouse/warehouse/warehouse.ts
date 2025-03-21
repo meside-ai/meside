@@ -1,11 +1,11 @@
-import type { WarehouseEntity } from "../db/schema/warehouse";
 import type { Warehouse } from "./warehouse.interface";
+import type { WarehouseProvider } from "./warehouse.type";
 import { BigqueryWarehouse } from "./warehouse/bigquery";
 import { MysqlWarehouse } from "./warehouse/mysql";
 import { PostgresWarehouse } from "./warehouse/postgres";
 
 export class WarehouseFactory {
-  create(type: WarehouseEntity["type"]): Warehouse {
+  create(type: WarehouseProvider["type"]): Warehouse {
     switch (type) {
       case "postgresql":
         return new PostgresWarehouse();

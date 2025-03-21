@@ -22,6 +22,20 @@
       "when": 1742516320591,
       "tag": "0002_complex_wild_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1742552152982,
+      "tag": "0003_spicy_stature",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1742559607126,
+      "tag": "0004_absent_rawhide_kid",
+      "breakpoints": true
     }
   ]
 }

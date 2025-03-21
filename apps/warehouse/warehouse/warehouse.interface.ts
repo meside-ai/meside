@@ -1,12 +1,5 @@
 import type { WarehouseQueryColumn, WarehouseQueryRow } from "./type";
-
-export type ConnectionConfig = {
-  host: string;
-  port: number;
-  database: string;
-  username: string;
-  password: string;
-};
+import type { WarehouseProvider } from "./warehouse.type";
 
 export type WarehouseFactoryCatalog = {
   schemaName: string;
@@ -27,24 +20,24 @@ export type WarehouseFactoryRelation = {
 
 export interface Warehouse {
   getCatalogs: (
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
   ) => Promise<WarehouseFactoryCatalog[]>;
   getRelations: (
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
   ) => Promise<WarehouseFactoryRelation[]>;
   query: (
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
     sql: string,
   ) => Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
   }>;
   getColumnSample: (
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
     schemaName: string,
     tableName: string,
     columnName: string,
     limit: number,
   ) => Promise<WarehouseQueryRow[]>;
-  testConnection: (connection: ConnectionConfig) => Promise<boolean>;
+  testConnection: (provider: WarehouseProvider) => Promise<boolean>;
 }

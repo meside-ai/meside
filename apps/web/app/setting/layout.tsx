@@ -1,14 +1,13 @@
 "use client";
 
 import { AppShell, NavLink } from "@mantine/core";
-import {
-  IconDatabase,
-  IconRobot,
-  IconSettings,
-  IconTools,
-} from "@tabler/icons-react";
+import { Notifications } from "@mantine/notifications";
+import { IconSettings } from "@tabler/icons-react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { queryClient } from "../../utils/query-client";
 
 const sidebarItems = [
   {
@@ -17,19 +16,9 @@ const sidebarItems = [
     icon: IconSettings,
   },
   {
-    title: "Model Setting",
-    href: "/setting/model",
-    icon: IconDatabase,
-  },
-  {
-    title: "Agent Setting",
-    href: "/setting/agent",
-    icon: IconRobot,
-  },
-  {
-    title: "Tool Setting",
-    href: "/setting/tools",
-    icon: IconTools,
+    title: "Warehouse",
+    href: "/setting/warehouse",
+    icon: IconSettings,
   },
 ];
 
@@ -41,27 +30,31 @@ export default function SettingLayout({
   const pathname = usePathname();
 
   return (
-    <AppShell navbar={{ width: 300, breakpoint: "sm" }} padding="md">
-      <AppShell.Navbar p="md">
-        <AppShell.Section grow>
-          {sidebarItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              style={{ textDecoration: "none" }}
-            >
-              <NavLink
-                label={item.title}
-                leftSection={<item.icon size="1.2rem" stroke={1.5} />}
-                active={pathname === item.href}
-                variant="filled"
-              />
-            </Link>
-          ))}
-        </AppShell.Section>
-      </AppShell.Navbar>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools />
+      <Notifications />
+      <AppShell navbar={{ width: 300, breakpoint: "sm" }} padding="md">
+        <AppShell.Navbar p="md">
+          <AppShell.Section grow>
+            {sidebarItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{ textDecoration: "none" }}
+              >
+                <NavLink
+                  label={item.title}
+                  leftSection={<item.icon size="1.2rem" stroke={1.5} />}
+                  active={pathname === item.href}
+                  variant="filled"
+                />
+              </Link>
+            ))}
+          </AppShell.Section>
+        </AppShell.Navbar>
 
-      <AppShell.Main>{children}</AppShell.Main>
-    </AppShell>
+        <AppShell.Main>{children}</AppShell.Main>
+      </AppShell>
+    </QueryClientProvider>
   );
 }

@@ -2,12 +2,10 @@ import { pgTable, text } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
-import { warehouseType } from "./warehouse";
 
 export const catalogTable = pgTable("catalog", {
   catalogId: primaryKeyCuid("catalog_id"),
   warehouseId: foreignCuid("warehouse_id").notNull(),
-  warehouseType: warehouseType("warehouse_type").notNull(),
   fullName: text("full_name").notNull().unique(),
   schemaName: text("schema_name").notNull(),
   tableName: text("table_name").notNull(),

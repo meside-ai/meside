@@ -2,27 +2,34 @@ import pg from "pg";
 import { z } from "zod";
 import { getLogger } from "../../logger";
 import { cuid } from "../../utils/cuid";
-import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
 import type {
-  ConnectionConfig,
   Warehouse,
   WarehouseFactoryCatalog,
   WarehouseFactoryRelation,
 } from "../warehouse.interface";
+import type { WarehouseProvider } from "../warehouse.type";
+import type {
+  WarehouseQueryColumn,
+  WarehouseQueryRow,
+} from "../warehouse.type";
 
 export class PostgresWarehouse implements Warehouse {
   private logger = getLogger(PostgresWarehouse.name);
 
   async getCatalogs(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
   ): Promise<WarehouseFactoryCatalog[]> {
+    if (provider.type !== "postgresql") {
+      throw new Error("Invalid provider type");
+    }
+
     const { Client } = pg;
     const client = new Client({
-      host: connection.host,
-      port: connection.port,
-      database: connection.database,
-      user: connection.username,
-      password: connection.password,
+      host: provider.host,
+      port: provider.port,
+      database: provider.database,
+      user: provider.username,
+      password: provider.password,
     });
 
     try {
@@ -66,15 +73,19 @@ export class PostgresWarehouse implements Warehouse {
   }
 
   async getRelations(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
   ): Promise<WarehouseFactoryRelation[]> {
+    if (provider.type !== "postgresql") {
+      throw new Error("Invalid provider type");
+    }
+
     const { Client } = pg;
     const client = new Client({
-      host: connection.host,
-      port: connection.port,
-      database: connection.database,
-      user: connection.username,
-      password: connection.password,
+      host: provider.host,
+      port: provider.port,
+      database: provider.database,
+      user: provider.username,
+      password: provider.password,
     });
 
     try {
@@ -114,19 +125,23 @@ export class PostgresWarehouse implements Warehouse {
   }
 
   async query(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
     sql: string,
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
   }> {
+    if (provider.type !== "postgresql") {
+      throw new Error("Invalid provider type");
+    }
+
     const { Client } = pg;
     const client = new Client({
-      host: connection.host,
-      port: connection.port,
-      database: connection.database,
-      user: connection.username,
-      password: connection.password,
+      host: provider.host,
+      port: provider.port,
+      database: provider.database,
+      user: provider.username,
+      password: provider.password,
     });
 
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -174,14 +189,18 @@ export class PostgresWarehouse implements Warehouse {
   }
 
   async getColumnSample(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
     schemaName: string,
     tableName: string,
     columnName: string,
     limit = 3,
   ): Promise<WarehouseQueryRow[]> {
+    if (provider.type !== "postgresql") {
+      throw new Error("Invalid provider type");
+    }
+
     const dbResult = await this.query(
-      connection,
+      provider,
       `
       SELECT "${columnName}" AS sample
       FROM "${schemaName}"."${tableName}"
@@ -193,14 +212,18 @@ export class PostgresWarehouse implements Warehouse {
     return dbResult.rows;
   }
 
-  async testConnection(connection: ConnectionConfig): Promise<boolean> {
+  async testConnection(provider: WarehouseProvider): Promise<boolean> {
+    if (provider.type !== "postgresql") {
+      throw new Error("Invalid provider type");
+    }
+
     const { Client } = pg;
     const client = new Client({
-      host: connection.host,
-      port: connection.port,
-      database: connection.database,
-      user: connection.username,
-      password: connection.password,
+      host: provider.host,
+      port: provider.port,
+      database: provider.database,
+      user: provider.username,
+      password: provider.password,
     });
     try {
       await client.connect();

@@ -6,41 +6,35 @@ import { queryTable } from "../db/schema/query";
 import { relationTable } from "../db/schema/relation";
 import { type WarehouseEntity, warehouseTable } from "../db/schema/warehouse";
 import { cuid } from "../utils/cuid";
-import { firstOrNotFound } from "../utils/toolkit";
+import { firstOrNotCreated, firstOrNotFound } from "../utils/toolkit";
 import type {
   WarehouseQueryColumn,
   WarehouseQueryRow,
 } from "../warehouse/type";
 import { WarehouseFactory } from "../warehouse/warehouse";
-import type { ConnectionConfig } from "../warehouse/warehouse.interface";
 
 class WarehouseService {
   private warehouseFactory = new WarehouseFactory();
 
-  /**
-   * Get all warehouses
-   */
-  async getWarehouses() {
-    try {
-      const warehouses = await getDrizzle()
-        .select({
-          warehouseId: warehouseTable.warehouseId,
-          name: warehouseTable.name,
-          type: warehouseTable.type,
-        })
-        .from(warehouseTable);
+  async getWarehouses(): Promise<
+    {
+      warehouseId: string;
+      name: string;
+      type: string;
+    }[]
+  > {
+    const warehouses = await getDrizzle().select().from(warehouseTable);
 
-      return warehouses;
-    } catch (error) {
-      console.error("Error fetching warehouses:", error);
-      throw new Error("Failed to fetch warehouses");
-    }
+    return warehouses.map((warehouse) => ({
+      warehouseId: warehouse.warehouseId,
+      name: warehouse.name,
+      type: warehouse.provider.type,
+    }));
   }
 
-  /**
-   * Get warehouse by name
-   */
-  async getWarehouseByName(warehouseName: string): Promise<WarehouseEntity> {
+  private async getWarehouseByName(
+    warehouseName: string,
+  ): Promise<WarehouseEntity> {
     const warehouses = await getDrizzle()
       .select()
       .from(warehouseTable)
@@ -55,7 +49,9 @@ class WarehouseService {
     return warehouse;
   }
 
-  async getWarehouseById(warehouseId: string): Promise<WarehouseEntity> {
+  private async getWarehouseById(
+    warehouseId: string,
+  ): Promise<WarehouseEntity> {
     const warehouses = await getDrizzle()
       .select()
       .from(warehouseTable)
@@ -70,23 +66,14 @@ class WarehouseService {
     return warehouse;
   }
 
-  /**
-   * Get all tables in a warehouse
-   */
   async getTables(warehouseName: string) {
     try {
       const warehouse = await this.getWarehouseByName(warehouseName);
 
-      const connectionConfig: ConnectionConfig = {
-        host: warehouse.host,
-        port: warehouse.port,
-        database: warehouse.database,
-        username: warehouse.username,
-        password: warehouse.password,
-      };
-
-      const warehouseInstance = this.warehouseFactory.create(warehouse.type);
-      const catalogs = await warehouseInstance.getCatalogs(connectionConfig);
+      const warehouseInstance = this.warehouseFactory.create(
+        warehouse.provider.type,
+      );
+      const catalogs = await warehouseInstance.getCatalogs(warehouse.provider);
 
       // Group by schema and table
       const tables = catalogs.reduce(
@@ -122,17 +109,13 @@ class WarehouseService {
     try {
       const warehouse = await this.getWarehouseByName(warehouseName);
 
-      const connectionConfig: ConnectionConfig = {
-        host: warehouse.host,
-        port: warehouse.port,
-        database: warehouse.database,
-        username: warehouse.username,
-        password: warehouse.password,
-      };
-
-      const warehouseInstance = this.warehouseFactory.create(warehouse.type);
-      const catalogs = await warehouseInstance.getCatalogs(connectionConfig);
-      const relations = await warehouseInstance.getRelations(connectionConfig);
+      const warehouseInstance = this.warehouseFactory.create(
+        warehouse.provider.type,
+      );
+      const catalogs = await warehouseInstance.getCatalogs(warehouse.provider);
+      const relations = await warehouseInstance.getRelations(
+        warehouse.provider,
+      );
 
       const labels = await getDrizzle()
         .select()
@@ -191,17 +174,10 @@ class WarehouseService {
     queryUrl: string;
   }> {
     const warehouse = await this.getWarehouseByName(warehouseName);
-
-    const connectionConfig: ConnectionConfig = {
-      host: warehouse.host,
-      port: warehouse.port,
-      database: warehouse.database,
-      username: warehouse.username,
-      password: warehouse.password,
-    };
-
-    const warehouseInstance = this.warehouseFactory.create(warehouse.type);
-    const result = await warehouseInstance.query(connectionConfig, sql);
+    const warehouseInstance = this.warehouseFactory.create(
+      warehouse.provider.type,
+    );
+    const result = await warehouseInstance.query(warehouse.provider, sql);
     const query = await this.createQuery(warehouse, sql, result.fields);
     const queryUrl = `https://p.meside.com/meside/warehouse/query/${query.queryId}`;
 
@@ -219,17 +195,10 @@ class WarehouseService {
     fields: WarehouseQueryColumn[];
   }> {
     const warehouse = await this.getWarehouseById(warehouseId);
-
-    const connectionConfig: ConnectionConfig = {
-      host: warehouse.host,
-      port: warehouse.port,
-      database: warehouse.database,
-      username: warehouse.username,
-      password: warehouse.password,
-    };
-
-    const warehouseInstance = this.warehouseFactory.create(warehouse.type);
-    const result = await warehouseInstance.query(connectionConfig, sql);
+    const warehouseInstance = this.warehouseFactory.create(
+      warehouse.provider.type,
+    );
+    const result = await warehouseInstance.query(warehouse.provider, sql);
 
     return result;
   }
@@ -244,7 +213,6 @@ class WarehouseService {
       .values({
         queryId: cuid(),
         warehouseId: warehouse.warehouseId,
-        warehouseType: warehouse.type,
         sql,
         fields,
       })
@@ -318,6 +286,70 @@ class WarehouseService {
       .from(queryTable)
       .where(eq(queryTable.queryId, queryId));
     return firstOrNotFound(query, "Query not found");
+  }
+
+  async testConnection(warehouseName: string) {
+    const warehouse = await this.getWarehouseByName(warehouseName);
+    const warehouseInstance = this.warehouseFactory.create(
+      warehouse.provider.type,
+    );
+    return warehouseInstance.testConnection(warehouse.provider);
+  }
+
+  async createWarehouse(
+    body: Omit<
+      WarehouseEntity,
+      "warehouseId" | "createdAt" | "updatedAt" | "deletedAt"
+    >,
+  ): Promise<{ warehouseId: string }> {
+    const warehouse = await getDrizzle()
+      .insert(warehouseTable)
+      .values({
+        ...body,
+        warehouseId: cuid(),
+      })
+      .returning({
+        warehouseId: warehouseTable.warehouseId,
+      });
+
+    return firstOrNotCreated(warehouse, "Failed to create warehouse");
+  }
+
+  async updateWarehouse(
+    warehouseId: string,
+    body: Partial<WarehouseEntity>,
+  ): Promise<void> {
+    await getDrizzle()
+      .update(warehouseTable)
+      .set(body)
+      .where(eq(warehouseTable.warehouseId, warehouseId));
+  }
+
+  async deleteWarehouse(warehouseId: string): Promise<void> {
+    await getDrizzle()
+      .update(warehouseTable)
+      .set({ deletedAt: new Date().toISOString() })
+      .where(eq(warehouseTable.warehouseId, warehouseId));
+  }
+
+  async getWarehouseList(): Promise<WarehouseEntity[]> {
+    const warehouses = await getDrizzle()
+      .select()
+      .from(warehouseTable)
+      .where(and(isNull(warehouseTable.deletedAt)));
+
+    return warehouses;
+  }
+
+  async getWarehouseDetail(body: {
+    warehouseId: string;
+  }): Promise<WarehouseEntity> {
+    const warehouse = await getDrizzle()
+      .select()
+      .from(warehouseTable)
+      .where(eq(warehouseTable.warehouseId, body.warehouseId));
+
+    return firstOrNotFound(warehouse, "Warehouse not found");
   }
 }
 

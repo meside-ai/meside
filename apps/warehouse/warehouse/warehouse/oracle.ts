@@ -2,29 +2,36 @@ import oracledb from "oracledb";
 import { z } from "zod";
 import { getLogger } from "../../logger";
 import { cuid } from "../../utils/cuid";
-import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
 import type {
-  ConnectionConfig,
   Warehouse,
   WarehouseFactoryCatalog,
   WarehouseFactoryRelation,
 } from "../warehouse.interface";
+import type { WarehouseProvider } from "../warehouse.type";
+import type {
+  WarehouseQueryColumn,
+  WarehouseQueryRow,
+} from "../warehouse.type";
 
 export class OracleWarehouse implements Warehouse {
   private logger = getLogger(OracleWarehouse.name);
 
-  private async getConnection(connection: ConnectionConfig) {
+  private async getConnection(provider: WarehouseProvider) {
+    if (provider.type !== "oracle") {
+      throw new Error("Invalid provider type");
+    }
+
     return await oracledb.getConnection({
-      user: connection.username,
-      password: connection.password,
-      connectString: `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=${connection.host})(PORT=${connection.port}))(CONNECT_DATA=(SID=${connection.database})(SERVICE_NAME=${connection.database})))`,
+      user: provider.username,
+      password: provider.password,
+      connectString: `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=${provider.host})(PORT=${provider.port}))(CONNECT_DATA=(SID=${provider.database})(SERVICE_NAME=${provider.database})))`,
     });
   }
 
   async getCatalogs(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
   ): Promise<WarehouseFactoryCatalog[]> {
-    const conn = await this.getConnection(connection);
+    const conn = await this.getConnection(provider);
     try {
       const res = await conn.execute(`
         SELECT
@@ -41,7 +48,7 @@ export class OracleWarehouse implements Warehouse {
         WHERE
             owner NOT IN ('SYS', 'SYSTEM')
         AND 
-            owner = '${connection.username.toUpperCase()}'
+            owner = '${provider.type === "oracle" ? provider.username.toUpperCase() : ""}'
         ORDER BY
             table_name, column_id
       `);
@@ -64,9 +71,9 @@ export class OracleWarehouse implements Warehouse {
   }
 
   async getRelations(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
   ): Promise<WarehouseFactoryRelation[]> {
-    const conn = await this.getConnection(connection);
+    const conn = await this.getConnection(provider);
     try {
       const res = await conn.execute(`
         SELECT
@@ -112,13 +119,13 @@ export class OracleWarehouse implements Warehouse {
   }
 
   async query(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
     sql: string,
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
   }> {
-    const conn = await this.getConnection(connection);
+    const conn = await this.getConnection(provider);
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     let res: oracledb.Result<any>;
 
@@ -159,14 +166,14 @@ export class OracleWarehouse implements Warehouse {
   }
 
   async getColumnSample(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
     schemaName: string,
     tableName: string,
     columnName: string,
     limit = 3,
   ): Promise<WarehouseQueryRow[]> {
     const dbResult = await this.query(
-      connection,
+      provider,
       `
       SELECT ${columnName} AS sample
       FROM ${schemaName}.${tableName}
@@ -178,9 +185,9 @@ export class OracleWarehouse implements Warehouse {
     return dbResult.rows;
   }
 
-  async testConnection(connection: ConnectionConfig): Promise<boolean> {
+  async testConnection(provider: WarehouseProvider): Promise<boolean> {
     try {
-      const conn = await this.getConnection(connection);
+      const conn = await this.getConnection(provider);
       await conn.close();
       return true;
     } catch (error) {

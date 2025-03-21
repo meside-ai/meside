@@ -1,30 +1,21 @@
-import { integer, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
-import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
-
-export const warehouseType = pgEnum("warehouse_type", [
-  "postgresql",
-  "bigquery",
-  "mysql",
-  "oracle",
-]);
+import {
+  type WarehouseProvider,
+  warehouseProviderSchema,
+} from "../../warehouse/warehouse.type";
+import { primaryKeyCuid, useTimestamp } from "../utils";
 
 export const warehouseTable = pgTable("warehouse", {
   warehouseId: primaryKeyCuid("warehouse_id"),
-  name: text("name").notNull(),
-  type: warehouseType("warehouse_type").notNull(),
-  host: text("host").notNull(),
-  port: integer("port").notNull(),
-  database: text("database").notNull(),
-  username: text("username").notNull(),
-  password: text("password").notNull(),
-  schema: text("schema"),
-  ownerId: foreignCuid("owner_id").notNull(),
-  orgId: foreignCuid("org_id").notNull(),
+  name: text("name").notNull().unique(),
+  provider: jsonb("provider").notNull().$type<WarehouseProvider>(),
   ...useTimestamp(),
 });
 
-export const warehouseEntitySchema = createSelectSchema(warehouseTable);
+export const warehouseEntitySchema = createSelectSchema(warehouseTable, {
+  provider: warehouseProviderSchema,
+});
 
 export type WarehouseEntity = z.infer<typeof warehouseEntitySchema>;

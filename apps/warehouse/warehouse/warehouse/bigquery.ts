@@ -3,19 +3,23 @@ import { getLogger } from "../../logger";
 import { cuid } from "../../utils/cuid";
 import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
 import type {
-  ConnectionConfig,
   Warehouse,
   WarehouseFactoryCatalog,
   WarehouseFactoryRelation,
 } from "../warehouse.interface";
+import type { WarehouseProvider } from "../warehouse.type";
 
 export class BigqueryWarehouse implements Warehouse {
   private logger = getLogger("bigquery");
 
   async getCatalogs(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
   ): Promise<WarehouseFactoryCatalog[]> {
-    const projectId = connection.database;
+    if (provider.type !== "bigquery") {
+      throw new Error("Invalid provider type");
+    }
+
+    const projectId = provider.projectId;
     const bigquery = new BigQuery({ projectId });
 
     const [datasets] = await bigquery.getDatasets();
@@ -78,9 +82,13 @@ export class BigqueryWarehouse implements Warehouse {
   }
 
   async getRelations(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
   ): Promise<WarehouseFactoryRelation[]> {
-    const projectId = connection.database;
+    if (provider.type !== "bigquery") {
+      throw new Error("Invalid provider type");
+    }
+
+    const projectId = provider.projectId;
     const bigquery = new BigQuery({ projectId });
 
     try {
@@ -149,13 +157,17 @@ export class BigqueryWarehouse implements Warehouse {
   }
 
   async query(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
     sql: string,
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
   }> {
-    const projectId = connection.database;
+    if (provider.type !== "bigquery") {
+      throw new Error("Invalid provider type");
+    }
+
+    const projectId = provider.projectId;
     const bigquery = new BigQuery({ projectId });
 
     try {
@@ -195,8 +207,12 @@ export class BigqueryWarehouse implements Warehouse {
     }
   }
 
-  async testConnection(connection: ConnectionConfig): Promise<boolean> {
-    const projectId = connection.database;
+  async testConnection(provider: WarehouseProvider): Promise<boolean> {
+    if (provider.type !== "bigquery") {
+      throw new Error("Invalid provider type");
+    }
+
+    const projectId = provider.projectId;
     try {
       // Create a BigQuery client with the provided project ID
       const bigquery = new BigQuery({ projectId });
@@ -215,19 +231,23 @@ export class BigqueryWarehouse implements Warehouse {
   }
 
   async getColumnSample(
-    connection: ConnectionConfig,
+    provider: WarehouseProvider,
     schemaName: string,
     tableName: string,
     columnName: string,
     limit = 3,
   ): Promise<WarehouseQueryRow[]> {
-    const projectId = connection.database;
+    if (provider.type !== "bigquery") {
+      throw new Error("Invalid provider type");
+    }
+
+    const projectId = provider.projectId;
 
     try {
       // In BigQuery, the format is `project.dataset.table`
       // schemaName in this context refers to the dataset
       const dbResult = await this.query(
-        connection,
+        provider,
         `
         SELECT \`${columnName}\` AS sample
         FROM \`${projectId}.${schemaName}.${tableName}\`

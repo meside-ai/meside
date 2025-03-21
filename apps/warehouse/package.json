@@ -42,6 +42,9 @@
     "@repo/typescript-config": "*",
     "@types/oracledb": "^6.5.3",
     "@types/pg": "^8.11.11",
-    "drizzle-kit": "^0.30.5"
+    "drizzle-kit": "^0.30.5",
+    "postcss": "^8.5.3",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1"
   }
 }
