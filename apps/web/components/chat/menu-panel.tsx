@@ -15,8 +15,6 @@ import { getThreadList } from "../../queries/thread";
 import { useThreadContext } from "./context";
 
 export const MenuPanel = () => {
-  const { threadId } = useThreadContext();
-
   return (
     <Box
       h="100%"
@@ -30,7 +28,6 @@ export const MenuPanel = () => {
       <Box style={{ overflow: "hidden" }} mb="lg">
         <StartPanel />
       </Box>
-      <Box>{threadId}</Box>
       <Box flex={1} style={{ overflow: "hidden" }}>
         <ThreadPanel />
       </Box>
@@ -49,7 +46,7 @@ const StartPanel = () => {
       mx="md"
       pt="md"
       display="flex"
-      style={{ flexDirection: "column", alignItems: "center" }}
+      style={{ flexDirection: "column", alignItems: "flex-start" }}
     >
       <Title
         order={1}
@@ -71,6 +68,7 @@ const StartPanel = () => {
         onClick={() => {
           setThreadId(null);
         }}
+        variant="light"
         leftSection={<IconMessageCircle size={16} />}
       >
         New Chat
@@ -91,8 +89,6 @@ export const ThreadPanel = () => {
           {data?.threads.map((thread) => (
             <UnstyledButton
               key={thread.threadId}
-              // active={question.questionId === activeQuestionId}
-              // label={question.shortName}
               bg={thread.threadId === activeThreadId ? "dark.5" : undefined}
               c={thread.threadId === activeThreadId ? "white" : undefined}
               fz={14}
