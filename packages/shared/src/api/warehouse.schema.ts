@@ -4,12 +4,13 @@ import { userDtoSchema } from "./user.schema";
 import {
   warehouseQueryColumnSchema,
   warehouseQueryRowSchema,
+  warehouseTypeSchema,
 } from "./warehouse.type";
 
 export const warehouseDtoSchema = z.object({
   warehouseId: z.string(),
   name: z.string(),
-  type: z.enum(["postgresql", "bigquery", "mysql", "oracle"]),
+  type: warehouseTypeSchema,
   host: z.string(),
   port: z.number(),
   username: z.string(),

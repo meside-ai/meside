@@ -22,3 +22,29 @@ export const warehouseQueryRowSchema = z.record(
 );
 
 export type WarehouseQueryRow = z.infer<typeof warehouseQueryRowSchema>;
+
+export const warehouseTypeSchema = z.enum([
+  "postgresql",
+  "bigquery",
+  "mysql",
+  "oracle",
+]);
+
+export type WarehouseType = z.infer<typeof warehouseTypeSchema>;
+
+export const warehouseProviderSchema = z.union([
+  z.object({
+    type: z.literal("postgresql"),
+    host: z.string(),
+    port: z.number(),
+    username: z.string(),
+    password: z.string(),
+  }),
+  z.object({
+    type: z.literal("bigquery"),
+    projectId: z.string(),
+    credentials: z.string(),
+  }),
+]);
+
+export type WarehouseProvider = z.infer<typeof warehouseProviderSchema>;

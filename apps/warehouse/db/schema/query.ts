@@ -1,7 +1,7 @@
+import { warehouseQueryColumnSchema } from "@meside/shared/api/warehouse.type";
 import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
-import { warehouseQueryColumnSchema } from "../../warehouse/type";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../utils";
 import { warehouseType } from "./warehouse";
 

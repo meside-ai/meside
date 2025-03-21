@@ -1,0 +1,9 @@
+---
+description: when rewrite the front-end, attach rule
+globs: 
+alwaysApply: false
+---
+
+# Your rule content
+
+- use mantine as frontend component library, the docs is https://mantine.dev/getting-started/
