@@ -34,7 +34,10 @@ export async function GET(req: Request) {
 
   const serverRes = res as unknown as ServerResponse;
 
-  transport = new SSEServerTransport("/api/mcp/warehouse", serverRes);
+  transport = new SSEServerTransport(
+    "/meside/warehouse/api/mcp/warehouse",
+    serverRes,
+  );
   await server.connect(transport);
 
   return new Response(readable, {

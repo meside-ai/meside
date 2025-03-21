@@ -1,14 +1,43 @@
 import type { TextUIPart } from "@ai-sdk/ui-utils";
-import { Box, Table, Text } from "@mantine/core";
-import BaseMarkdown from "react-markdown";
+import { Box, Button, Table, Text } from "@mantine/core";
+import BaseMarkdown, { defaultUrlTransform } from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import remarkGfm from "remark-gfm";
+import { usePreviewContext } from "../preview/preview-context";
 
 export const MarkdownPart = ({ part }: { part: TextUIPart }) => {
+  const { openPreview } = usePreviewContext();
+
   return (
     <BaseMarkdown
+      urlTransform={urlTransform}
       remarkPlugins={[remarkGfm]}
       components={{
+        a: ({ children, ...props }) => {
+          const { href, ...rest } = props;
+          if (href?.startsWith("https://p.meside.com")) {
+            return (
+              <Button
+                variant="outline"
+                size="xs"
+                onClick={() => {
+                  openPreview({
+                    name: "Preview",
+                    type: "preview",
+                    value: href,
+                  });
+                }}
+              >
+                Click to preview
+              </Button>
+            );
+          }
+          return (
+            <Text component="a" href={href} {...rest}>
+              {children}
+            </Text>
+          );
+        },
         p: ({ children }) => {
           return <Text>{children}</Text>;
         },
@@ -53,4 +82,9 @@ export const MarkdownPart = ({ part }: { part: TextUIPart }) => {
       {part.text}
     </BaseMarkdown>
   );
+};
+
+const urlTransform = (url: string): string | null | undefined => {
+  console.log(url);
+  return defaultUrlTransform(url);
 };

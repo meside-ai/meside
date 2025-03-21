@@ -1,21 +1,18 @@
 import { and, eq, isNull } from "drizzle-orm";
-import { getDrizzle } from "../../../../db/db";
-import { catalogTable } from "../../../../db/schema/catalog";
-import { labelTable } from "../../../../db/schema/label";
-import { queryTable } from "../../../../db/schema/query";
-import { relationTable } from "../../../../db/schema/relation";
-import {
-  type WarehouseEntity,
-  warehouseTable,
-} from "../../../../db/schema/warehouse";
-import { cuid } from "../../../../utils/cuid";
-import { firstOrNotFound } from "../../../../utils/toolkit";
+import { getDrizzle } from "../db/db";
+import { catalogTable } from "../db/schema/catalog";
+import { labelTable } from "../db/schema/label";
+import { queryTable } from "../db/schema/query";
+import { relationTable } from "../db/schema/relation";
+import { type WarehouseEntity, warehouseTable } from "../db/schema/warehouse";
+import { cuid } from "../utils/cuid";
+import { firstOrNotFound } from "../utils/toolkit";
 import type {
   WarehouseQueryColumn,
   WarehouseQueryRow,
-} from "../../../../warehouse/type";
-import { WarehouseFactory } from "../../../../warehouse/warehouse";
-import type { ConnectionConfig } from "../../../../warehouse/warehouse.interface";
+} from "../warehouse/type";
+import { WarehouseFactory } from "../warehouse/warehouse";
+import type { ConnectionConfig } from "../warehouse/warehouse.interface";
 
 class WarehouseService {
   private warehouseFactory = new WarehouseFactory();
@@ -41,9 +38,9 @@ class WarehouseService {
   }
 
   /**
-   * Get warehouse by ID
+   * Get warehouse by name
    */
-  async getWarehouse(warehouseName: string): Promise<WarehouseEntity> {
+  async getWarehouseByName(warehouseName: string): Promise<WarehouseEntity> {
     const warehouses = await getDrizzle()
       .select()
       .from(warehouseTable)
@@ -58,12 +55,27 @@ class WarehouseService {
     return warehouse;
   }
 
+  async getWarehouseById(warehouseId: string): Promise<WarehouseEntity> {
+    const warehouses = await getDrizzle()
+      .select()
+      .from(warehouseTable)
+      .where(eq(warehouseTable.warehouseId, warehouseId))
+      .limit(1);
+
+    const warehouse = firstOrNotFound(
+      warehouses,
+      `Warehouse with id ${warehouseId} not found`,
+    );
+
+    return warehouse;
+  }
+
   /**
    * Get all tables in a warehouse
    */
   async getTables(warehouseName: string) {
     try {
-      const warehouse = await this.getWarehouse(warehouseName);
+      const warehouse = await this.getWarehouseByName(warehouseName);
 
       const connectionConfig: ConnectionConfig = {
         host: warehouse.host,
@@ -108,7 +120,7 @@ class WarehouseService {
     const [schemaName, tableName] = schemaTableName.split(".");
 
     try {
-      const warehouse = await this.getWarehouse(warehouseName);
+      const warehouse = await this.getWarehouseByName(warehouseName);
 
       const connectionConfig: ConnectionConfig = {
         host: warehouse.host,
@@ -171,14 +183,14 @@ class WarehouseService {
    * Run a SQL query on a specific warehouse
    */
   async runQuery(
-    warehouseId: string,
+    warehouseName: string,
     sql: string,
   ): Promise<{
     rows: WarehouseQueryRow[];
     fields: WarehouseQueryColumn[];
     queryUrl: string;
   }> {
-    const warehouse = await this.getWarehouse(warehouseId);
+    const warehouse = await this.getWarehouseByName(warehouseName);
 
     const connectionConfig: ConnectionConfig = {
       host: warehouse.host,
@@ -190,8 +202,12 @@ class WarehouseService {
 
     const warehouseInstance = this.warehouseFactory.create(warehouse.type);
     const result = await warehouseInstance.query(connectionConfig, sql);
-    const query = await this.createQuery(warehouseId, sql, result.fields);
-    const queryUrl = `/meside/warehouse/query/${query.queryId}`;
+    const query = await this.createQuery(
+      warehouse.warehouseId,
+      sql,
+      result.fields,
+    );
+    const queryUrl = `https://p.meside.com/meside/warehouse/query/${query.queryId}`;
 
     return {
       ...result,
@@ -199,12 +215,35 @@ class WarehouseService {
     };
   }
 
+  async runQueryByWarehouseId(
+    warehouseId: string,
+    sql: string,
+  ): Promise<{
+    rows: WarehouseQueryRow[];
+    fields: WarehouseQueryColumn[];
+  }> {
+    const warehouse = await this.getWarehouseById(warehouseId);
+
+    const connectionConfig: ConnectionConfig = {
+      host: warehouse.host,
+      port: warehouse.port,
+      database: warehouse.database,
+      username: warehouse.username,
+      password: warehouse.password,
+    };
+
+    const warehouseInstance = this.warehouseFactory.create(warehouse.type);
+    const result = await warehouseInstance.query(connectionConfig, sql);
+
+    return result;
+  }
+
   async createQuery(
     warehouseName: string,
     sql: string,
     fields: WarehouseQueryColumn[],
   ): Promise<{ queryId: string }> {
-    const warehouse = await this.getWarehouse(warehouseName);
+    const warehouse = await this.getWarehouseByName(warehouseName);
     const query = await getDrizzle()
       .insert(queryTable)
       .values({
@@ -222,8 +261,7 @@ class WarehouseService {
   }
 
   async getCatalogs(warehouseName: string) {
-    console.log("getCatalogs", warehouseName);
-    const warehouse = await this.getWarehouse(warehouseName);
+    const warehouse = await this.getWarehouseByName(warehouseName);
     const catalogs = await getDrizzle()
       .select()
       .from(catalogTable)
@@ -276,8 +314,15 @@ class WarehouseService {
       tableMarkdownSeparator,
       catalogTableMarkdown,
     ].join("\n");
-    console.log("warehousePrompt", warehousePrompt);
     return warehousePrompt;
+  }
+
+  async getQuery(queryId: string) {
+    const query = await getDrizzle()
+      .select()
+      .from(queryTable)
+      .where(eq(queryTable.queryId, queryId));
+    return firstOrNotFound(query, "Query not found");
   }
 }
 

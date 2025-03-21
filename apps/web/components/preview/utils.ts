@@ -1,5 +1,7 @@
 import type { PreviewEntity } from "./types";
 
-export const getPreviewId = (preview: Pick<PreviewEntity, "payload">) => {
-  return preview.payload.type;
+export const getPreviewId = (
+  preview: Pick<PreviewEntity, "type" | "value">,
+) => {
+  return `${preview.type}-${preview.value}`;
 };

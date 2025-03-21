@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { warehouseService } from "./service";
+import { warehouseService } from "../../../../services/warehouse";
 
 // Create the MCP server
 export const server = new McpServer({

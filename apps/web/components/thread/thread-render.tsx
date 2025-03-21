@@ -13,7 +13,7 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconPencil,
-  IconTool,
+  IconSettingsSpark,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -127,15 +127,15 @@ const AssistantMessageRender = ({ message }: { message: UIMessage }) => {
 
 const ToolInvocationRender = ({ part }: { part: ToolInvocationUIPart }) => {
   return (
-    <Box
-      style={{ backgroundColor: "#eee", padding: "10px", borderRadius: "5px" }}
-      mb="sm"
-    >
-      <Group gap="sm">
-        <IconTool size={14} />
-        <Text>{part.toolInvocation.toolName}</Text>
-      </Group>
-      {/* <Text size="xs">{JSON.stringify(part.toolInvocation.args, null, 2)}</Text> */}
+    <Box mb="sm">
+      <Button
+        variant="gradient"
+        size="sm"
+        radius="lg"
+        leftSection={<IconSettingsSpark size={12} />}
+      >
+        {part.toolInvocation.toolName}
+      </Button>
     </Box>
   );
 };
