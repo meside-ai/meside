@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { IconMessageCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { getThreadList } from "../../queries/thread";
 import { useThreadContext } from "./context";
 
@@ -115,9 +116,16 @@ export const ThreadPanel = () => {
 };
 
 const MyProfile = () => {
+  const navigate = useRouter();
   return (
     <Box mx="md">
-      <Card p="xs" style={{ cursor: "pointer" }}>
+      <Card
+        p="xs"
+        style={{ cursor: "pointer" }}
+        onClick={() => {
+          navigate.push("/setting/warehouse");
+        }}
+      >
         <Group gap="xs">
           <Avatar size="sm" color="blue">
             CW
