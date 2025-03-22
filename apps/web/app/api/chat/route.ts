@@ -1,7 +1,9 @@
 import { openai } from "@ai-sdk/openai";
+import { QueryClient } from "@tanstack/react-query";
 import { type Tool, experimental_createMCPClient as createMCPClient } from "ai";
 import { streamText } from "ai";
 import { environment } from "../../../configs/environment";
+import { getLlmList } from "../../../queries/llm";
 
 let warehouseMcp: Awaited<ReturnType<typeof createMCPClient>> | null = null;
 
@@ -14,6 +16,18 @@ export async function POST(req: Request) {
 
   if (!threadId) {
     return new Response("threadId is required", { status: 400 });
+  }
+
+  const queryClient = new QueryClient();
+
+  const llmList = await queryClient.fetchQuery(getLlmList({}));
+
+  const llm = llmList.llms.find((llm) => llm.isDefault);
+
+  if (!llm) {
+    return new Response("llm is required, or you could not set default llm", {
+      status: 400,
+    });
   }
 
   warehouseMcp = await createMCPClient({

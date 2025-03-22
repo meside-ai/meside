@@ -26,7 +26,7 @@ export const getThreadList = ({
   queryKey: [getThreadList.name, parentThreadId],
   queryFn: async () => {
     const json = await createPost<ThreadListRequest, ThreadListResponse>(
-      `${threadListRoute.path}`,
+      `/meside/server/thread/${threadListRoute.path}`,
     )({ parentThreadId });
     return json;
   },
@@ -39,7 +39,7 @@ export const getThreadDetail = ({
   queryKey: [getThreadDetail.name, threadId],
   queryFn: async () => {
     const json = await createPost<ThreadDetailRequest, ThreadDetailResponse>(
-      `${threadDetailRoute.path}`,
+      `/meside/server/thread/${threadDetailRoute.path}`,
     )({ threadId });
     return json;
   },
@@ -53,7 +53,7 @@ export const getThreadCreate = (): UseMutationOptions<
   mutationKey: [getThreadCreate.name],
   mutationFn: async (body) => {
     const json = await createPost<ThreadCreateRequest, ThreadCreateResponse>(
-      `${threadCreateRoute.path}`,
+      `/meside/server/thread/${threadCreateRoute.path}`,
     )(body);
     return json;
   },
@@ -67,7 +67,7 @@ export const getThreadUpdate = (): UseMutationOptions<
   mutationKey: [getThreadCreate.name],
   mutationFn: async (body) => {
     const json = await createPost<ThreadUpdateRequest, ThreadUpdateResponse>(
-      `${threadUpdateRoute.path}`,
+      `/meside/server/thread/${threadUpdateRoute.path}`,
     )(body);
     return json;
   },

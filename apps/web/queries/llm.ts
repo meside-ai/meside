@@ -26,7 +26,7 @@ export const getLlmList = (
   queryKey: [getLlmList.name],
   queryFn: async () => {
     const json = await createPost<LlmListRequest, LlmListResponse>(
-      `${llmListRoute.path}`,
+      `/meside/server/llm/${llmListRoute.path}`,
     )(params);
     return json;
   },
@@ -39,7 +39,7 @@ export const getLlmDetail = ({
   queryKey: [getLlmDetail.name, llmId],
   queryFn: async () => {
     const json = await createPost<LlmDetailRequest, LlmDetailResponse>(
-      `${llmDetailRoute.path}`,
+      `/meside/server/llm/${llmDetailRoute.path}`,
     )({ llmId });
     return json;
   },
@@ -53,7 +53,7 @@ export const getLlmCreate = (): UseMutationOptions<
   mutationKey: [getLlmCreate.name],
   mutationFn: async (body) => {
     const json = await createPost<LlmCreateRequest, LlmCreateResponse>(
-      `${llmCreateRoute.path}`,
+      `/meside/server/llm/${llmCreateRoute.path}`,
     )(body);
     return json;
   },
@@ -67,7 +67,7 @@ export const getLlmUpdate = (): UseMutationOptions<
   mutationKey: [getLlmUpdate.name],
   mutationFn: async (body) => {
     const json = await createPost<LlmUpdateRequest, LlmUpdateResponse>(
-      `${llmUpdateRoute.path}`,
+      `/meside/server/llm/${llmUpdateRoute.path}`,
     )(body);
     return json;
   },

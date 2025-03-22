@@ -73,7 +73,7 @@ Follow the installation and setup instructions in the [README.md](README.md) to 
   cp apps/server/default.env apps/server/.env
   cp apps/web/default.env apps/web/.env
   cp apps/warehouse/default.env apps/warehouse/.env
-  echo 'OPENAI_API_KEY=<your-api-key>' >> apps/web/.env
+  echo 'OPENAI_API_KEY=<your-api-key>' >> warehouse/web/.env
   ```
 5. **Database Setup**:  
   ```bash 

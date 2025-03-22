@@ -24,7 +24,7 @@ export const llmDtoSchema = z.object({
   llmId: z.string(),
   name: z.string(),
   provider: llmProviderSchema,
-  isDefault: z.boolean(),
+  isDefault: z.boolean().optional(),
   ownerId: z.string(),
   orgId: z.string(),
   createdAt: z.string(),
@@ -47,7 +47,7 @@ export type LlmListResponse = z.infer<typeof llmListResponseSchema>;
 
 export const llmListRoute = createRoute({
   method: "post",
-  path: "/llm/list",
+  path: "/list",
   request: {
     body: {
       content: {
@@ -83,7 +83,7 @@ export type LlmDetailResponse = z.infer<typeof llmDetailResponseSchema>;
 
 export const llmDetailRoute = createRoute({
   method: "post",
-  path: "/llm/detail",
+  path: "/detail",
   request: {
     body: {
       content: {
@@ -107,10 +107,9 @@ export const llmDetailRoute = createRoute({
 
 // llmCreate
 export const llmCreateRequestSchema = z.object({
-  versionId: z.string().nullable(),
   name: z.string(),
   provider: llmProviderSchema,
-  isDefault: z.boolean(),
+  isDefault: z.boolean().optional(),
 });
 
 export const llmCreateResponseSchema = z.object({
@@ -122,7 +121,7 @@ export type LlmCreateResponse = z.infer<typeof llmCreateResponseSchema>;
 
 export const llmCreateRoute = createRoute({
   method: "post",
-  path: "/llm/create",
+  path: "/create",
   request: {
     body: {
       content: {
@@ -159,7 +158,7 @@ export type LlmUpdateResponse = z.infer<typeof llmUpdateResponseSchema>;
 
 export const llmUpdateRoute = createRoute({
   method: "post",
-  path: "/llm/update",
+  path: "/update",
   request: {
     body: {
       content: {

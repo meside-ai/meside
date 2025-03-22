@@ -33,7 +33,7 @@ export const createPost = <PostRequest, PostResponse>(
     baseUrl: string;
   },
 ) => {
-  const baseUrl = options?.baseUrl ?? "/meside/server";
+  const baseUrl = options?.baseUrl ?? "";
   const defaultOptions = getOptions();
   const fetch = defaultOptions.fetch;
 

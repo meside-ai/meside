@@ -1,4 +1,6 @@
+import { environment } from "./configs/environment";
 import { getDrizzle } from "./db/db";
+import { llmTable } from "./db/schema/llm";
 import { orgTable } from "./db/schema/org";
 import { threadTable } from "./db/schema/thread";
 import { userTable } from "./db/schema/user";
@@ -61,6 +63,19 @@ export async function main() {
     messages: [],
     status: "idle",
     parentThreadId: null,
+  });
+
+  await db.insert(llmTable).values({
+    llmId: cuid(),
+    name: "OpenAI",
+    provider: {
+      provider: "openai",
+      apiKey: environment.OPENAI_API_KEY ?? "change_to_your_api_key",
+      model: "gpt-4o",
+    },
+    isDefault: true,
+    ownerId: userId,
+    orgId,
   });
 }
 

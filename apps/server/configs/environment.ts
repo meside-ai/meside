@@ -6,6 +6,7 @@ export const environmentSchema = z.object({
     .optional()
     .default("development"),
   DATABASE_URL: z.string(),
+  OPENAI_API_KEY: z.string().optional(),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);

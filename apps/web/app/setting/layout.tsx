@@ -16,7 +16,12 @@ const sidebarItems = [
     icon: IconSettings,
   },
   {
-    title: "Warehouse",
+    title: "AI Providers",
+    href: "/setting/llm",
+    icon: IconSettings,
+  },
+  {
+    title: "Warehouses",
     href: "/setting/warehouse",
     icon: IconSettings,
   },

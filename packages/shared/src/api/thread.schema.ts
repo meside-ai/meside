@@ -38,7 +38,7 @@ export type ThreadListResponse = z.infer<typeof threadListResponseSchema>;
 
 export const threadListRoute = createRoute({
   method: "post",
-  path: "/thread/list",
+  path: "/list",
   request: {
     body: {
       content: {
@@ -74,7 +74,7 @@ export type ThreadDetailResponse = z.infer<typeof threadDetailResponseSchema>;
 
 export const threadDetailRoute = createRoute({
   method: "post",
-  path: "/thread/detail",
+  path: "/detail",
   request: {
     body: {
       content: {
@@ -114,7 +114,7 @@ export type ThreadCreateResponse = z.infer<typeof threadCreateResponseSchema>;
 
 export const threadCreateRoute = createRoute({
   method: "post",
-  path: "/thread/create",
+  path: "/create",
   request: {
     body: {
       content: {
@@ -155,7 +155,7 @@ export type ThreadUpdateResponse = z.infer<typeof threadUpdateResponseSchema>;
 
 export const threadUpdateRoute = createRoute({
   method: "post",
-  path: "/thread/update",
+  path: "/update",
   request: {
     body: {
       content: {
