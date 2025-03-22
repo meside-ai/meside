@@ -41,7 +41,19 @@ Meside is an open-source, AI-driven MCP Client and Data Warehouse MCP Server. By
   sh ./dev-docker-clean.sh
   sh ./dev-docker-start.sh
   ```
-6. **Start the server**:  
+6. **Migrate and seed**
+  ```bash
+  cd apps/warehouse
+  bun run migrate
+  bun run reset
+  bun run seed
+
+  cd ../web
+  bun run migrate
+  bun run reset
+  bun run seed
+  ```
+7. **Start the server**:  
   ```bash  
   bun run dev
   # localhost:3000
