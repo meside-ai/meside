@@ -1,5 +1,6 @@
 import type { TextUIPart } from "@ai-sdk/ui-utils";
 import { Box, Button, Table, Text } from "@mantine/core";
+import { PREVIEW_URL_PREFIX } from "@meside/shared/constant/index";
 import BaseMarkdown, { defaultUrlTransform } from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import remarkGfm from "remark-gfm";
@@ -15,7 +16,7 @@ export const MarkdownPart = ({ part }: { part: TextUIPart }) => {
       components={{
         a: ({ children, ...props }) => {
           const { href, ...rest } = props;
-          if (href?.startsWith("https://p.meside.com")) {
+          if (href?.startsWith(PREVIEW_URL_PREFIX)) {
             return (
               <Button
                 variant="light"
