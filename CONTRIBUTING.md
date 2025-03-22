@@ -59,31 +59,32 @@ Follow the installation and setup instructions in the [README.md](README.md) to 
 ## Development Environment Installation & Setup
 
 1. **Prerequisites**: Ensure [Bun](https://bun.sh/) (v1.0+) and [Docker](https://www.docker.com/) are installed.  
-2. **Database Setup**:  
-   ```bash 
-   sh ./dev-docker-start.sh
-   ```
-3. **Backend Setup**:  
-   ```bash  
-   cd ./server  
-   cp .env.default .env
-   echo 'AI_MODEL=o3-mini' >> .env
-   echo 'OPENAI_API_KEY=<your-api-key>' >> .env
-   # if you want to use DeepSeek-R1, but currently only support DeepSeek official platform
-   # echo 'AI_MODEL=deepseek-reasoner' >> .env
-   # echo 'DEEPSEEK_API_KEY=<your-api-key>' >> .env
-   bun install  
-   bun run migrate  # Initialize database  
-   bun run reset    # Reset dev environment  
-   bun run seed     # Load sample data  
-   bun run dev      # Start backend server  
-   ```  
-4. **Frontend Setup**:  
-   ```bash  
-   cd ./frontend  
-   bun install  
-   bun run dev      # Launch development client  
-   ```  
+2. git clone
+  ```bash
+  git clone https://github.com/meside-ai/meside.git
+  # git clone git@github.com:meside-ai/meside.git
+  ```
+3. install dependencies:
+  ```bash
+  bun install
+  ```
+4. **Prepare Environments**:
+  ```bash
+  cp apps/server/default.env apps/server/.env
+  cp apps/web/default.env apps/web/.env
+  cp apps/warehouse/default.env apps/warehouse/.env
+  echo 'OPENAI_API_KEY=<your-api-key>' >> warehouse/web/.env
+  ```
+5. **Database Setup**:  
+  ```bash 
+  sh ./dev-docker-clean.sh
+  sh ./dev-docker-start.sh
+  ```
+6. **Start the server**:  
+  ```bash  
+  bun run dev
+  # localhost:3000
+  ```  
 
 ## Reporting Issues
 
