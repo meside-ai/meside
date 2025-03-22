@@ -1,13 +1,13 @@
-import { openai } from "@ai-sdk/openai";
-import { QueryClient } from "@tanstack/react-query";
+import type { LlmListResponse } from "@meside/shared/api/llm.schema";
 import { type Tool, experimental_createMCPClient as createMCPClient } from "ai";
 import { streamText } from "ai";
 import { environment } from "../../../configs/environment";
-import { getLlmList } from "../../../queries/llm";
+import { getLlmModel } from "./llm";
 
 let warehouseMcp: Awaited<ReturnType<typeof createMCPClient>> | null = null;
 
 export async function POST(req: Request) {
+  // TODO: use zod to validate the request
   const { messages, threadId } = await req.json();
 
   if (!messages || messages.length === 0) {
@@ -18,9 +18,18 @@ export async function POST(req: Request) {
     return new Response("threadId is required", { status: 400 });
   }
 
-  const queryClient = new QueryClient();
-
-  const llmList = await queryClient.fetchQuery(getLlmList({}));
+  // TODO: move route to server, when createMCPClient and streamText are ready
+  const response = await fetch(
+    `${environment.SERVER_DOMAIN}/meside/server/llm/list`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({}),
+    },
+  );
+  const llmList: LlmListResponse = await response.json();
 
   const llm = llmList.llms.find((llm) => llm.isDefault);
 
@@ -30,10 +39,12 @@ export async function POST(req: Request) {
     });
   }
 
+  const llmModel = await getLlmModel(llm);
+
   warehouseMcp = await createMCPClient({
     transport: {
       type: "sse",
-      url: `${environment.WAREHOUSE_SERVICE_URL}/api/mcp/warehouse`,
+      url: `${environment.WAREHOUSE_DOMAIN}/meside/warehouse/api/mcp/warehouse`,
     },
   });
 
@@ -44,7 +55,7 @@ export async function POST(req: Request) {
   };
 
   const result = streamText({
-    model: openai("gpt-4o"),
+    model: llmModel,
     system: [
       "# Background",
       "You are a helpful assistant that can help with SQL queries.",

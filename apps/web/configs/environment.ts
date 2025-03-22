@@ -5,7 +5,8 @@ export const environmentSchema = z.object({
     .enum(["production", "development", "test"])
     .optional()
     .default("development"),
-  WAREHOUSE_SERVICE_URL: z.string(),
+  SERVER_DOMAIN: z.string(),
+  WAREHOUSE_DOMAIN: z.string(),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);

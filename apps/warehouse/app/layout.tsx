@@ -36,8 +36,10 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <QueryProvider>
-          <Notification />
-          <MantineProvider theme={getTheme()}>{children}</MantineProvider>
+          <MantineProvider theme={getTheme()}>
+            <Notification />
+            {children}
+          </MantineProvider>
         </QueryProvider>
       </body>
     </html>

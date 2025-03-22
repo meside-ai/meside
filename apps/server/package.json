@@ -14,8 +14,11 @@
     "studio": "drizzle-kit studio --port=5183"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.3.0",
     "@hono/zod-openapi": "^0.19.2",
-    "@meside/shared": "*"
+    "@meside/shared": "*",
+    "@modelcontextprotocol/sdk": "^1.7.0",
+    "ai": "^4.2.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "*"
