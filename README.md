@@ -1,5 +1,5 @@
 # meside  
-**The better AI Agent for Database (multi agents and model context protocol)**
+**The better AI Agent for Data Analysis (multi agents and model context protocol)**
 
 ![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE)
@@ -9,7 +9,7 @@
 * Supported databases: PostgreSQL, BigQuery, MySQL, OracleDB
 * Databases to be supported: Clickhouse, Snowflake, SQLite, SQLServer
 
-Meside is an open-source, AI-driven data transformation tool designed to streamline complex data workflows. By integrating machine learning models, Meside automates schema inference, format conversion, and data normalization, reducing manual effort in ETL (Extract, Transform, Load) processes. Built for flexibility, it supports structured and semi-structured data formats like JSON, CSV, and XML, with plans to expand to unstructured data.
+Meside is an open-source, AI-driven MCP Client and Data Warehouse MCP Server. By integrating AI agents, Meside automates schema inference, format conversion, and data normalization, reducing manual effort in ETL (Extract, Transform, Load) processes. Built for flexibility, it supports structured and semi-structured data formats like JSON, CSV, and XML, with plans to expand to unstructured data.
 
 ### Key Features  
 - **AI-Powered Transformations**: Leverage pre-trained models to auto-detect data patterns and suggest optimizations.  
@@ -20,32 +20,32 @@ Meside is an open-source, AI-driven data transformation tool designed to streaml
 
 ### Installation & Setup  
 1. **Prerequisites**: Ensure [Bun](https://bun.sh/) (v1.0+) and [Docker](https://www.docker.com/) are installed.  
-2. **Database Setup**:  
-   ```bash 
-   sh ./dev-docker-clean.sh
-   sh ./dev-docker-start.sh
-   ```
-3. **Backend Setup**:  
-   ```bash  
-   cd ./server  
-   cp .env.default .env
-   echo 'AI_MODEL=o3-mini' >> .env
-   echo 'OPENAI_API_KEY=<your-api-key>' >> .env
-   # if you want to use DeepSeek-R1, but currently only support DeepSeek official platform
-   # echo 'AI_MODEL=deepseek-reasoner' >> .env
-   # echo 'DEEPSEEK_API_KEY=<your-api-key>' >> .env
-   bun install  
-   bun run migrate  # Initialize database  
-   bun run reset    # Reset dev environment  
-   bun run seed     # Load sample data  
-   bun run dev      # Start backend server  
-   ```  
-4. **Frontend Setup**:  
-   ```bash  
-   cd ./frontend  
-   bun install  
-   bun run dev      # Launch development client  
-   ```  
+2. git clone
+  ```bash
+  git clone https://github.com/meside-ai/meside.git
+  # git clone git@github.com:meside-ai/meside.git
+  ```
+3. install dependencies:
+  ```bash
+  bun install
+  ```
+4. **Prepare Environments**:
+  ```bash
+  cp apps/server/default.env apps/server/.env
+  cp apps/web/default.env apps/web/.env
+  cp apps/warehouse/default.env apps/warehouse/.env
+  echo 'OPENAI_API_KEY=<your-api-key>' >> apps/web/.env
+  ```
+5. **Database Setup**:  
+  ```bash 
+  sh ./dev-docker-clean.sh
+  sh ./dev-docker-start.sh
+  ```
+6. **Start the server**:  
+  ```bash  
+  bun run dev
+  # localhost:3000
+  ```  
 
 ### How to use MCP
 
@@ -57,7 +57,7 @@ We only support SSE MCP currently, the Claude Desktop is not support SSE, the Cu
 {
   "mcpServers": {
     "database": {
-      "url": "http://localhost:6333/meside/api/mcp-server/sse",
+      "url": "http://localhost:6333/meside/warehouse/api/mcp",
     }
   }
 }
