@@ -48,13 +48,14 @@ Meside is an open-source, AI-driven MCP Client and Data Warehouse MCP Server. By
   bun run reset
   bun run seed
 
-  cd ../web
+  cd ../server
   bun run migrate
   bun run reset
   bun run seed
   ```
 7. **Start the server**:  
   ```bash  
+  cd ../..
   bun run dev
   # localhost:3000
   ```  
