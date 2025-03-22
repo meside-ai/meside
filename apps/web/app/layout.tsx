@@ -7,6 +7,8 @@ import {
   MantineProvider,
   mantineHtmlProps,
 } from "@mantine/core";
+import { Notification } from "./component/notification";
+import QueryProvider from "./component/query-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,7 +35,12 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <MantineProvider theme={getTheme()}>{children}</MantineProvider>
+        <QueryProvider>
+          <MantineProvider theme={getTheme()}>
+            <Notification />
+            {children}
+          </MantineProvider>
+        </QueryProvider>
       </body>
     </html>
   );
