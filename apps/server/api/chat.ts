@@ -9,7 +9,7 @@ import {
 } from "ai";
 import { and, eq, isNull } from "drizzle-orm";
 import { Hono } from "hono";
-import { stream } from "hono/streaming";
+import { streamSSE } from "hono/streaming";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
 import { getAuthOrUnauthorized } from "../utils/auth";
@@ -67,13 +67,9 @@ chatApi.post("/stream", async (c) => {
     ...warehouseTools,
   };
 
-  console.log("tools", tools);
-
   const dataStream = createDataStream({
     execute: async (dataStreamWriter) => {
-      dataStreamWriter.writeData("initialized call");
-      // TODO: use agent table to manage
-      const result = streamText({
+      const aiStream = streamText({
         model: llmModel,
         system: [
           "# Background",
@@ -91,21 +87,38 @@ chatApi.post("/stream", async (c) => {
         temperature: 0,
         experimental_telemetry: { isEnabled: true },
       });
-      result.mergeIntoDataStream(dataStreamWriter);
+      aiStream.mergeIntoDataStream(dataStreamWriter);
     },
     onError: (error) => {
-      // Error messages are masked by default for security reasons.
-      // If you want to expose the error message to the client, you can do so here:
+      console.error("error", error);
       return error instanceof Error ? error.message : String(error);
     },
   });
 
   c.header("X-Vercel-AI-Data-Stream", "v1");
   c.header("Content-Type", "text/plain; charset=utf-8");
-  //   return stream(c, (stream) => stream.pipe(result.toDataStream()));
-  return stream(c, (stream) =>
-    stream.pipe(dataStream.pipeThrough(new TextEncoderStream())),
-  );
+
+  return streamSSE(c, async (honoStream) => {
+    const reader = dataStream.getReader();
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          await honoStream.writeSSE({
+            data: "[DONE]",
+          });
+          await honoStream.close();
+          break;
+        }
+        await honoStream.writeSSE({
+          data: value,
+        });
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  });
 });
 
 const getLlmModel = async (llm: LlmDto): Promise<LanguageModelV1> => {

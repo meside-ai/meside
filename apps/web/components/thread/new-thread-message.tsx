@@ -21,7 +21,7 @@ export const NewThreadMessage = ({
   }, [finished, errored]);
 
   const { messages, input, setInput, handleSubmit } = useChat({
-    api: "/api/chat",
+    api: "/meside/server/chat/stream",
     body: {
       threadId,
     },
