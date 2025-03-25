@@ -6,11 +6,11 @@ services:
     container_name: db
     command: '-c full_page_writes=off -c fsync=off -c synchronous_commit=off'
     environment:
-      POSTGRES_USER: aidw
-      POSTGRES_PASSWORD: aidw
-      POSTGRES_DB: aidw
+      POSTGRES_USER: meside
+      POSTGRES_PASSWORD: meside
+      POSTGRES_DB: meside
     ports:
-      - "${AIDW_DB_PORT:-25433}:5432"
+      - "${MESIDE_DB_PORT:-25433}:5432"
     volumes:
       - ./dev/volumes/db/data:/var/lib/postgresql/data
   warehouse:
@@ -22,7 +22,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: chinook
     ports:
-      - "${AIDW_WAREHOUSE_PORT:-25435}:5432"
+      - "${MESIDE_WAREHOUSE_PORT:-25435}:5432"
     volumes:
       - ./dev/Chinook_PostgreSql.sql:/docker-entrypoint-initdb.d/Chinook_PostgreSql.sql
       - ./dev/volumes/warehouse/data:/var/lib/postgresql/data
@@ -30,6 +30,6 @@ services:
     image: redis:latest
     container_name: redis
     ports:
-      - "${AIDW_REDIS_PORT:-25637}:6379"
+      - "${MESIDE_REDIS_PORT:-25637}:6379"
     volumes:
       - ./dev/volumes/redis/data:/data

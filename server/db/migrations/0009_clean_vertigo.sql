@@ -1,1 +1,0 @@
-ALTER TABLE "question" ADD COLUMN "active_version" boolean DEFAULT false NOT NULL;

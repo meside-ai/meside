@@ -1,1 +1,0 @@
-ALTER TABLE "usage" ALTER COLUMN "message_id" DROP NOT NULL;
