@@ -2,13 +2,10 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import {
   type LlmCreateResponse,
   type LlmDetailResponse,
-  type LlmUpdateResponse,
   llmCreateRequestSchema,
   llmCreateRoute,
   llmDetailRoute,
   llmListRoute,
-  llmUpdateRequestSchema,
-  llmUpdateRoute,
 } from "@meside/shared/api/llm.schema";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../db/db";
@@ -55,8 +52,16 @@ llmApi.openapi(llmCreateRoute, async (c) => {
   const auth = getAuthOrUnauthorized(c);
   const llmId = cuid();
 
-  const llm = firstOrNotCreated(
-    await getDrizzle()
+  const llms = await getDrizzle().transaction(async (tx) => {
+    if (body.isDefault) {
+      await tx
+        .update(llmTable)
+        .set({
+          isDefault: false,
+        })
+        .where(eq(llmTable.orgId, auth.orgId));
+    }
+    const llms = await tx
       .insert(llmTable)
       .values({
         llmId,
@@ -66,26 +71,14 @@ llmApi.openapi(llmCreateRoute, async (c) => {
         ownerId: auth.userId,
         orgId: auth.orgId,
       })
-      .returning(),
-    "Failed to create llm",
-  );
+      .returning();
+
+    return llms;
+  });
+
+  const llm = firstOrNotCreated(llms, "Failed to create llm");
 
   const llmDto = await getLlmDtos([llm]);
 
   return c.json({ llm: llmDto[0] } as LlmCreateResponse);
-});
-
-llmApi.openapi(llmUpdateRoute, async (c) => {
-  const body = llmUpdateRequestSchema.parse(await c.req.json());
-
-  await getDrizzle()
-    .update(llmTable)
-    .set({
-      name: body.name,
-      provider: body.provider,
-      isDefault: body.isDefault,
-    })
-    .where(eq(llmTable.llmId, body.llmId));
-
-  return c.json({} as LlmUpdateResponse);
 });
