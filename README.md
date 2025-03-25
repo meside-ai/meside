@@ -34,7 +34,7 @@ Meside is an open-source, AI-driven MCP Client and Data Warehouse MCP Server. By
   cp apps/server/default.env apps/server/.env
   cp apps/web/default.env apps/web/.env
   cp apps/warehouse/default.env apps/warehouse/.env
-  echo 'OPENAI_API_KEY=<your-api-key>' >> warehouse/web/.env
+  echo 'OPENAI_API_KEY=<your-api-key>' >> apps/warehouse/.env
   ```
 5. **Database Setup**:  
   ```bash 
