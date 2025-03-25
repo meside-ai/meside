@@ -4,7 +4,7 @@ import {
   type LanguageModelV1,
   type Tool,
   createDataStream,
-  experimental_createMCPClient,
+  experimental_createMCPClient as createMCPClient,
   streamText,
 } from "ai";
 import { and, eq, isNull } from "drizzle-orm";
@@ -16,6 +16,8 @@ import { getAuthOrUnauthorized } from "../utils/auth";
 import { firstOrNotFound } from "../utils/toolkit";
 
 export const chatApi = new Hono();
+
+let warehouseMcp: Awaited<ReturnType<typeof createMCPClient>> | null = null;
 
 chatApi.post("/stream", async (c) => {
   // TODO: use hono validate
@@ -47,21 +49,19 @@ chatApi.post("/stream", async (c) => {
 
   const llmModel = await getLlmModel(activeLlm);
 
-  console.log("llmModel", llmModel);
-
-  const warehouseMcp = await experimental_createMCPClient({
-    transport: {
-      type: "sse",
-      // TODO: use database to manage mcp
-      url: "http://localhost:3002/meside/warehouse/api/mcp/warehouse",
-    },
-  });
-
-  console.log("warehouseMcp", warehouseMcp);
+  try {
+    warehouseMcp = await createMCPClient({
+      transport: {
+        type: "sse",
+        // TODO: use database to manage mcp
+        url: "http://localhost:3002/meside/warehouse/api/mcp/warehouse",
+      },
+    });
+  } catch (error) {
+    return c.json({ error: "Failed to create warehouse mcp" }, 500);
+  }
 
   const warehouseTools = await warehouseMcp.tools();
-
-  console.log("warehouseTools", warehouseTools);
 
   const tools: Record<string, Tool> = {
     ...warehouseTools,
@@ -105,9 +105,6 @@ chatApi.post("/stream", async (c) => {
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
-          await honoStream.writeSSE({
-            data: "[DONE]",
-          });
           await honoStream.close();
           break;
         }
@@ -124,6 +121,15 @@ chatApi.post("/stream", async (c) => {
 const getLlmModel = async (llm: LlmDto): Promise<LanguageModelV1> => {
   if (llm.provider.provider === "openai") {
     const provider = createOpenAI({
+      apiKey: llm.provider.apiKey,
+    });
+
+    return provider(llm.provider.model);
+  }
+
+  if (llm.provider.provider === "deepseek") {
+    const provider = createOpenAI({
+      baseURL: "https://api.deepseek.com/v1",
       apiKey: llm.provider.apiKey,
     });
 
