@@ -9,6 +9,11 @@ export const llmProviderSchema = z.union([
     model: z.enum(["gpt-4o"]),
   }),
   z.object({
+    provider: z.literal("deepseek"),
+    apiKey: z.string(),
+    model: z.enum(["deepseek-chat"]),
+  }),
+  z.object({
     provider: z.literal("openaiCompatible"),
     apiKey: z.string(),
     baseUrl: z.string(),
