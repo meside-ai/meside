@@ -9,7 +9,7 @@ import {
 } from "ai";
 import { and, eq, isNull } from "drizzle-orm";
 import { Hono } from "hono";
-import { streamSSE } from "hono/streaming";
+import { stream } from "hono/streaming";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
 import { getAuthOrUnauthorized } from "../utils/auth";
@@ -97,25 +97,11 @@ chatApi.post("/stream", async (c) => {
 
   c.header("X-Vercel-AI-Data-Stream", "v1");
   c.header("Content-Type", "text/plain; charset=utf-8");
+  c.header("Content-Encoding", "none");
 
-  return streamSSE(c, async (honoStream) => {
-    const reader = dataStream.getReader();
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          await honoStream.close();
-          break;
-        }
-        await honoStream.writeSSE({
-          data: value,
-        });
-      }
-    } finally {
-      reader.releaseLock();
-    }
-  });
+  return stream(c, (stream) =>
+    stream.pipe(dataStream.pipeThrough(new TextEncoderStream())),
+  );
 });
 
 const getLlmModel = async (llm: LlmDto): Promise<LanguageModelV1> => {

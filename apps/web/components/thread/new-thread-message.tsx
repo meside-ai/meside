@@ -19,9 +19,10 @@ export const NewThreadMessage = ({
   const isLoading = useMemo(() => {
     return !finished || !errored;
   }, [finished, errored]);
+  const api = "/meside/server/chat/stream";
 
   const { messages, input, setInput, handleSubmit } = useChat({
-    api: "/meside/server/chat/stream",
+    api,
     body: {
       threadId,
     },
