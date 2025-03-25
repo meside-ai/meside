@@ -4,7 +4,7 @@ import {
   type LanguageModelV1,
   type Tool,
   createDataStream,
-  experimental_createMCPClient,
+  experimental_createMCPClient as createMCPClient,
   streamText,
 } from "ai";
 import { and, eq, isNull } from "drizzle-orm";
@@ -16,6 +16,8 @@ import { getAuthOrUnauthorized } from "../utils/auth";
 import { firstOrNotFound } from "../utils/toolkit";
 
 export const chatApi = new Hono();
+
+let warehouseMcp: Awaited<ReturnType<typeof createMCPClient>> | null = null;
 
 chatApi.post("/stream", async (c) => {
   // TODO: use hono validate
@@ -47,33 +49,27 @@ chatApi.post("/stream", async (c) => {
 
   const llmModel = await getLlmModel(activeLlm);
 
-  console.log("llmModel", llmModel);
-
-  const warehouseMcp = await experimental_createMCPClient({
-    transport: {
-      type: "sse",
-      // TODO: use database to manage mcp
-      url: "http://localhost:3002/meside/warehouse/api/mcp/warehouse",
-    },
-  });
-
-  console.log("warehouseMcp", warehouseMcp);
+  try {
+    warehouseMcp = await createMCPClient({
+      transport: {
+        type: "sse",
+        // TODO: use database to manage mcp
+        url: "http://localhost:3002/meside/warehouse/api/mcp/warehouse",
+      },
+    });
+  } catch (error) {
+    return c.json({ error: "Failed to create warehouse mcp" }, 500);
+  }
 
   const warehouseTools = await warehouseMcp.tools();
-
-  console.log("warehouseTools", warehouseTools);
 
   const tools: Record<string, Tool> = {
     ...warehouseTools,
   };
 
-  console.log("tools", tools);
-
   const dataStream = createDataStream({
     execute: async (dataStreamWriter) => {
-      dataStreamWriter.writeData("initialized call");
-      // TODO: use agent table to manage
-      const result = streamText({
+      const aiStream = streamText({
         model: llmModel,
         system: [
           "# Background",
@@ -91,18 +87,18 @@ chatApi.post("/stream", async (c) => {
         temperature: 0,
         experimental_telemetry: { isEnabled: true },
       });
-      result.mergeIntoDataStream(dataStreamWriter);
+      aiStream.mergeIntoDataStream(dataStreamWriter);
     },
     onError: (error) => {
-      // Error messages are masked by default for security reasons.
-      // If you want to expose the error message to the client, you can do so here:
+      console.error("error", error);
       return error instanceof Error ? error.message : String(error);
     },
   });
 
   c.header("X-Vercel-AI-Data-Stream", "v1");
   c.header("Content-Type", "text/plain; charset=utf-8");
-  //   return stream(c, (stream) => stream.pipe(result.toDataStream()));
+  c.header("Content-Encoding", "none");
+
   return stream(c, (stream) =>
     stream.pipe(dataStream.pipeThrough(new TextEncoderStream())),
   );
@@ -111,6 +107,15 @@ chatApi.post("/stream", async (c) => {
 const getLlmModel = async (llm: LlmDto): Promise<LanguageModelV1> => {
   if (llm.provider.provider === "openai") {
     const provider = createOpenAI({
+      apiKey: llm.provider.apiKey,
+    });
+
+    return provider(llm.provider.model);
+  }
+
+  if (llm.provider.provider === "deepseek") {
+    const provider = createOpenAI({
+      baseURL: "https://api.deepseek.com/v1",
       apiKey: llm.provider.apiKey,
     });
 

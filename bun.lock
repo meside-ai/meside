@@ -37,6 +37,7 @@
         "@meside/shared": "*",
         "@modelcontextprotocol/sdk": "^1.7.0",
         "ai": "^4.2.0",
+        "hono": "^4.7.5",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
