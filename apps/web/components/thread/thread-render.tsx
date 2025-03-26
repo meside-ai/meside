@@ -31,17 +31,19 @@ export const ThreadRender = ({
   messages,
   loading,
   addToolResult,
+  error,
 }: {
   messages: UIMessage[];
   loading?: boolean;
   addToolResult?: AddToolResult;
+  error?: Error;
 }) => {
   return (
     <Box style={{ height: "100%", overflow: "auto" }}>
       <ScrollArea scrollbars="y">
         <Box p="md">
           {messages.map((message) => (
-            <>
+            <Box key={message.id}>
               {message.role === "user" ? (
                 <UserMessageRender key={message.id} message={message} />
               ) : (
@@ -51,8 +53,9 @@ export const ThreadRender = ({
                   addToolResult={addToolResult}
                 />
               )}
-            </>
+            </Box>
           ))}
+          {error && <Text>{error?.message ?? "unknown error"}</Text>}
           {loading && (
             <Box>
               <Loader type="dots" />
@@ -65,6 +68,7 @@ export const ThreadRender = ({
 };
 
 const UserMessageRender = ({ message }: { message: UIMessage }) => {
+  const [enableEditing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -95,7 +99,7 @@ const UserMessageRender = ({ message }: { message: UIMessage }) => {
           </Box>
         </Box>
       )}
-      {!isEditing && (
+      {enableEditing && !isEditing && (
         <Group justify="flex-end" align="center" gap="xs" mt="md">
           <Box display="flex" style={{ justifyContent: "space-between" }}>
             <ThreadSiblings />
@@ -127,10 +131,16 @@ const AssistantMessageRender = ({
       {message.parts.map((part, i) => {
         switch (part.type) {
           case "reasoning":
-            return <div>Reasoning {part.reasoning}</div>;
+            return (
+              <div key={`${message.id}-${i}`}>Reasoning {part.reasoning}</div>
+            );
           case "tool-invocation":
             return (
-              <ToolInvocationRender part={part} addToolResult={addToolResult} />
+              <ToolInvocationRender
+                key={`${message.id}-${part.toolInvocation.toolCallId}`}
+                part={part}
+                addToolResult={addToolResult}
+              />
             );
           case "text":
             return <MarkdownPart key={`${message.id}-${i}`} part={part} />;
@@ -144,7 +154,6 @@ const ToolInvocationRender = ({
   part,
   addToolResult,
 }: { part: ToolInvocationUIPart; addToolResult?: AddToolResult }) => {
-  console.log("part", JSON.stringify(part, null, 2), addToolResult);
   if (
     part.toolInvocation.toolName === "human-input" &&
     part.toolInvocation.state === "call" &&

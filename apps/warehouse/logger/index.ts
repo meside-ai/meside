@@ -8,18 +8,19 @@ export type Logger = {
 };
 
 export const getLogger = (name: string): Logger => {
+  const time = new Date().toISOString();
   return {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     error: (...args: any[]) => {
-      console.error(name, args);
+      console.error(name, time, args);
     },
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     warn: (...args: any[]) => {
-      console.warn(name, args);
+      console.warn(name, time, args);
     },
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     info: (...args: any[]) => {
-      console.info(name, args);
+      console.info(name, time, args);
     },
   };
 };

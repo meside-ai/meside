@@ -82,35 +82,37 @@ chatApi.post("/stream", async (c) => {
     execute: async (dataStreamWriter) => {
       const lastMessage = messages[messages.length - 1];
 
-      if (lastMessage) {
-        lastMessage.parts = await Promise.all(
-          lastMessage?.parts?.map(async (part) => {
-            if (part.type !== "tool-invocation") {
-              return part;
-            }
-            const toolInvocation = part.toolInvocation;
-
-            if (
-              toolInvocation.toolName !== "human-input" ||
-              toolInvocation.state !== "result"
-            ) {
-              return part;
-            }
-
-            const result = toolInvocation.result;
-            console.log("result", JSON.stringify(result, null, 2));
-
-            dataStreamWriter.write(
-              formatDataStreamPart("tool_result", {
-                toolCallId: toolInvocation.toolCallId,
-                result,
-              }),
-            );
-
-            return { ...part, toolInvocation: { ...toolInvocation, result } };
-          }) ?? [],
-        );
+      if (!lastMessage) {
+        throw new Error("lastMessage is required");
       }
+
+      lastMessage.parts = await Promise.all(
+        lastMessage?.parts?.map(async (part) => {
+          if (part.type !== "tool-invocation") {
+            return part;
+          }
+          const toolInvocation = part.toolInvocation;
+
+          if (
+            toolInvocation.toolName !== "human-input" ||
+            toolInvocation.state !== "result"
+          ) {
+            return part;
+          }
+
+          const result = toolInvocation.result;
+          console.log("result", JSON.stringify(result, null, 2));
+
+          dataStreamWriter.write(
+            formatDataStreamPart("tool_result", {
+              toolCallId: toolInvocation.toolCallId,
+              result,
+            }),
+          );
+
+          return { ...part, toolInvocation: { ...toolInvocation, result } };
+        }) ?? [],
+      );
 
       const aiStream = streamText({
         model: llmModel,
