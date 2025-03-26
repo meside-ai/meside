@@ -8,7 +8,9 @@ import {
   Loader,
   ScrollArea,
   Text,
+  Textarea,
 } from "@mantine/core";
+import { useForm, zodResolver } from "@mantine/form";
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -17,18 +19,22 @@ import {
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { z } from "zod";
 import { getThreadDetail } from "../../queries/thread";
 import { useThreadContext } from "../chat/context";
 import { AssistantHeader } from "./assistant-header";
 import { EditThreadInput } from "./edit-thread-input";
 import { MarkdownPart } from "./markdown-part";
+import type { AddToolResult } from "./new-thread-message.type";
 
 export const ThreadRender = ({
   messages,
   loading,
+  addToolResult,
 }: {
   messages: UIMessage[];
   loading?: boolean;
+  addToolResult?: AddToolResult;
 }) => {
   return (
     <Box style={{ height: "100%", overflow: "auto" }}>
@@ -39,7 +45,11 @@ export const ThreadRender = ({
               {message.role === "user" ? (
                 <UserMessageRender key={message.id} message={message} />
               ) : (
-                <AssistantMessageRender key={message.id} message={message} />
+                <AssistantMessageRender
+                  key={message.id}
+                  message={message}
+                  addToolResult={addToolResult}
+                />
               )}
             </>
           ))}
@@ -107,7 +117,10 @@ const UserMessageRender = ({ message }: { message: UIMessage }) => {
   );
 };
 
-const AssistantMessageRender = ({ message }: { message: UIMessage }) => {
+const AssistantMessageRender = ({
+  message,
+  addToolResult,
+}: { message: UIMessage; addToolResult?: AddToolResult }) => {
   return (
     <Box>
       <AssistantHeader />
@@ -116,7 +129,9 @@ const AssistantMessageRender = ({ message }: { message: UIMessage }) => {
           case "reasoning":
             return <div>Reasoning {part.reasoning}</div>;
           case "tool-invocation":
-            return <ToolInvocationRender part={part} />;
+            return (
+              <ToolInvocationRender part={part} addToolResult={addToolResult} />
+            );
           case "text":
             return <MarkdownPart key={`${message.id}-${i}`} part={part} />;
         }
@@ -125,7 +140,19 @@ const AssistantMessageRender = ({ message }: { message: UIMessage }) => {
   );
 };
 
-const ToolInvocationRender = ({ part }: { part: ToolInvocationUIPart }) => {
+const ToolInvocationRender = ({
+  part,
+  addToolResult,
+}: { part: ToolInvocationUIPart; addToolResult?: AddToolResult }) => {
+  console.log("part", JSON.stringify(part, null, 2), addToolResult);
+  if (
+    part.toolInvocation.toolName === "human-input" &&
+    part.toolInvocation.state === "call" &&
+    addToolResult
+  ) {
+    return <HumanInputRender part={part} addToolResult={addToolResult} />;
+  }
+
   return (
     <Box mb="sm">
       <Button
@@ -136,6 +163,41 @@ const ToolInvocationRender = ({ part }: { part: ToolInvocationUIPart }) => {
       >
         {part.toolInvocation.toolName}
       </Button>
+    </Box>
+  );
+};
+
+const HumanInputRender = ({
+  part,
+  addToolResult,
+}: { part: ToolInvocationUIPart; addToolResult: AddToolResult }) => {
+  const toolInvocation = part.toolInvocation;
+  const toolCallId = toolInvocation.toolCallId;
+  const form = useForm({
+    initialValues: {
+      input: "",
+    },
+    validate: zodResolver(
+      z.object({
+        input: z.string().min(1),
+      }),
+    ),
+  });
+
+  return (
+    <Box mb="sm">
+      <Text>{JSON.stringify(toolInvocation.args)}</Text>
+      <form
+        onSubmit={form.onSubmit((values) => {
+          addToolResult({
+            toolCallId,
+            result: values.input,
+          });
+        })}
+      >
+        <Textarea {...form.getInputProps("input")} />
+        <Button type="submit">Confirm</Button>
+      </form>
     </Box>
   );
 };

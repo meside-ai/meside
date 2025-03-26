@@ -1,8 +1,6 @@
 import { useChat } from "@ai-sdk/react";
 import { Box } from "@mantine/core";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getThreadDetail, getThreadUpdate } from "../../queries/thread";
 import { ThreadRender } from "./thread-render";
 
 export const NewThreadMessage = ({
@@ -12,7 +10,6 @@ export const NewThreadMessage = ({
   threadId: string;
   userPrompt: string;
 }) => {
-  const queryClient = useQueryClient();
   const [finished, setFinished] = useState(false);
   const [errored, setErrored] = useState(false);
   const mountedRef = useRef(false);
@@ -21,7 +18,7 @@ export const NewThreadMessage = ({
   }, [finished, errored]);
   const api = "/meside/server/chat/stream";
 
-  const { messages, input, setInput, handleSubmit } = useChat({
+  const { messages, input, setInput, handleSubmit, addToolResult } = useChat({
     api,
     body: {
       threadId,
@@ -34,32 +31,17 @@ export const NewThreadMessage = ({
     },
   });
 
-  const { mutateAsync: updateThread } = useMutation({
-    ...getThreadUpdate(),
-    onSuccess: () => {
-      queryClient.invalidateQueries(getThreadDetail({ threadId }));
-    },
-  });
-
   useEffect(() => {
     if (finished) {
-      updateThread({
-        threadId,
-        status: "active",
-        messages,
-      });
+      console.log("finished");
     }
-  }, [finished, threadId, messages, updateThread]);
+  }, [finished]);
 
   useEffect(() => {
     if (errored) {
-      updateThread({
-        threadId,
-        status: "closed",
-        messages,
-      });
+      console.log("errored");
     }
-  }, [errored, threadId, messages, updateThread]);
+  }, [errored]);
 
   useEffect(() => {
     if (mountedRef.current) {
@@ -83,7 +65,11 @@ export const NewThreadMessage = ({
 
   return (
     <Box style={{ height: "100%", overflow: "auto" }}>
-      <ThreadRender messages={messages} loading={isLoading} />
+      <ThreadRender
+        messages={messages}
+        loading={isLoading}
+        addToolResult={addToolResult}
+      />
     </Box>
   );
 };
