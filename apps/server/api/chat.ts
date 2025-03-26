@@ -20,6 +20,8 @@ import { firstOrNotFound } from "../utils/toolkit";
 
 export const chatApi = new Hono();
 
+let warehouseMcp: Awaited<ReturnType<typeof createMCPClient>> | null = null;
+
 chatApi.post("/stream", async (c) => {
   // TODO: use hono validate
   const { messages, threadId } = (await c.req.json()) as {
@@ -53,20 +55,20 @@ chatApi.post("/stream", async (c) => {
 
   const llmModel = await getLlmModel(activeLlm);
 
-  let warehouseMcp: Awaited<ReturnType<typeof createMCPClient>> | null = null;
-
-  try {
-    console.log("try to create warehouseMcp");
-    warehouseMcp = await createMCPClient({
-      transport: {
-        type: "sse",
-        // TODO: use database to manage mcp
-        url: "http://localhost:3002/meside/warehouse/api/mcp/warehouse",
-      },
-    });
-    console.log("crated warehouseMcp");
-  } catch (error) {
-    return c.json({ error: "Failed to create warehouse mcp" }, 500);
+  if (!warehouseMcp) {
+    try {
+      console.log("try to create warehouseMcp");
+      warehouseMcp = await createMCPClient({
+        transport: {
+          type: "sse",
+          // TODO: use database to manage mcp
+          url: "http://localhost:3002/meside/warehouse/api/mcp/warehouse",
+        },
+      });
+      console.log("crated warehouseMcp");
+    } catch (error) {
+      return c.json({ error: "Failed to create warehouse mcp" }, 500);
+    }
   }
 
   const warehouseTools = await warehouseMcp.tools();
@@ -120,14 +122,12 @@ chatApi.post("/stream", async (c) => {
         experimental_telemetry: { isEnabled: true },
         onFinish: () => {
           console.log("onFinish");
-          warehouseMcp?.close();
         },
       });
       aiStream.mergeIntoDataStream(dataStreamWriter);
     },
     onError: (error) => {
       console.error("error", error);
-      warehouseMcp?.close();
       return error instanceof Error ? error.message : String(error);
     },
   });
