@@ -1,89 +1,135 @@
-import { useChat } from "@ai-sdk/react";
-import { Box } from "@mantine/core";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { type Message, useChat } from "@ai-sdk/react";
+import { ActionIcon, Box, Group, Loader, Paper, Textarea } from "@mantine/core";
+import { useMounted } from "@mantine/hooks";
+import { IconArrowUp } from "@tabler/icons-react";
+import { useMutation } from "@tanstack/react-query";
+import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getThreadDetail, getThreadUpdate } from "../../queries/thread";
+import { getThreadAppendMessage } from "../../queries/thread";
 import { ThreadRender } from "./thread-render";
 
 export const NewThreadMessage = ({
   threadId,
-  userPrompt,
+  threadMessages,
 }: {
   threadId: string;
-  userPrompt: string;
+  threadMessages: Message[];
 }) => {
-  const queryClient = useQueryClient();
-  const [finished, setFinished] = useState(false);
-  const [errored, setErrored] = useState(false);
-  const mountedRef = useRef(false);
-  const isLoading = useMemo(() => {
-    return !finished || !errored;
-  }, [finished, errored]);
+  const [error, setError] = useState<Error | null>(null);
+
   const api = "/meside/server/chat/stream";
 
-  const { messages, input, setInput, handleSubmit } = useChat({
+  // TODO: move appendThreadMessage to server api
+  const { mutateAsync: appendThreadMessage } = useMutation({
+    ...getThreadAppendMessage(),
+  });
+
+  const {
+    messages,
+    setMessages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    addToolResult,
+    status,
+    reload,
+  } = useChat({
     api,
     body: {
       threadId,
     },
-    onError: () => {
-      setErrored(true);
+    onError: (error) => {
+      console.error(error);
+      setError(error);
     },
-    onFinish: async () => {
-      setFinished(true);
+    onFinish: async (message) => {
+      await appendThreadMessage({
+        threadId,
+        messages: [message],
+      });
     },
   });
 
-  const { mutateAsync: updateThread } = useMutation({
-    ...getThreadUpdate(),
-    onSuccess: () => {
-      queryClient.invalidateQueries(getThreadDetail({ threadId }));
-    },
-  });
+  const isLoading = useMemo(
+    () => status === "submitted" || status === "streaming",
+    [status],
+  );
+
+  const mounted = useMounted();
 
   useEffect(() => {
-    if (finished) {
-      updateThread({
-        threadId,
-        status: "active",
-        messages,
-      });
+    if (mounted) {
+      setMessages(threadMessages);
     }
-  }, [finished, threadId, messages, updateThread]);
+  }, [mounted, threadMessages, setMessages]);
+
+  const reloadIfOnlyUserPromptCount = useRef(0);
 
   useEffect(() => {
-    if (errored) {
-      updateThread({
-        threadId,
-        status: "closed",
-        messages,
-      });
-    }
-  }, [errored, threadId, messages, updateThread]);
-
-  useEffect(() => {
-    if (mountedRef.current) {
+    if (reloadIfOnlyUserPromptCount.current > 0) {
       return;
     }
-    setInput(userPrompt);
-    mountedRef.current = true;
-  }, [setInput, userPrompt]);
-
-  const mountedRef2 = useRef(false);
-
-  useEffect(() => {
-    if (mountedRef2.current) {
+    if (messages.length === 0) {
       return;
     }
-    if (input) {
-      handleSubmit();
-      mountedRef2.current = true;
+    const onlyUserPrompt = messages.every((message) => message.role === "user");
+    if (onlyUserPrompt) {
+      reloadIfOnlyUserPromptCount.current++;
+      reload();
     }
-  }, [input, handleSubmit]);
+  }, [messages, reload]);
 
   return (
-    <Box style={{ height: "100%", overflow: "auto" }}>
-      <ThreadRender messages={messages} loading={isLoading} />
+    <Box
+      display="flex"
+      style={{
+        flexDirection: "column",
+        height: "100%",
+        overflow: "auto",
+      }}
+    >
+      <Box style={{ flex: 1 }}>
+        <ThreadRender
+          loading={isLoading}
+          messages={messages}
+          addToolResult={addToolResult}
+          error={error ?? undefined}
+        />
+      </Box>
+      <Box px="md" pb="md">
+        <Paper withBorder p="md" radius="lg">
+          <form
+            onSubmit={async (event) => {
+              event.preventDefault();
+              setError(null);
+              await appendThreadMessage({
+                threadId,
+                messages: [
+                  {
+                    id: `msg-${nanoid()}`,
+                    content: input,
+                    role: "user",
+                    parts: [{ type: "text", text: input }],
+                  },
+                ],
+              });
+              handleSubmit(event);
+            }}
+          >
+            <Textarea
+              variant="unstyled"
+              value={input}
+              placeholder={"Let AI agents help you."}
+              onChange={handleInputChange}
+            />
+            <Group justify="flex-end" gap="xs">
+              <ActionIcon type="submit" size="xs">
+                {isLoading ? <Loader type="dots" /> : <IconArrowUp />}
+              </ActionIcon>
+            </Group>
+          </form>
+        </Paper>
+      </Box>
     </Box>
   );
 };

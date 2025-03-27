@@ -176,3 +176,42 @@ export const threadUpdateRoute = createRoute({
     },
   },
 });
+
+// threadAppendMessage
+export const threadAppendMessageRequestSchema = z.object({
+  threadId: z.string(),
+  messages: z.array(z.any()), // TODO: write self messages type from @ai-sdk/ui-utils
+});
+
+export const threadAppendMessageResponseSchema = z.object({});
+
+export type ThreadAppendMessageRequest = z.infer<
+  typeof threadAppendMessageRequestSchema
+>;
+export type ThreadAppendMessageResponse = z.infer<
+  typeof threadAppendMessageResponseSchema
+>;
+
+export const threadAppendMessageRoute = createRoute({
+  method: "post",
+  path: "/append-message",
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: threadAppendMessageRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: threadAppendMessageResponseSchema,
+        },
+      },
+      description: "Append message to the thread",
+    },
+  },
+});

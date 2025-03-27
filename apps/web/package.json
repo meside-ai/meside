@@ -10,8 +10,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.2.6",
-    "@ai-sdk/react": "^1.1.24",
+    "@ai-sdk/react": "^1.2.2",
     "@mantine/core": "^7.17.2",
     "@mantine/dates": "^7.17.2",
     "@mantine/form": "^7.17.2",
@@ -37,7 +36,6 @@
     "@tiptap/starter-kit": "^2.11.5",
     "@tiptap/suggestion": "^2.11.5",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "ai": "^4.1.63",
     "date-fns": "^4.1.0",
     "immer": "^10.1.1",
     "mantine-form-zod-resolver": "^1.1.0",

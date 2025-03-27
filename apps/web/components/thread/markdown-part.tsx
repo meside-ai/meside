@@ -87,6 +87,5 @@ export const MarkdownPart = ({ part }: { part: TextUIPart }) => {
 };
 
 const urlTransform = (url: string): string | null | undefined => {
-  console.log(url);
   return defaultUrlTransform(url);
 };

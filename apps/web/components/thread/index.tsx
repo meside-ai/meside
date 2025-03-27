@@ -4,7 +4,6 @@ import { getThreadDetail } from "../../queries/thread";
 import { useThreadContext } from "../chat/context";
 import { NewThreadInput } from "./new-thread-input";
 import { NewThreadMessage } from "./new-thread-message";
-import { ThreadRender } from "./thread-render";
 
 export const Thread = () => {
   const { threadId, setThreadId } = useThreadContext();
@@ -31,22 +30,10 @@ export const Thread = () => {
     );
   }
 
-  if (data.thread.status === "idle" && data.thread.messages.length === 0) {
-    return (
-      <NewThreadMessage
-        threadId={data.thread.threadId}
-        userPrompt={data.thread.userPrompt}
-      />
-    );
-  }
-
-  if (data.thread.status === "active" || data.thread.status === "closed") {
-    return (
-      <Box style={{ height: "100%", overflow: "auto" }}>
-        <ThreadRender messages={data.thread.messages} />
-      </Box>
-    );
-  }
-
-  return <Box>Unknown issue</Box>;
+  return (
+    <NewThreadMessage
+      threadId={data?.thread.threadId}
+      threadMessages={data?.thread.messages ?? []}
+    />
+  );
 };

@@ -1,9 +1,12 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import {
+  type ThreadAppendMessageResponse,
   type ThreadCreateResponse,
   type ThreadDetailResponse,
   type ThreadListResponse,
   type ThreadUpdateResponse,
+  threadAppendMessageRequestSchema,
+  threadAppendMessageRoute,
   threadCreateRequestSchema,
   threadCreateRoute,
   threadDetailRequestSchema,
@@ -13,10 +16,12 @@ import {
   threadUpdateRequestSchema,
   threadUpdateRoute,
 } from "@meside/shared/api/thread.schema";
+import type { Message } from "ai";
 import { type SQL, and, desc, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../db/db";
 import { type ThreadEntity, threadTable } from "../db/schema/thread";
 import { getThreadDtos } from "../mappers/thread";
+import { appendThreadMessages } from "../service/thread";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { cuid } from "../utils/cuid";
 import { firstOrNotCreated, firstOrNull } from "../utils/toolkit";
@@ -89,6 +94,20 @@ threadApi.openapi(threadCreateRoute, async (c) => {
 
   const threadId = cuid();
 
+  const messages: Message[] = [
+    {
+      id: cuid(),
+      content: body.userPrompt,
+      role: "user",
+      parts: [
+        {
+          type: "text",
+          text: body.userPrompt,
+        },
+      ],
+    },
+  ];
+
   const thread = firstOrNotCreated(
     await getDrizzle().transaction(async (tx) => {
       await tx
@@ -112,7 +131,7 @@ threadApi.openapi(threadCreateRoute, async (c) => {
           shortName: body.shortName ?? undefined,
           systemPrompt: body.systemPrompt,
           userPrompt: body.userPrompt,
-          messages: [],
+          messages,
           parentThreadId: parentThread?.threadId ?? undefined,
           ownerId: auth.userId,
           orgId: auth.orgId,
@@ -144,4 +163,10 @@ threadApi.openapi(threadUpdateRoute, async (c) => {
     .where(eq(threadTable.threadId, body.threadId));
 
   return c.json({} as ThreadUpdateResponse);
+});
+
+threadApi.openapi(threadAppendMessageRoute, async (c) => {
+  const body = threadAppendMessageRequestSchema.parse(await c.req.json());
+  await appendThreadMessages(body.threadId, body.messages);
+  return c.json({} as ThreadAppendMessageResponse);
 });

@@ -8,12 +8,14 @@ export const ThreadInput = ({
   placeholder = "Say something...",
   loading = false,
   buttons,
+  disabled,
 }: {
   handleSubmit: (userInput: string) => void;
   defaultValue?: string;
   placeholder?: string;
   loading?: boolean;
   buttons?: ReactNode;
+  disabled?: boolean;
 }) => {
   const [input, setInput] = useState(defaultValue);
   const onSubmit = useCallback(
@@ -33,6 +35,7 @@ export const ThreadInput = ({
           value={input}
           placeholder={placeholder}
           onChange={(e) => setInput(e.target.value)}
+          disabled={disabled}
         />
         <Group justify="flex-end" gap="xs">
           {buttons}
