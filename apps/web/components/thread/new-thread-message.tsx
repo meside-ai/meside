@@ -100,6 +100,7 @@ export const NewThreadMessage = ({
         <Paper withBorder p="md" radius="lg">
           <form
             onSubmit={async (event) => {
+              event.preventDefault();
               setError(null);
               await appendThreadMessage({
                 threadId,

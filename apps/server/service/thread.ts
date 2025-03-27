@@ -21,7 +21,17 @@ export const appendThreadMessages = async (
     throw new Error("Previous messages are not an array");
   }
 
-  const newMessages = [...previousMessages, ...messages];
+  const overrideMessages = previousMessages.map((prevMsg) => {
+    const matchingNewMsg = messages.find((msg) => msg.id === prevMsg.id);
+    return matchingNewMsg || prevMsg;
+  });
+
+  // Append messages that don't have matching IDs
+  const messagesToAppend = messages.filter(
+    (msg) => !previousMessages.some((prevMsg) => prevMsg.id === msg.id),
+  );
+
+  const newMessages = [...overrideMessages, ...messagesToAppend];
 
   await getDrizzle()
     .update(threadTable)
