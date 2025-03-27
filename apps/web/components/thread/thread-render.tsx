@@ -195,7 +195,7 @@ const HumanInputRender = ({
 
   return (
     <Box mb="sm">
-      <Text>{JSON.stringify(toolInvocation.args)}</Text>
+      <Text mb="sm">{toolInvocation?.args?.askHumanMessage ?? ""}</Text>
       <form
         onSubmit={form.onSubmit((values) => {
           addToolResult({
@@ -204,8 +204,12 @@ const HumanInputRender = ({
           });
         })}
       >
-        <Textarea {...form.getInputProps("input")} />
-        <Button type="submit">Confirm</Button>
+        <Box>
+          <Textarea {...form.getInputProps("input")} mb="sm" />
+        </Box>
+        <Box display="flex" style={{ justifyContent: "flex-end" }}>
+          <Button type="submit">Confirm</Button>
+        </Box>
       </form>
     </Box>
   );

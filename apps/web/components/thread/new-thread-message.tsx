@@ -3,8 +3,9 @@ import { ActionIcon, Box, Group, Loader, Paper, Textarea } from "@mantine/core";
 import { useMounted } from "@mantine/hooks";
 import { IconArrowUp } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { getThreadUpdate } from "../../queries/thread";
+import { nanoid } from "nanoid";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getThreadAppendMessage } from "../../queries/thread";
 import { ThreadRender } from "./thread-render";
 
 export const NewThreadMessage = ({
@@ -14,13 +15,13 @@ export const NewThreadMessage = ({
   threadId: string;
   threadMessages: Message[];
 }) => {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const api = "/meside/server/chat/stream";
 
-  const { mutateAsync: updateThread } = useMutation({
-    ...getThreadUpdate(),
+  // TODO: move appendThreadMessage to server api
+  const { mutateAsync: appendThreadMessage } = useMutation({
+    ...getThreadAppendMessage(),
   });
 
   const {
@@ -30,35 +31,29 @@ export const NewThreadMessage = ({
     handleInputChange,
     handleSubmit,
     addToolResult,
+    status,
+    reload,
   } = useChat({
     api,
     body: {
       threadId,
     },
-    onResponse: () => {
-      setLoading(true);
-      setError(null);
-    },
     onError: (error) => {
       console.error(error);
-      setLoading(false);
       setError(error);
-      updateThread({
+    },
+    onFinish: async (message) => {
+      await appendThreadMessage({
         threadId,
-        status: "closed",
+        messages: [message],
       });
     },
-    onFinish: async () => {
-      if (messages.length > 0) {
-        updateThread({
-          threadId,
-          status: "closed",
-          messages,
-        });
-      }
-      setLoading(false);
-    },
   });
+
+  const isLoading = useMemo(
+    () => status === "submitted" || status === "streaming",
+    [status],
+  );
 
   const mounted = useMounted();
 
@@ -67,6 +62,22 @@ export const NewThreadMessage = ({
       setMessages(threadMessages);
     }
   }, [mounted, threadMessages, setMessages]);
+
+  const reloadIfOnlyUserPromptCount = useRef(0);
+
+  useEffect(() => {
+    if (reloadIfOnlyUserPromptCount.current > 0) {
+      return;
+    }
+    if (messages.length === 0) {
+      return;
+    }
+    const onlyUserPrompt = messages.every((message) => message.role === "user");
+    if (onlyUserPrompt) {
+      reloadIfOnlyUserPromptCount.current++;
+      reload();
+    }
+  }, [messages, reload]);
 
   return (
     <Box
@@ -79,7 +90,7 @@ export const NewThreadMessage = ({
     >
       <Box style={{ flex: 1 }}>
         <ThreadRender
-          loading={loading}
+          loading={isLoading}
           messages={messages}
           addToolResult={addToolResult}
           error={error ?? undefined}
@@ -88,8 +99,19 @@ export const NewThreadMessage = ({
       <Box px="md" pb="md">
         <Paper withBorder p="md" radius="lg">
           <form
-            onSubmit={(event) => {
-              setLoading(true);
+            onSubmit={async (event) => {
+              setError(null);
+              await appendThreadMessage({
+                threadId,
+                messages: [
+                  {
+                    id: `msg-${nanoid()}`,
+                    content: input,
+                    role: "user",
+                    parts: [{ type: "text", text: input }],
+                  },
+                ],
+              });
               handleSubmit(event);
             }}
           >
@@ -101,7 +123,7 @@ export const NewThreadMessage = ({
             />
             <Group justify="flex-end" gap="xs">
               <ActionIcon type="submit" size="xs">
-                {loading ? <Loader type="dots" /> : <IconArrowUp />}
+                {isLoading ? <Loader type="dots" /> : <IconArrowUp />}
               </ActionIcon>
             </Group>
           </form>

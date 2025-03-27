@@ -1,7 +1,8 @@
-import { Box, Skeleton, Text } from "@mantine/core";
+import { Box, Skeleton } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { getThreadDetail } from "../../queries/thread";
 import { useThreadContext } from "../chat/context";
+import { NewThreadInput } from "./new-thread-input";
 import { NewThreadMessage } from "./new-thread-message";
 
 export const Thread = () => {
@@ -24,7 +25,7 @@ export const Thread = () => {
   if (!data?.thread) {
     return (
       <Box p="md">
-        <Text>No thread found</Text>
+        <NewThreadInput setThreadId={setThreadId} />
       </Box>
     );
   }

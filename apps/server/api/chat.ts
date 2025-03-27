@@ -122,9 +122,6 @@ chatApi.post("/stream", async (c) => {
         maxSteps: 10,
         temperature: 0,
         experimental_telemetry: { isEnabled: true },
-        onFinish: () => {
-          console.log("onFinish");
-        },
       });
       aiStream.mergeIntoDataStream(dataStreamWriter);
     },

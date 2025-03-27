@@ -8,7 +8,9 @@ export const NewThreadInput = ({
 }: {
   setThreadId: (threadId: string) => void;
 }) => {
-  const { mutateAsync: createNewThread } = useMutation(getThreadCreate());
+  const { mutateAsync: createNewThread, isPending } = useMutation(
+    getThreadCreate(),
+  );
   return (
     <Paper withBorder p="md" radius="lg">
       <ThreadInput
@@ -22,6 +24,8 @@ export const NewThreadInput = ({
           setThreadId(json.thread.threadId);
         }}
         placeholder="Create a new thread"
+        loading={isPending}
+        disabled={isPending}
       />
     </Paper>
   );
