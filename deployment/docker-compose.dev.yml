@@ -33,3 +33,12 @@ services:
       - "${MESIDE_REDIS_PORT:-25637}:6379"
     volumes:
       - ./dev/volumes/redis/data:/data
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    container_name: jaeger
+    ports:
+      - "${MESIDE_JAEGER_PORT:-16686}:16686"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      - LOG_LEVEL=debug

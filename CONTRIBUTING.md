@@ -73,7 +73,6 @@ Follow the installation and setup instructions in the [README.md](README.md) to 
   cp apps/server/default.env apps/server/.env
   cp apps/web/default.env apps/web/.env
   cp apps/warehouse/default.env apps/warehouse/.env
-  echo 'OPENAI_API_KEY=<your-api-key>' >> warehouse/web/.env
   ```
 5. **Database Setup**:  
   ```bash 
@@ -85,6 +84,15 @@ Follow the installation and setup instructions in the [README.md](README.md) to 
   bun run dev
   # localhost:3000
   ```  
+
+7. **Set up llm, agent and warehouse**
+  * open [localhost:3000](localhost:3000)
+  * Go to the profile in the bottom left corner
+  * set up llm, agent and data warehouse.
+  * Notes: if did not set up the llm, agent and data warehouse, the meside will not work correctly.
+
+8. **Start opentelemetry observability**:
+  open link [http://localhost:16686/](http://localhost:16686/)
 
 ## Reporting Issues
 

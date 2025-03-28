@@ -2,9 +2,8 @@ import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
 
 export const toolProviderSchema = z.object({
-  provider: z.literal("mcpSse"),
+  provider: z.literal("http"),
   configs: z.object({
-    type: z.literal("sse"),
     url: z.string(),
   }),
 });

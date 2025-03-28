@@ -18,49 +18,7 @@ Meside is an open-source, AI-driven MCP Client and Data Warehouse MCP Server. By
 - **Multi-Format Support**: Seamlessly convert between JSON, CSV, YAML, and more.  
 - **Metadata Awareness**: Preserve and enrich data context during transformations.  
 
-### Installation & Setup  
-1. **Prerequisites**: Ensure [Bun](https://bun.sh/) (v1.0+) and [Docker](https://www.docker.com/) are installed.  
-2. git clone
-  ```bash
-  git clone https://github.com/meside-ai/meside.git
-  # git clone git@github.com:meside-ai/meside.git
-  ```
-3. install dependencies:
-  ```bash
-  bun install
-  ```
-4. **Prepare Environments**:
-  ```bash
-  cp apps/server/default.env apps/server/.env
-  cp apps/web/default.env apps/web/.env
-  cp apps/warehouse/default.env apps/warehouse/.env
-  echo 'OPENAI_API_KEY=<your-api-key>' >> apps/warehouse/.env
-  ```
-5. **Database Setup**:  
-  ```bash 
-  sh ./dev-docker-clean.sh
-  sh ./dev-docker-start.sh
-  ```
-6. **Migrate and seed**
-  ```bash
-  cd apps/warehouse
-  bun run migrate
-  bun run reset
-  bun run seed
-
-  cd ../server
-  bun run migrate
-  bun run reset
-  bun run seed
-  ```
-7. **Start the server**:  
-  ```bash  
-  cd ../..
-  bun run dev
-  # localhost:3000
-  ```  
-
-### How to use MCP
+### How to use MCP Server (Data warehouse)
 
 We only support SSE MCP currently, the Claude Desktop is not support SSE, the Cursor or other IDE support it.
 
@@ -70,16 +28,20 @@ We only support SSE MCP currently, the Claude Desktop is not support SSE, the Cu
 {
   "mcpServers": {
     "database": {
+      "type": "sse",
       "url": "http://localhost:6333/meside/warehouse/api/mcp",
     }
   }
 }
 ```
 
+### Installation & Setup in development
+Look into [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ### Contributing  
-We welcome contributions! Check out our [roadmap](docs/ROADMAP.md) and [issue tracker](https://github.com/meside-ai/meside/issues). Follow these steps:  
+Follow these steps:  
 1. Fork the repository and create a feature branch.  
-2. Adhere to the coding standards in `CONTRIBUTING.md`.  
+2. Adhere to the coding standards in [CONTRIBUTING.md](CONTRIBUTING.md).  
 3. Submit a pull request with detailed documentation.  
 
 ### License  

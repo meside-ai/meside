@@ -1,6 +1,6 @@
 import type { ServerResponse } from "node:http";
-import { getLogger } from "../../../../logger";
-import { SSEServerTransport } from "../../../../mcp/sse";
+import { getLogger } from "../../../logger";
+import { SSEServerTransport } from "../../../mcp/sse";
 import { server } from "./mcp-server";
 
 const logger = getLogger("warehouse-mcp");

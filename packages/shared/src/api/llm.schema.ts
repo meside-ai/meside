@@ -18,7 +18,6 @@ export const llmProviderSchema = z.union([
     apiKey: z.string(),
     baseUrl: z.string(),
     model: z.string(),
-    isCompatibleTool: z.boolean(),
   }),
 ]);
 
