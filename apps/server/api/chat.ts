@@ -1,6 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "@hono/zod-openapi";
 import type { LlmDto } from "@meside/shared/api/llm.schema";
+import { getLogger } from "@meside/shared/logger/index";
 import {
   type LanguageModelV1,
   type Message,
@@ -15,12 +16,13 @@ import { Hono } from "hono";
 import { stream } from "hono/streaming";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
+import { getMcpToolsConfig } from "../service/tool";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { firstOrNotFound } from "../utils/toolkit";
 
-export const chatApi = new Hono();
+const logger = getLogger("chat");
 
-let warehouseMcp: Awaited<ReturnType<typeof createMCPClient>> | null = null;
+export const chatApi = new Hono();
 
 chatApi.post("/stream", async (c) => {
   // TODO: use hono validate
@@ -55,27 +57,11 @@ chatApi.post("/stream", async (c) => {
 
   const llmModel = await getLlmModel(activeLlm);
 
-  if (!warehouseMcp) {
-    try {
-      console.log("try to create warehouseMcp");
-      warehouseMcp = await createMCPClient({
-        transport: {
-          type: "sse",
-          // TODO: use database to manage mcp
-          url: "http://localhost:3002/meside/warehouse/api/mcp/warehouse",
-        },
-      });
-      console.log("crated warehouseMcp");
-    } catch (error) {
-      return c.json({ error: "Failed to create warehouse mcp" }, 500);
-    }
-  }
-
-  const warehouseTools = await warehouseMcp.tools();
+  const mcpTools = await getMcpTools();
 
   const tools: Record<string, Tool> = {
     ...getInternalTools(),
-    ...warehouseTools,
+    ...mcpTools,
   };
 
   const dataStream = createDataStream({
@@ -101,7 +87,6 @@ chatApi.post("/stream", async (c) => {
           }
 
           const result = toolInvocation.result;
-          console.log("result", JSON.stringify(result, null, 2));
 
           dataStreamWriter.write(
             formatDataStreamPart("tool_result", {
@@ -126,7 +111,7 @@ chatApi.post("/stream", async (c) => {
       aiStream.mergeIntoDataStream(dataStreamWriter);
     },
     onError: (error) => {
-      console.error("error", error);
+      logger.error("error", error);
       return error instanceof Error ? error.message : String(error);
     },
   });
@@ -199,4 +184,32 @@ const getInternalTools = (): Record<string, Tool> => {
       }),
     },
   };
+};
+
+const getMcpTools = async () => {
+  const mcpToolsConfig = await getMcpToolsConfig();
+
+  logger.info("preparing mcpToolsConfig");
+  const mcpToolsMap = await Promise.all(
+    mcpToolsConfig.map(async (config) => {
+      logger.info("preparing createMCPClient");
+      const mcp = await createMCPClient({
+        transport: config,
+      });
+      logger.info("prepared createMCPClient");
+      logger.info("preparing mcp tools");
+      return await mcp.tools();
+    }),
+  );
+
+  logger.info("prepared mcpToolsMap");
+
+  const mcpTools = mcpToolsMap.reduce(
+    (acc, curr) => {
+      return Object.assign(acc, curr);
+    },
+    {} as Record<string, Tool>,
+  );
+
+  return mcpTools;
 };
