@@ -9,6 +9,7 @@ import {
   createDataStream,
   experimental_createMCPClient as createMCPClient,
   formatDataStreamPart,
+  generateObject,
   streamText,
 } from "ai";
 import { and, eq, isNull } from "drizzle-orm";
@@ -16,6 +17,7 @@ import { Hono } from "hono";
 import { stream } from "hono/streaming";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
+import { getAgentDetail, getAgentList } from "../service/agent";
 import { getMcpToolsConfig } from "../service/tool";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { firstOrNotFound } from "../utils/toolkit";
@@ -41,28 +43,16 @@ chatApi.post("/stream", async (c) => {
 
   const auth = getAuthOrUnauthorized(c);
 
-  const activeLlm = firstOrNotFound(
-    await getDrizzle()
-      .select()
-      .from(llmTable)
-      .where(
-        and(
-          eq(llmTable.orgId, auth.orgId),
-          eq(llmTable.isDefault, true),
-          isNull(llmTable.deletedAt),
-        ),
-      ),
-    "Could not find default llm",
-  );
-
-  const llmModel = await getLlmModel(activeLlm);
-
   const mcpTools = await getMcpTools();
 
   const tools: Record<string, Tool> = {
     ...getInternalTools(),
     ...mcpTools,
   };
+
+  const agentName = await getAgentNameByRouterWorkflow(messages);
+
+  const agentOptions = await getAgentOptions(agentName);
 
   const dataStream = createDataStream({
     execute: async (dataStreamWriter) => {
@@ -100,12 +90,9 @@ chatApi.post("/stream", async (c) => {
       );
 
       const aiStream = streamText({
-        model: llmModel,
-        system: getSystemPrompt(),
+        ...agentOptions,
         messages,
         tools,
-        maxSteps: 10,
-        temperature: 0,
         experimental_telemetry: { isEnabled: true },
       });
       aiStream.mergeIntoDataStream(dataStreamWriter);
@@ -156,21 +143,40 @@ const getLlmModel = async (llm: LlmDto): Promise<LanguageModelV1> => {
   throw new Error("Unsupported provider");
 };
 
-const getSystemPrompt = () => {
-  return [
-    "# Background",
-    "You are a helpful assistant that can help with SQL queries.",
+const getAgentNameByRouterWorkflow = async (
+  messages: Message[],
+): Promise<string> => {
+  const agentList = await getAgentList();
+
+  const agentTextList = agentList.map((agent) => {
+    return [
+      `# agent name: ${agent.name}`,
+      `backstory: ${agent.backstory}`,
+      `instruction: ${agent.instruction}`,
+      `goal: ${agent.goal}`,
+    ].join("\n");
+  });
+
+  const systemPrompt = [
+    "You are a router workflow agent, choose the best agent to handle the user request",
     "# Instructions",
-    "1. first get all warehouses",
-    "2. If you dont know should query which warehouse, then use human-input tool to get the warehouse name",
-    "3. get all tables",
-    "4. get all columns in the specific table",
-    "5. run query to validate the question",
-    "# Output",
-    "1. if validate is ok, must return the query url in the response, dont return sql query code in the response",
-    "2. if validate is not ok, return the human readable error message",
-    "3. final response must be the markdown format",
+    "1. return the agent name in the response",
+    "# Here are the agents:",
+    agentTextList.join("\n"),
   ].join("\n");
+
+  const routerLlm = await getRouterLlmModel();
+
+  const result = await generateObject({
+    model: routerLlm,
+    system: systemPrompt,
+    messages,
+    schema: z.object({
+      agentName: z.string(),
+    }),
+  });
+
+  return result.object.agentName;
 };
 
 const getInternalTools = (): Record<string, Tool> => {
@@ -212,4 +218,57 @@ const getMcpTools = async () => {
   );
 
   return mcpTools;
+};
+
+const getRouterLlmModel = async () => {
+  const activeLlm = firstOrNotFound(
+    await getDrizzle()
+      .select()
+      .from(llmTable)
+      .where(
+        and(
+          eq(llmTable.orgId, "hkwgx29khaflgmm5c8ipp79r"), // TODO: use auth.orgId
+          eq(llmTable.isDefault, true),
+          isNull(llmTable.deletedAt),
+        ),
+      ),
+    "Could not find default llm",
+  );
+
+  const llmModel = await getLlmModel(activeLlm);
+  return llmModel;
+};
+
+const getAgentOptions = async (
+  agentName: string,
+): Promise<{
+  model: LanguageModelV1;
+  system: string;
+  maxSteps: number;
+  temperature: number;
+}> => {
+  const agent = await getAgentDetail(agentName);
+  const llms = await getDrizzle()
+    .select()
+    .from(llmTable)
+    .where(eq(llmTable.llmId, agent.llmId));
+
+  const llm = firstOrNotFound(llms, "Could not find llm");
+  const llmModel = await getLlmModel(llm);
+
+  const systemPrompt = [
+    "# Backstory",
+    agent.backstory,
+    "# Instructions",
+    agent.instruction,
+    "# Goal",
+    agent.goal,
+  ].join("\n");
+
+  return {
+    model: llmModel,
+    system: systemPrompt,
+    maxSteps: 10,
+    temperature: 0,
+  };
 };
