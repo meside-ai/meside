@@ -1,9 +1,11 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { z } from "@hono/zod-openapi";
+import type { AgentDto } from "@meside/shared/api/agent.schema";
 import type { LlmDto } from "@meside/shared/api/llm.schema";
 import { getLogger } from "@meside/shared/logger/index";
 import {
   type LanguageModelV1,
+  type LanguageModelV1Middleware,
+  type LanguageModelV1StreamPart,
   type Message,
   type Tool,
   createDataStream,
@@ -11,6 +13,7 @@ import {
   formatDataStreamPart,
   generateObject,
   streamText,
+  wrapLanguageModel,
 } from "ai";
 import { and, eq, isNull } from "drizzle-orm";
 import { Hono } from "hono";
@@ -18,7 +21,7 @@ import { stream } from "hono/streaming";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
 import { getAgentDetail, getAgentList } from "../service/agent";
-import { getMcpToolsConfig } from "../service/tool";
+import { getMcpToolsConfig, getWarehouseTools } from "../service/tool";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { firstOrNotFound } from "../utils/toolkit";
 
@@ -42,17 +45,6 @@ chatApi.post("/stream", async (c) => {
   }
 
   const auth = getAuthOrUnauthorized(c);
-
-  const mcpTools = await getMcpTools();
-
-  const tools: Record<string, Tool> = {
-    ...getInternalTools(),
-    ...mcpTools,
-  };
-
-  const agentName = await getAgentNameByRouterWorkflow(messages);
-
-  const agentOptions = await getAgentOptions(agentName);
 
   const dataStream = createDataStream({
     execute: async (dataStreamWriter) => {
@@ -89,6 +81,13 @@ chatApi.post("/stream", async (c) => {
         }) ?? [],
       );
 
+      const agentName = await getAgentNameByRouterWorkflow(messages, {
+        orgId: auth.orgId,
+      });
+      const agent = await getAgent(agentName);
+      const tools = await loadTools(agent.toolIds);
+      const agentOptions = await getAgentOptions(agent);
+
       const aiStream = streamText({
         ...agentOptions,
         messages,
@@ -114,6 +113,17 @@ chatApi.post("/stream", async (c) => {
 });
 
 const getLlmModel = async (llm: LlmDto): Promise<LanguageModelV1> => {
+  const llmModel = await getLlmModelCore(llm);
+
+  const wrappedLanguageModel = wrapLanguageModel({
+    model: llmModel,
+    middleware: [llmLoggerMiddleware],
+  });
+
+  return wrappedLanguageModel;
+};
+
+const getLlmModelCore = async (llm: LlmDto): Promise<LanguageModelV1> => {
   if (llm.provider.provider === "openai") {
     const provider = createOpenAI({
       apiKey: llm.provider.apiKey,
@@ -145,53 +155,49 @@ const getLlmModel = async (llm: LlmDto): Promise<LanguageModelV1> => {
 
 const getAgentNameByRouterWorkflow = async (
   messages: Message[],
+  context: {
+    orgId: string;
+  },
 ): Promise<string> => {
   const agentList = await getAgentList();
 
   const agentTextList = agentList.map((agent) => {
     return [
-      `# agent name: ${agent.name}`,
-      `backstory: ${agent.backstory}`,
-      `instruction: ${agent.instruction}`,
-      `goal: ${agent.goal}`,
+      `### agent name: ${agent.name}`,
+      `* instruction: ${agent.instruction}`,
     ].join("\n");
   });
 
   const systemPrompt = [
     "You are a router workflow agent, choose the best agent to handle the user request",
     "# Instructions",
-    "1. return the agent name in the response",
+    "return the agent name in the response",
     "# Here are the agents:",
     agentTextList.join("\n"),
+    "# User request",
+    `${JSON.stringify(messages)}`,
   ].join("\n");
 
-  const routerLlm = await getRouterLlmModel();
+  const routerLlm = await getRouterLlmModel({ orgId: context.orgId });
 
   const result = await generateObject({
     model: routerLlm,
-    system: systemPrompt,
-    messages,
-    schema: z.object({
-      agentName: z.string(),
-    }),
+    prompt: systemPrompt,
+    output: "enum",
+    enum: agentList.map((agent) => agent.name),
   });
+  logger.info("😉 finish get agent name", result);
 
-  return result.object.agentName;
+  const agentName = result.object;
+
+  return agentName;
 };
 
-const getInternalTools = (): Record<string, Tool> => {
-  return {
-    "human-input": {
-      description: "Input a human readable message",
-      parameters: z.object({
-        askHumanMessage: z
-          .string()
-          .describe("Describe what information you needs human to provider"),
-      }),
-    },
-  };
-};
-
+/**
+ * @refactor
+ * @deprecated
+ * waiting for the transport SDK for MCP protocol 2025-03-26 version
+ */
 const getMcpTools = async () => {
   const mcpToolsConfig = await getMcpToolsConfig();
 
@@ -220,14 +226,14 @@ const getMcpTools = async () => {
   return mcpTools;
 };
 
-const getRouterLlmModel = async () => {
+const getRouterLlmModel = async ({ orgId }: { orgId: string }) => {
   const activeLlm = firstOrNotFound(
     await getDrizzle()
       .select()
       .from(llmTable)
       .where(
         and(
-          eq(llmTable.orgId, "hkwgx29khaflgmm5c8ipp79r"), // TODO: use auth.orgId
+          eq(llmTable.orgId, orgId),
           eq(llmTable.isDefault, true),
           isNull(llmTable.deletedAt),
         ),
@@ -239,15 +245,19 @@ const getRouterLlmModel = async () => {
   return llmModel;
 };
 
+const getAgent = async (agentName: string) => {
+  const agent = await getAgentDetail(agentName);
+  return agent;
+};
+
 const getAgentOptions = async (
-  agentName: string,
+  agent: AgentDto,
 ): Promise<{
   model: LanguageModelV1;
   system: string;
   maxSteps: number;
   temperature: number;
 }> => {
-  const agent = await getAgentDetail(agentName);
   const llms = await getDrizzle()
     .select()
     .from(llmTable)
@@ -256,14 +266,7 @@ const getAgentOptions = async (
   const llm = firstOrNotFound(llms, "Could not find llm");
   const llmModel = await getLlmModel(llm);
 
-  const systemPrompt = [
-    "# Backstory",
-    agent.backstory,
-    "# Instructions",
-    agent.instruction,
-    "# Goal",
-    agent.goal,
-  ].join("\n");
+  const systemPrompt = agent.instruction;
 
   return {
     model: llmModel,
@@ -271,4 +274,63 @@ const getAgentOptions = async (
     maxSteps: 10,
     temperature: 0,
   };
+};
+
+export const llmLoggerMiddleware: LanguageModelV1Middleware = {
+  wrapGenerate: async ({ doGenerate, params }) => {
+    logger.info("doGenerate called");
+    logger.info(`doGenerate params: ${JSON.stringify(params, null, 2)}`);
+    const result = await doGenerate();
+
+    logger.info("doGenerated finished", result);
+
+    return result;
+  },
+
+  wrapStream: async ({ doStream, params }) => {
+    logger.info("doStream called");
+    logger.info(`doStream params: ${JSON.stringify(params, null, 2)}`);
+
+    const { stream, ...rest } = await doStream();
+
+    let generatedText = "";
+
+    const transformStream = new TransformStream<
+      LanguageModelV1StreamPart,
+      LanguageModelV1StreamPart
+    >({
+      transform(chunk, controller) {
+        if (chunk.type === "text-delta") {
+          generatedText += chunk.textDelta;
+        }
+
+        controller.enqueue(chunk);
+      },
+
+      flush() {
+        logger.info("doStream finished:", generatedText);
+      },
+    });
+
+    return {
+      stream: stream.pipeThrough(transformStream),
+      ...rest,
+    };
+  },
+};
+
+const loadTools = async (toolIds: string[]) => {
+  const tools: Record<string, Tool> = {};
+
+  await Promise.all(
+    toolIds.map(async (toolId) => {
+      if (toolId === "warehouse-toolset") {
+        const warehouseTools = getWarehouseTools("warehouse");
+        Object.assign(tools, warehouseTools);
+      }
+      // TODO: get tools from db
+    }),
+  );
+
+  return tools;
 };
