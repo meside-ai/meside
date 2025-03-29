@@ -1,6 +1,10 @@
 import { z } from "@hono/zod-openapi";
-import { type Tool, tool } from "ai";
-
+import type { ToolDto } from "@meside/shared/api/tool.schema";
+import { type Tool, tool as aiTool, jsonSchema } from "ai";
+import { and, inArray, isNull } from "drizzle-orm";
+import { getDrizzle } from "../db/db";
+import { toolTable } from "../db/schema/tool";
+import { getToolDtos } from "../mappers/tool";
 /**
  * @refactor
  * @deprecated
@@ -20,96 +24,85 @@ export const getHumanInputTool = (): Record<string, Tool> => {
   };
 };
 
-/**
- * @refactor
- * @deprecated
- * Rewrite or waiting for the transport SDK for MCP protocol 2025-03-26 version
- */
-export const getMcpToolsConfig = async (): Promise<
-  {
-    type: "sse";
-    url: string;
-  }[]
-> => {
-  return [
-    {
-      type: "sse",
-      url: "http://localhost:3002/meside/warehouse/api/mcp/warehouse",
-    },
-  ];
+export const getTools = async (toolIds: string[]): Promise<ToolDto[]> => {
+  const tools = await getDrizzle()
+    .select()
+    .from(toolTable)
+    .where(
+      and(inArray(toolTable.toolId, toolIds), isNull(toolTable.deletedAt)),
+    );
+
+  const toolDtos = await getToolDtos(tools);
+
+  return toolDtos;
 };
 
-/**
- * @refactor
- * temporary usages, waiting for the transport SDK for MCP protocol 2025-03-26 version
- */
-export const getWarehouseTools = (
-  toolSetPrefix: string,
-): Record<string, Tool> => {
+export const loadTools = async (
+  toolDtos: ToolDto[],
+): Promise<Record<string, Tool>> => {
+  const aiTools: Record<string, Tool> = {};
+
+  const connectTools = await Promise.all(
+    toolDtos.map(async (tool) => {
+      if (tool.provider.provider === "http") {
+        const httpTools = await loadHttpTools(tool);
+        return httpTools;
+      }
+    }),
+  );
+
+  for (const tool of connectTools) {
+    tool && Object.assign(aiTools, tool);
+  }
+
+  return aiTools;
+};
+
+export const loadHttpTools = async (
+  tool: ToolDto,
+): Promise<Record<string, Tool>> => {
+  if (tool.provider.provider !== "http") {
+    throw new Error("Tool is not a http tool");
+  }
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const makeFetch = async (action: string, payload: any) => {
-    const response = await fetch(
-      "http://localhost:3002/meside/warehouse/api/internal",
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          action,
-          payload,
-        }),
+    const response = await fetch(tool.provider.configs.url, {
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      method: "POST",
+      body: JSON.stringify({
+        action,
+        payload,
+      }),
+    });
     const data = await response.json();
     return data;
   };
 
-  return {
-    [`${toolSetPrefix}-get-warehouses`]: tool({
-      description: "get all data warehouses",
-      parameters: z.object({}),
+  const httpTools: {
+    name: string;
+    description: string;
+    schema: object;
+  }[] = await makeFetch("tools/list", {});
+
+  const tools: Record<string, Tool> = {};
+
+  for (const httpTool of httpTools) {
+    const toolName = convertToolName(tool.name);
+    tools[`${toolName}-${httpTool.name}`] = aiTool({
+      description: httpTool.description,
+      parameters: jsonSchema(httpTool.schema),
       execute: async (payload) => {
-        return await makeFetch("get-warehouses", payload);
+        return await makeFetch(httpTool.name, payload);
       },
-    }),
-    [`${toolSetPrefix}-get-all-columns`]: tool({
-      description: "get all columns of a warehouse",
-      parameters: z.object({
-        warehouseName: z.string(),
-      }),
-      execute: async (payload) => {
-        return await makeFetch("get-all-columns", payload);
-      },
-    }),
-    [`${toolSetPrefix}-get-tables`]: tool({
-      description: "get all tables of a warehouse",
-      parameters: z.object({
-        warehouseName: z.string(),
-      }),
-      execute: async (payload) => {
-        return await makeFetch("get-tables", payload);
-      },
-    }),
-    [`${toolSetPrefix}-get-columns`]: tool({
-      description: "get all columns of a table",
-      parameters: z.object({
-        warehouseName: z.string(),
-        tableName: z.string(),
-      }),
-      execute: async (payload) => {
-        return await makeFetch("get-columns", payload);
-      },
-    }),
-    [`${toolSetPrefix}-query`]: tool({
-      description: "query a warehouse",
-      parameters: z.object({
-        warehouseName: z.string(),
-        sql: z.string(),
-      }),
-      execute: async (payload) => {
-        return await makeFetch("query", payload);
-      },
-    }),
-  };
+    });
+  }
+
+  return tools;
+};
+
+const convertToolName = (toolName: string): string => {
+  // only letters, numbers, underscores and hyphens
+  return toolName.replace(/[^a-zA-Z0-9_-]/g, "_");
 };

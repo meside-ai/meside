@@ -15,9 +15,17 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.0",
+    "@hono/otel": "^0.1.0",
     "@hono/zod-openapi": "^0.19.2",
     "@meside/shared": "*",
     "@modelcontextprotocol/sdk": "^1.7.0",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.57.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.200.0",
+    "@opentelemetry/instrumentation-http": "^0.200.0",
+    "@opentelemetry/sdk-metrics": "^2.0.0",
+    "@opentelemetry/sdk-node": "^0.200.0",
+    "@opentelemetry/sdk-trace-node": "^2.0.0",
     "ai": "^4.2.0",
     "hono": "^4.7.5"
   },

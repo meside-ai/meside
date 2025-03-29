@@ -15,6 +15,13 @@
       "when": 1742628043170,
       "tag": "0001_fearless_skullbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1743214485312,
+      "tag": "0002_familiar_starjammers",
+      "breakpoints": true
     }
   ]
 }

@@ -7,9 +7,7 @@ import {
   type LanguageModelV1Middleware,
   type LanguageModelV1StreamPart,
   type Message,
-  type Tool,
   createDataStream,
-  experimental_createMCPClient as createMCPClient,
   formatDataStreamPart,
   generateObject,
   streamText,
@@ -20,8 +18,8 @@ import { Hono } from "hono";
 import { stream } from "hono/streaming";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
-import { getAgentDetail, getAgentList } from "../service/agent";
-import { getMcpToolsConfig, getWarehouseTools } from "../service/tool";
+import { getAgentDetailByName, getAgentList } from "../service/agent";
+import { getTools, loadTools } from "../service/tool";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { firstOrNotFound } from "../utils/toolkit";
 
@@ -85,7 +83,7 @@ chatApi.post("/stream", async (c) => {
         orgId: auth.orgId,
       });
       const agent = await getAgent(agentName);
-      const tools = await loadTools(agent.toolIds);
+      const tools = await loadAllTools(agent.toolIds);
       const agentOptions = await getAgentOptions(agent);
 
       const aiStream = streamText({
@@ -163,8 +161,7 @@ const getAgentNameByRouterWorkflow = async (
 
   const agentTextList = agentList.map((agent) => {
     return [
-      `### agent name: ${agent.name}`,
-      `* instruction: ${agent.instruction}`,
+      `* agent name: ${agent.name}; description: ${agent.description}`,
     ].join("\n");
   });
 
@@ -185,45 +182,13 @@ const getAgentNameByRouterWorkflow = async (
     prompt: systemPrompt,
     output: "enum",
     enum: agentList.map((agent) => agent.name),
+    experimental_telemetry: { isEnabled: true },
   });
   logger.info("😉 finish get agent name", result);
 
   const agentName = result.object;
 
   return agentName;
-};
-
-/**
- * @refactor
- * @deprecated
- * waiting for the transport SDK for MCP protocol 2025-03-26 version
- */
-const getMcpTools = async () => {
-  const mcpToolsConfig = await getMcpToolsConfig();
-
-  logger.info("preparing mcpToolsConfig");
-  const mcpToolsMap = await Promise.all(
-    mcpToolsConfig.map(async (config) => {
-      logger.info("preparing createMCPClient");
-      const mcp = await createMCPClient({
-        transport: config,
-      });
-      logger.info("prepared createMCPClient");
-      logger.info("preparing mcp tools");
-      return await mcp.tools();
-    }),
-  );
-
-  logger.info("prepared mcpToolsMap");
-
-  const mcpTools = mcpToolsMap.reduce(
-    (acc, curr) => {
-      return Object.assign(acc, curr);
-    },
-    {} as Record<string, Tool>,
-  );
-
-  return mcpTools;
 };
 
 const getRouterLlmModel = async ({ orgId }: { orgId: string }) => {
@@ -246,7 +211,7 @@ const getRouterLlmModel = async ({ orgId }: { orgId: string }) => {
 };
 
 const getAgent = async (agentName: string) => {
-  const agent = await getAgentDetail(agentName);
+  const agent = await getAgentDetailByName(agentName);
   return agent;
 };
 
@@ -266,7 +231,12 @@ const getAgentOptions = async (
   const llm = firstOrNotFound(llms, "Could not find llm");
   const llmModel = await getLlmModel(llm);
 
-  const systemPrompt = agent.instruction;
+  const systemPrompt = [
+    "# Background",
+    agent.description,
+    "# Instructions",
+    agent.instructions,
+  ].join("\n");
 
   return {
     model: llmModel,
@@ -319,18 +289,8 @@ export const llmLoggerMiddleware: LanguageModelV1Middleware = {
   },
 };
 
-const loadTools = async (toolIds: string[]) => {
-  const tools: Record<string, Tool> = {};
-
-  await Promise.all(
-    toolIds.map(async (toolId) => {
-      if (toolId === "warehouse-toolset") {
-        const warehouseTools = getWarehouseTools("warehouse");
-        Object.assign(tools, warehouseTools);
-      }
-      // TODO: get tools from db
-    }),
-  );
-
+const loadAllTools = async (toolIds: string[]) => {
+  const toolDtos = await getTools(toolIds);
+  const tools = await loadTools(toolDtos);
   return tools;
 };

@@ -14,4 +14,4 @@
 - [x] Support OracleDB
 - [ ] support SQLServer 🏗️
 - [x] Refactor warehouse to MCP
-- [ ] Refactor Multi Agent 🏗️
+- [x] Refactor Multi Agent 🏗️

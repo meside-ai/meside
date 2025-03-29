@@ -1,8 +1,11 @@
 import { reset } from "drizzle-seed";
 import { getDrizzle } from "./db/db";
+import { agentTable } from "./db/schema/agent";
+import { agentToolTable } from "./db/schema/agent-tool";
 import { llmTable } from "./db/schema/llm";
 import { orgTable } from "./db/schema/org";
 import { threadTable } from "./db/schema/thread";
+import { toolTable } from "./db/schema/tool";
 import { usageTable } from "./db/schema/usage";
 import { userTable } from "./db/schema/user";
 
@@ -15,6 +18,9 @@ export async function resetDb() {
     usageTable,
     threadTable,
     llmTable,
+    toolTable,
+    agentTable,
+    agentToolTable,
   });
 }
 
