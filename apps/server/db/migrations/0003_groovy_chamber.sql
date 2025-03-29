@@ -1,0 +1,1 @@
+ALTER TABLE "thread" ADD COLUMN "rename_count" integer DEFAULT 0 NOT NULL;

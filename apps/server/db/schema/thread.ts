@@ -1,5 +1,6 @@
 import {
   boolean,
+  integer,
   jsonb,
   pgEnum,
   pgTable,
@@ -19,6 +20,7 @@ export const threadTable = pgTable("thread", {
   ownerId: foreignCuid("owner_id").notNull(),
   orgId: foreignCuid("org_id").notNull(),
   shortName: text("short_name").notNull().default("question"),
+  renameCount: integer("rename_count").notNull().default(0),
   systemPrompt: text("system_prompt").notNull().default(""),
   userPrompt: text("user_prompt").notNull().default(""),
   messages: jsonb("messages").notNull().default([]),

@@ -4,19 +4,12 @@ import {
   type ThreadCreateResponse,
   type ThreadDetailResponse,
   type ThreadListResponse,
-  type ThreadNameResponse,
   type ThreadUpdateResponse,
-  threadAppendMessageRequestSchema,
   threadAppendMessageRoute,
-  threadCreateRequestSchema,
   threadCreateRoute,
-  threadDetailRequestSchema,
   threadDetailRoute,
-  threadListRequestSchema,
   threadListRoute,
-  threadNameRequestSchema,
   threadNameRoute,
-  threadUpdateRequestSchema,
   threadUpdateRoute,
 } from "@meside/shared/api/thread.schema";
 import { type Message, generateObject } from "ai";
@@ -27,14 +20,18 @@ import { type ThreadEntity, threadTable } from "../db/schema/thread";
 import { getThreadDtos } from "../mappers/thread";
 import { getLlmModel } from "../service/ai";
 import { getActiveLlm } from "../service/llm";
-import { appendThreadMessages, getThreadDetail } from "../service/thread";
+import { appendThreadMessages } from "../service/thread";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { cuid } from "../utils/cuid";
-import { firstOrNotCreated, firstOrNull } from "../utils/toolkit";
+import {
+  firstOrNotCreated,
+  firstOrNotFound,
+  firstOrNull,
+} from "../utils/toolkit";
 export const threadApi = new OpenAPIHono();
 
 threadApi.openapi(threadListRoute, async (c) => {
-  const body = threadListRequestSchema.parse(await c.req.json());
+  const body = c.req.valid("json");
 
   const filter: SQL[] = [];
 
@@ -59,7 +56,8 @@ threadApi.openapi(threadListRoute, async (c) => {
 });
 
 threadApi.openapi(threadDetailRoute, async (c) => {
-  const { threadId } = threadDetailRequestSchema.parse(await c.req.json());
+  const { threadId } = c.req.valid("json");
+
   const thread = firstOrNull(
     await getDrizzle()
       .select()
@@ -80,7 +78,7 @@ threadApi.openapi(threadDetailRoute, async (c) => {
 });
 
 threadApi.openapi(threadCreateRoute, async (c) => {
-  const body = threadCreateRequestSchema.parse(await c.req.json());
+  const body = c.req.valid("json");
 
   const auth = getAuthOrUnauthorized(c);
 
@@ -153,7 +151,7 @@ threadApi.openapi(threadCreateRoute, async (c) => {
 });
 
 threadApi.openapi(threadUpdateRoute, async (c) => {
-  const body = threadUpdateRequestSchema.parse(await c.req.json());
+  const body = c.req.valid("json");
 
   await getDrizzle()
     .update(threadTable)
@@ -171,16 +169,27 @@ threadApi.openapi(threadUpdateRoute, async (c) => {
 });
 
 threadApi.openapi(threadAppendMessageRoute, async (c) => {
-  const body = threadAppendMessageRequestSchema.parse(await c.req.json());
+  const body = c.req.valid("json");
   await appendThreadMessages(body.threadId, body.messages);
   return c.json({} as ThreadAppendMessageResponse);
 });
 
 threadApi.openapi(threadNameRoute, async (c) => {
-  const { threadId } = threadNameRequestSchema.parse(await c.req.json());
+  const { threadId } = c.req.valid("json");
 
   const auth = getAuthOrUnauthorized(c);
-  const thread = await getThreadDetail(threadId);
+  const threads = await getDrizzle()
+    .select()
+    .from(threadTable)
+    .where(eq(threadTable.threadId, threadId));
+  const thread = firstOrNotFound(threads, "Thread not found");
+
+  if (thread.renameCount > 2) {
+    return c.json({
+      threadId,
+      shortName: thread.shortName,
+    });
+  }
 
   const prompt = [
     "give a question short name. word count should be between 10 and 50",
@@ -205,11 +214,12 @@ threadApi.openapi(threadNameRoute, async (c) => {
     .update(threadTable)
     .set({
       shortName,
+      renameCount: thread.renameCount + 1,
     })
     .where(eq(threadTable.threadId, threadId));
 
   return c.json({
     threadId,
     shortName,
-  } as ThreadNameResponse);
+  });
 });
