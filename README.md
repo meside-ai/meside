@@ -1,5 +1,5 @@
 # meside  
-**The better AI Agent for Data Analysis (multi agents and model context protocol)**
+**The Multi AI Agent and Data Analysis Tool**
 
 ![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE)
@@ -16,24 +16,7 @@ Meside is an open-source, AI-driven MCP Client and Data Warehouse MCP Server. By
 - **Extensible Architecture**: Plugin system for custom AI models or transformation rules.  
 - **Real-Time Debugging**: Interactive previews of transformation steps.  
 - **Multi-Format Support**: Seamlessly convert between JSON, CSV, YAML, and more.  
-- **Metadata Awareness**: Preserve and enrich data context during transformations.  
-
-### How to use MCP Server (Data warehouse)
-
-We only support SSE MCP currently, the Claude Desktop is not support SSE, the Cursor or other IDE support it.
-
-* [Cursor docs](https://docs.cursor.com/context/model-context-protocol)
-
-``` json
-{
-  "mcpServers": {
-    "database": {
-      "type": "sse",
-      "url": "http://localhost:6333/meside/warehouse/api/mcp",
-    }
-  }
-}
-```
+- **Metadata Awareness**: Preserve and enrich data context during transformations.
 
 ### Installation & Setup in development
 Look into [CONTRIBUTING.md](CONTRIBUTING.md).
