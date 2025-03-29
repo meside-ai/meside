@@ -223,3 +223,12 @@ export const getUserById = async (userId: string) => {
 
   return user;
 };
+
+/**
+ * Verifies a JWT token and returns the payload
+ */
+export const verifyToken = async (token: string) => {
+  const jose = await import("jose");
+  const { payload } = await jose.jwtVerify(token, JWT_SECRET);
+  return payload;
+};
