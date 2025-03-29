@@ -7,12 +7,15 @@ import {
   type ThreadDetailResponse,
   type ThreadListRequest,
   type ThreadListResponse,
+  type ThreadNameRequest,
+  type ThreadNameResponse,
   type ThreadUpdateRequest,
   type ThreadUpdateResponse,
   threadAppendMessageRoute,
   threadCreateRoute,
   threadDetailRoute,
   threadListRoute,
+  threadNameRoute,
   threadUpdateRoute,
 } from "@meside/shared/api/thread.schema";
 import { createPost } from "@meside/shared/request/index";
@@ -87,6 +90,20 @@ export const getThreadAppendMessage = (): UseMutationOptions<
       ThreadAppendMessageRequest,
       ThreadAppendMessageResponse
     >(`/meside/server/thread${threadAppendMessageRoute.path}`)(body);
+    return json;
+  },
+});
+
+export const getThreadName = (): UseMutationOptions<
+  ThreadNameResponse,
+  QueryClientError,
+  ThreadNameRequest
+> => ({
+  mutationKey: [getThreadName.name],
+  mutationFn: async (body) => {
+    const json = await createPost<ThreadNameRequest, ThreadNameResponse>(
+      `/meside/server/thread${threadNameRoute.path}`,
+    )(body);
     return json;
   },
 });

@@ -22,6 +22,13 @@
       "when": 1743214485312,
       "tag": "0002_familiar_starjammers",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1743229700893,
+      "tag": "0003_groovy_chamber",
+      "breakpoints": true
     }
   ]
 }

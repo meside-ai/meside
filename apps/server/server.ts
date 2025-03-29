@@ -18,4 +18,5 @@ app.route("/meside/server/chat", chatApi);
 export default {
   ...app,
   port: 3003,
+  idleTimeout: 30,
 };

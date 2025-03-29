@@ -2,10 +2,14 @@ import { type Message, useChat } from "@ai-sdk/react";
 import { ActionIcon, Box, Group, Loader, Paper, Textarea } from "@mantine/core";
 import { useMounted } from "@mantine/hooks";
 import { IconArrowUp } from "@tabler/icons-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getThreadAppendMessage } from "../../queries/thread";
+import {
+  getThreadAppendMessage,
+  getThreadList,
+  getThreadName,
+} from "../../queries/thread";
 import { ThreadRender } from "./thread-render";
 
 export const NewThreadMessage = ({
@@ -15,6 +19,7 @@ export const NewThreadMessage = ({
   threadId: string;
   threadMessages: Message[];
 }) => {
+  const queryClient = useQueryClient();
   const [error, setError] = useState<Error | null>(null);
 
   const api = "/meside/server/chat/stream";
@@ -22,6 +27,13 @@ export const NewThreadMessage = ({
   // TODO: move appendThreadMessage to server api
   const { mutateAsync: appendThreadMessage } = useMutation({
     ...getThreadAppendMessage(),
+  });
+
+  const { mutateAsync: generateThreadName } = useMutation({
+    ...getThreadName(),
+    onSuccess: () => {
+      queryClient.invalidateQueries(getThreadList({}));
+    },
   });
 
   const {
@@ -46,6 +58,9 @@ export const NewThreadMessage = ({
       await appendThreadMessage({
         threadId,
         messages: [message],
+      });
+      await generateThreadName({
+        threadId,
       });
     },
   });

@@ -215,3 +215,40 @@ export const threadAppendMessageRoute = createRoute({
     },
   },
 });
+
+// threadName
+export const threadNameRequestSchema = z.object({
+  threadId: z.string(),
+});
+
+export const threadNameResponseSchema = z.object({
+  threadId: z.string(),
+  shortName: z.string(),
+});
+
+export type ThreadNameRequest = z.infer<typeof threadNameRequestSchema>;
+export type ThreadNameResponse = z.infer<typeof threadNameResponseSchema>;
+
+export const threadNameRoute = createRoute({
+  method: "post",
+  path: "/name",
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: threadNameRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: threadNameResponseSchema,
+        },
+      },
+      description: "Generate the thread name",
+    },
+  },
+});
