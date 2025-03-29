@@ -27,7 +27,11 @@
     "@opentelemetry/sdk-node": "^0.200.0",
     "@opentelemetry/sdk-trace-node": "^2.0.0",
     "ai": "^4.2.0",
-    "hono": "^4.7.5"
+    "date-fns": "^4.1.0",
+    "google-auth-library": "^9.6.3",
+    "hono": "^4.7.5",
+    "jose": "^6.0.10",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@repo/typescript-config": "*"

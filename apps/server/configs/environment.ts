@@ -6,11 +6,12 @@ export const environmentSchema = z.object({
     .optional()
     .default("development"),
   DATABASE_URL: z.string(),
+  JWT_SECRET: z.string().default("your-secret-key"),
+  GOOGLE_CLIENT_ID: z.string().default("google-client-id"),
   OTLP_TRACE_EXPORTER_URL: z
     .string()
-    .optional()
     .default("http://localhost:4318/v1/traces"),
-  OTLP_SERVICE_NAME: z.string().optional().default("meside-server"),
+  OTLP_SERVICE_NAME: z.string().default("meside-server"),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);
