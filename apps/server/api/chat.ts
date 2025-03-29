@@ -1,24 +1,21 @@
-import { createOpenAI } from "@ai-sdk/openai";
 import type { AgentDto } from "@meside/shared/api/agent.schema";
-import type { LlmDto } from "@meside/shared/api/llm.schema";
 import { getLogger } from "@meside/shared/logger/index";
 import {
   type LanguageModelV1,
-  type LanguageModelV1Middleware,
-  type LanguageModelV1StreamPart,
   type Message,
   createDataStream,
   formatDataStreamPart,
   generateObject,
   streamText,
-  wrapLanguageModel,
 } from "ai";
-import { and, eq, isNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { stream } from "hono/streaming";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
 import { getAgentDetailByName, getAgentList } from "../service/agent";
+import { getLlmModel } from "../service/ai";
+import { getActiveLlm } from "../service/llm";
 import { getTools, loadTools } from "../service/tool";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { firstOrNotFound } from "../utils/toolkit";
@@ -110,47 +107,6 @@ chatApi.post("/stream", async (c) => {
   );
 });
 
-const getLlmModel = async (llm: LlmDto): Promise<LanguageModelV1> => {
-  const llmModel = await getLlmModelCore(llm);
-
-  const wrappedLanguageModel = wrapLanguageModel({
-    model: llmModel,
-    middleware: [llmLoggerMiddleware],
-  });
-
-  return wrappedLanguageModel;
-};
-
-const getLlmModelCore = async (llm: LlmDto): Promise<LanguageModelV1> => {
-  if (llm.provider.provider === "openai") {
-    const provider = createOpenAI({
-      apiKey: llm.provider.apiKey,
-    });
-
-    return provider(llm.provider.model);
-  }
-
-  if (llm.provider.provider === "deepseek") {
-    const provider = createOpenAI({
-      baseURL: "https://api.deepseek.com/v1",
-      apiKey: llm.provider.apiKey,
-    });
-
-    return provider(llm.provider.model);
-  }
-
-  if (llm.provider.provider === "openaiCompatible") {
-    const provider = createOpenAI({
-      baseURL: llm.provider.baseUrl,
-      apiKey: llm.provider.apiKey,
-    });
-
-    return provider(llm.provider.model);
-  }
-
-  throw new Error("Unsupported provider");
-};
-
 const getAgentNameByRouterWorkflow = async (
   messages: Message[],
   context: {
@@ -192,20 +148,7 @@ const getAgentNameByRouterWorkflow = async (
 };
 
 const getRouterLlmModel = async ({ orgId }: { orgId: string }) => {
-  const activeLlm = firstOrNotFound(
-    await getDrizzle()
-      .select()
-      .from(llmTable)
-      .where(
-        and(
-          eq(llmTable.orgId, orgId),
-          eq(llmTable.isDefault, true),
-          isNull(llmTable.deletedAt),
-        ),
-      ),
-    "Could not find default llm",
-  );
-
+  const activeLlm = await getActiveLlm({ orgId });
   const llmModel = await getLlmModel(activeLlm);
   return llmModel;
 };
@@ -244,49 +187,6 @@ const getAgentOptions = async (
     maxSteps: 10,
     temperature: 0,
   };
-};
-
-export const llmLoggerMiddleware: LanguageModelV1Middleware = {
-  wrapGenerate: async ({ doGenerate, params }) => {
-    logger.info("doGenerate called");
-    logger.info(`doGenerate params: ${JSON.stringify(params, null, 2)}`);
-    const result = await doGenerate();
-
-    logger.info("doGenerated finished", result);
-
-    return result;
-  },
-
-  wrapStream: async ({ doStream, params }) => {
-    logger.info("doStream called");
-    logger.info(`doStream params: ${JSON.stringify(params, null, 2)}`);
-
-    const { stream, ...rest } = await doStream();
-
-    let generatedText = "";
-
-    const transformStream = new TransformStream<
-      LanguageModelV1StreamPart,
-      LanguageModelV1StreamPart
-    >({
-      transform(chunk, controller) {
-        if (chunk.type === "text-delta") {
-          generatedText += chunk.textDelta;
-        }
-
-        controller.enqueue(chunk);
-      },
-
-      flush() {
-        logger.info("doStream finished:", generatedText);
-      },
-    });
-
-    return {
-      stream: stream.pipeThrough(transformStream),
-      ...rest,
-    };
-  },
 };
 
 const loadAllTools = async (toolIds: string[]) => {
