@@ -4,6 +4,7 @@ import {
   type ThreadCreateResponse,
   type ThreadDetailResponse,
   type ThreadListResponse,
+  type ThreadNameResponse,
   type ThreadUpdateResponse,
   threadAppendMessageRequestSchema,
   threadAppendMessageRoute,
@@ -13,19 +14,23 @@ import {
   threadDetailRoute,
   threadListRequestSchema,
   threadListRoute,
+  threadNameRequestSchema,
+  threadNameRoute,
   threadUpdateRequestSchema,
   threadUpdateRoute,
 } from "@meside/shared/api/thread.schema";
-import type { Message } from "ai";
+import { type Message, generateObject } from "ai";
 import { type SQL, and, desc, eq, isNull } from "drizzle-orm";
+import { z } from "zod";
 import { getDrizzle } from "../db/db";
 import { type ThreadEntity, threadTable } from "../db/schema/thread";
 import { getThreadDtos } from "../mappers/thread";
-import { appendThreadMessages } from "../service/thread";
+import { getLlmModel } from "../service/ai";
+import { getActiveLlm } from "../service/llm";
+import { appendThreadMessages, getThreadDetail } from "../service/thread";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { cuid } from "../utils/cuid";
 import { firstOrNotCreated, firstOrNull } from "../utils/toolkit";
-
 export const threadApi = new OpenAPIHono();
 
 threadApi.openapi(threadListRoute, async (c) => {
@@ -169,4 +174,42 @@ threadApi.openapi(threadAppendMessageRoute, async (c) => {
   const body = threadAppendMessageRequestSchema.parse(await c.req.json());
   await appendThreadMessages(body.threadId, body.messages);
   return c.json({} as ThreadAppendMessageResponse);
+});
+
+threadApi.openapi(threadNameRoute, async (c) => {
+  const { threadId } = threadNameRequestSchema.parse(await c.req.json());
+
+  const auth = getAuthOrUnauthorized(c);
+  const thread = await getThreadDetail(threadId);
+
+  const prompt = [
+    "give a question short name. word count should be between 10 and 50",
+    "message history",
+    JSON.stringify(thread.messages),
+  ].join("\n");
+
+  const llm = await getActiveLlm({ orgId: auth.orgId });
+  const model = await getLlmModel(llm);
+  const result = await generateObject({
+    model,
+    prompt,
+    experimental_telemetry: { isEnabled: true },
+    schema: z.object({
+      shortName: z.string(),
+    }),
+  });
+
+  const shortName = result.object.shortName.replace(/[\r\n]/g, "").trim();
+
+  await getDrizzle()
+    .update(threadTable)
+    .set({
+      shortName,
+    })
+    .where(eq(threadTable.threadId, threadId));
+
+  return c.json({
+    threadId,
+    shortName,
+  } as ThreadNameResponse);
 });
