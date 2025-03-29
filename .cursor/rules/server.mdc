@@ -1,0 +1,31 @@
+---
+description: 
+globs: apps/server/**/*.ts
+alwaysApply: false
+---
+server: This is a Bun-based Hono API server that uses Drizzle ORM with PostgreSQL.
+
+Key features and components:
+- Framework: Hono.js for API routes with middleware
+- Database: PostgreSQL with Drizzle ORM for schema management
+- Auth: Custom JWT-based authentication system
+- OpenTelemetry instrumentation for observability
+- APIs: Auth, Thread, LLM, Chat
+- Structure:
+  - /api/: API route handlers
+  - /db/: Database connection and schema definitions
+  - /service/: Business logic and service implementations
+  - /middleware/: Reusable middleware (authentication, etc.)
+  - /utils/: Utility functions
+  - /configs/: Configuration and environment variables
+  - /mappers/: Convert ORM Entity to Dtos for API expose
+  - @meside/shared/api/: the API definition between server api and front-end
+
+Development workflow:
+- Run dev server: `bun run dev`
+
+When working with this codebase:
+1. Before writing any files, learn same file in the same directory.
+2. Throw new HttpError, dont return c.json({ error })
+4. Follow the API pattern: route definition in @meside/shared/api/, controller logic in /api/ and business logic in /service/
+4. Use Zod for DB validation and type-safety
