@@ -35,14 +35,26 @@ authApi.openapi(loginRoute, async (c) => {
   const { email, password } = c.req.valid("json");
 
   const result = await loginWithCredentials(email, password);
-  return c.json(result as LoginResponse);
+  const userDto = await getUserDtos([result.user]);
+
+  return c.json({
+    token: result.token,
+    refreshToken: result.refreshToken,
+    user: userDto[0],
+  } as LoginResponse);
 });
 
 authApi.openapi(googleLoginRoute, async (c) => {
   const { idToken } = c.req.valid("json");
 
   const result = await loginWithGoogle(idToken);
-  return c.json(result as GoogleLoginResponse);
+  const userDto = await getUserDtos([result.user]);
+
+  return c.json({
+    token: result.token,
+    refreshToken: result.refreshToken,
+    user: userDto[0],
+  } as GoogleLoginResponse);
 });
 
 authApi.openapi(refreshTokenRoute, async (c) => {

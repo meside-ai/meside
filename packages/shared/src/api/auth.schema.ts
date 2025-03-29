@@ -127,7 +127,7 @@ export type RefreshTokenResponse = z.infer<typeof refreshTokenResponseSchema>;
 
 export const refreshTokenRoute = createRoute({
   method: "post",
-  path: "/refresh-token",
+  path: "/refresh",
   request: {
     body: {
       content: {

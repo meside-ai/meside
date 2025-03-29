@@ -81,7 +81,7 @@ export async function main() {
     userId,
     name: "John Doe",
     email: "john.doe@example.com",
-    password: "password",
+    passwordHash: "",
   });
 
   await db.insert(threadTable).values({
