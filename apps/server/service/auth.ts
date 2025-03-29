@@ -211,7 +211,7 @@ async function generateTokens(user: { userId: string }): Promise<{
   };
 }
 
-export const getUserById = async (userId: string) => {
+export const getUserById = async (userId: string): Promise<UserEntity> => {
   const user = firstOrNotFound(
     await getDrizzle()
       .select()
@@ -227,8 +227,10 @@ export const getUserById = async (userId: string) => {
 /**
  * Verifies a JWT token and returns the payload
  */
-export const verifyToken = async (token: string) => {
+export const verifyToken = async (
+  token: string,
+): Promise<{ userId: string }> => {
   const jose = await import("jose");
   const { payload } = await jose.jwtVerify(token, JWT_SECRET);
-  return payload;
+  return payload as { userId: string };
 };

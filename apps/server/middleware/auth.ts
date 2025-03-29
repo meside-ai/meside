@@ -6,6 +6,7 @@ declare module "hono" {
   interface ContextVariableMap {
     auth: {
       userId: string;
+      name: string;
     };
   }
 }
@@ -16,26 +17,33 @@ export const authMiddleware = createMiddleware(
     const token = authHeader?.split(" ")[1];
 
     if (!token) {
-      return c.json({ message: "Authentication required" }, 401);
+      await next();
+      return;
+    }
+
+    let payload: { userId: string };
+
+    try {
+      payload = await verifyToken(token);
+    } catch (error) {
+      console.error(error);
+      await next();
+      return;
     }
 
     try {
-      const payload = await verifyToken(token);
-      const userId = payload.userId as string;
-
+      const userId = payload.userId;
       const user = await getUserById(userId);
-
-      if (!user) {
-        return c.json({ message: "User not found" }, 401);
-      }
 
       c.set("auth", {
         userId: user.userId,
+        name: user.name ?? "",
       });
 
       await next();
     } catch (error) {
-      return c.json({ message: "Invalid token" }, 403);
+      await next();
+      return;
     }
   },
 );
