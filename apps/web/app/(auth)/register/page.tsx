@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
 import { getGoogleLogin, getRegister } from "../../../queries/auth";
+import { setAuthTokens } from "../../../utils/auth-storage";
 
 const registerSchema = z
   .object({
@@ -66,8 +67,7 @@ export default function RegisterPage() {
   const googleLoginMutation = useMutation({
     ...getGoogleLogin(),
     onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("refreshToken", data.refreshToken);
+      setAuthTokens(data.token, data.refreshToken);
       router.push("/");
     },
     onError: () => {

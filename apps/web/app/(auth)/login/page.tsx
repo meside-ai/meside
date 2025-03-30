@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
 import { getGoogleLogin, getLogin } from "../../../queries/auth";
+import { setAuthTokens } from "../../../utils/auth-storage";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -43,8 +44,7 @@ export default function LoginPage() {
   const loginMutation = useMutation({
     ...getLogin(),
     onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("refreshToken", data.refreshToken);
+      setAuthTokens(data.token, data.refreshToken);
       router.push("/");
     },
   });
@@ -52,8 +52,7 @@ export default function LoginPage() {
   const googleLoginMutation = useMutation({
     ...getGoogleLogin(),
     onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("refreshToken", data.refreshToken);
+      setAuthTokens(data.token, data.refreshToken);
       router.push("/");
     },
   });
