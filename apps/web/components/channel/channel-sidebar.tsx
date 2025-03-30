@@ -8,6 +8,7 @@ import { Logo } from "../brand/logo";
 
 export function ChannelSidebar() {
   const params = useParams();
+  const orgId = params.orgId as string;
   const channelId = params.channelId as string;
 
   const { data } = useQuery(getTeamList({}));
@@ -38,7 +39,7 @@ export function ChannelSidebar() {
             <Button
               key={team.teamId}
               component={Link}
-              href={`/channel/${team.teamId}`}
+              href={`/org/${orgId}/channel/${team.teamId}`}
               variant={team.teamId === channelId ? "light" : "subtle"}
               color={team.teamId === channelId ? "blue" : "gray"}
               fullWidth

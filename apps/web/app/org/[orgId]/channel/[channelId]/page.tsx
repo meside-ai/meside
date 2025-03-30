@@ -2,8 +2,8 @@
 
 import { Box } from "@mantine/core";
 import { useParams } from "next/navigation";
-import { ChannelContent } from "../../../../components/channel/channel-content";
-import { ChannelSidebar } from "../../../../components/channel/channel-sidebar";
+import { ChannelContent } from "../../../../../components/channel/channel-content";
+import { ChannelSidebar } from "../../../../../components/channel/channel-sidebar";
 
 // Demo data for channels
 const CHANNELS = [
