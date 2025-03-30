@@ -4,164 +4,56 @@ import {
   Container,
   Group,
   Paper,
+  Skeleton,
   Stack,
   Text,
   Title,
 } from "@mantine/core";
-import { IconChevronRight, IconSearch, IconUser } from "@tabler/icons-react";
+import { IconChevronRight } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { getThreadList } from "../../queries/thread";
 
-// Demo data for threads (to be moved to a data file later)
-const THREADS = [
-  {
-    id: "perf-opt",
-    title: "Database Performance Optimization",
-    summary:
-      "We've identified several performance bottlenecks in our database queries. The team has proposed index optimizations and query restructuring to improve response times.",
-    type: "performance",
-  },
-  {
-    id: "schema-migration",
-    title: "Schema Migration Plan",
-    summary:
-      "The team has finalized the schema migration plan for the upcoming release. This includes new tables for user preferences and improved relationship modeling.",
-    type: "schema",
-  },
-  {
-    id: "backup-strategy",
-    title: "Backup Strategy Review",
-    summary:
-      "Regular evaluation of our backup approach to ensure data integrity and recoverability in case of system failures.",
-    type: "backup",
-  },
-];
+export function ChannelContent() {
+  const { data, isLoading } = useQuery(getThreadList({}));
+  const threads = data?.threads || [];
 
-interface ChannelContentProps {
-  channelName: string;
-}
+  if (isLoading) {
+    return (
+      <Box>
+        <Skeleton h={80} w="60%" />
+        <Skeleton h={80} w="100%" />
+        <Skeleton h={80} w="60%" />
+      </Box>
+    );
+  }
 
-export function ChannelContent({ channelName }: ChannelContentProps) {
   return (
     <Box flex={1} h="100%" style={{ overflow: "auto" }}>
-      {/* Channel header */}
-      <Box
-        w="100%"
-        h={60}
-        px="xl"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: "1px solid #e9ecef",
-        }}
-      >
-        <Title order={3}>{channelName}</Title>
-        <Group>
-          <Button variant="subtle" leftSection={<IconUser size={16} />}>
-            Members
-          </Button>
-          <Button variant="subtle" leftSection={<IconSearch size={16} />}>
-            Search
-          </Button>
-        </Group>
-      </Box>
-
-      {/* Thread cards */}
-      <Container size="xl" py="xl">
+      <Container py="xl">
         <Stack gap="xl">
-          {/* Performance Optimization Card */}
-          <Paper p="xl" radius="md" withBorder>
-            <Stack gap="md">
-              <Group justify="space-between">
-                <Title order={4}>Database Performance Optimization</Title>
-                <Button
-                  variant="subtle"
-                  rightSection={<IconChevronRight size={16} />}
-                >
-                  Review details
-                </Button>
-              </Group>
-              <Text size="sm" color="dimmed">
-                Summary: We've identified several performance bottlenecks in our
-                database queries. The team has proposed index optimizations and
-                query restructuring to improve response times.
-              </Text>
-              <Paper p="lg" radius="md" bg="rgba(0, 0, 0, 0.03)">
-                <Text ta="center" fw={500}>
-                  Performance Chart
-                </Text>
-              </Paper>
-              <Group gap="xs">
-                <Text size="xs" fw={500}>
-                  A
-                </Text>
-                <Text size="xs" fw={500}>
-                  B
-                </Text>
-                <Text size="xs" fw={500}>
-                  C
-                </Text>
-              </Group>
-            </Stack>
-          </Paper>
-
-          {/* Schema Migration Card */}
-          <Paper p="xl" radius="md" withBorder>
-            <Stack gap="md">
-              <Group justify="space-between">
-                <Title order={4}>Schema Migration Plan</Title>
-                <Button
-                  variant="subtle"
-                  rightSection={<IconChevronRight size={16} />}
-                >
-                  Review details
-                </Button>
-              </Group>
-              <Text size="sm" color="dimmed">
-                Summary: The team has finalized the schema migration plan for
-                the upcoming release. This includes new tables for user
-                preferences and improved relationship modeling.
-              </Text>
-              <Group grow>
-                <Paper p="lg" radius="md" bg="rgba(0, 0, 0, 0.03)">
-                  <Text ta="center" fw={500}>
-                    Current Schema
-                  </Text>
-                </Paper>
-                <Paper p="lg" radius="md" bg="rgba(0, 0, 0, 0.03)">
-                  <Text ta="center" fw={500}>
-                    New Schema
-                  </Text>
-                </Paper>
-              </Group>
-              <Group gap="xs">
-                <Text size="xs" fw={500}>
-                  D
-                </Text>
-                <Text size="xs" fw={500}>
-                  E
-                </Text>
-              </Group>
-            </Stack>
-          </Paper>
-
-          {/* Backup Strategy Card */}
-          <Paper p="xl" radius="md" withBorder>
-            <Stack gap="md">
-              <Group justify="space-between">
-                <Title order={4}>Backup Strategy Review</Title>
-                <Button
-                  variant="subtle"
-                  rightSection={<IconChevronRight size={16} />}
-                >
-                  Review details
-                </Button>
-              </Group>
-              <Text size="sm" color="dimmed">
-                Summary: Regular evaluation of our backup approach to ensure
-                data integrity and recoverability in case of system failures.
-              </Text>
-            </Stack>
-          </Paper>
+          {threads.map((thread) => (
+            <Paper key={thread.threadId} p="xl" radius="md" withBorder>
+              <Stack gap="md">
+                <Group justify="space-between">
+                  <Title order={4}>{thread.shortName}</Title>
+                  <Button
+                    component={Link}
+                    href={`/org/${thread.orgId}/thread/${thread.threadId}`}
+                    variant="subtle"
+                    rightSection={<IconChevronRight size={16} />}
+                  >
+                    Review details
+                  </Button>
+                </Group>
+              </Stack>
+            </Paper>
+          ))}
+          {threads.length === 0 && (
+            <Text ta="center" fs="italic" c="dimmed">
+              No threads available
+            </Text>
+          )}
         </Stack>
       </Container>
     </Box>
