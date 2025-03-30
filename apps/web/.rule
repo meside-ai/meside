@@ -30,6 +30,7 @@ This is a Next.js web application that uses:
 4. Use React Query hooks for data fetching
 5. Keep components focused on specific functionality
 6. Use the shared API schemas from @meside/shared for type consistency
+7. Use kebab-case for folders and files, dont use PascalCase for folders and files
 
 ## State Management
 - Use React Query for server state
