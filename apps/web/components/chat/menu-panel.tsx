@@ -6,13 +6,13 @@ import {
   Group,
   ScrollArea,
   Text,
-  Title,
   UnstyledButton,
 } from "@mantine/core";
 import { IconMessageCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { getThreadList } from "../../queries/thread";
+import { Logo } from "../brand/logo";
 import { useThreadContext } from "./context";
 
 export const MenuPanel = () => {
@@ -49,21 +49,7 @@ const StartPanel = () => {
       display="flex"
       style={{ flexDirection: "column", alignItems: "flex-start" }}
     >
-      <Title
-        order={1}
-        mb="md"
-        style={{
-          fontFamily: "Assistant",
-          fontOpticalSizing: "auto",
-          fontWeight: 600,
-          fontStyle: "normal",
-          color: "#000",
-          letterSpacing: "0px",
-          textAlign: "center",
-        }}
-      >
-        meside
-      </Title>
+      <Logo />
       <Button
         size="md"
         onClick={() => {
