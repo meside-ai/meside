@@ -1,8 +1,30 @@
 import { getDrizzle } from "../db/db";
 import { type AgentEntity, agentTable } from "../db/schema/agent";
 import { agentToolTable } from "../db/schema/agent-tool";
+import { type TeamEntity, teamTable } from "../db/schema/team";
+import { teamAgentTable } from "../db/schema/team-agent";
 import { type ToolEntity, toolTable } from "../db/schema/tool";
 import { cuid } from "../utils/cuid";
+
+const initTeamList = (props: {
+  ownerId: string;
+  orgId: string;
+}): TeamEntity[] => {
+  const createdAt = new Date();
+
+  return [
+    {
+      teamId: cuid(),
+      name: "Database Team",
+      description: "Database Team",
+      ownerId: props.ownerId,
+      orgId: props.orgId,
+      createdAt: createdAt.toISOString(),
+      updatedAt: createdAt.toISOString(),
+      deletedAt: null,
+    },
+  ];
+};
 
 const initAgentList = (props: {
   ownerId: string;
@@ -91,11 +113,13 @@ export const initApplicationData = async (props: {
   const createdAt = new Date();
   const agentList = initAgentList(props);
   const toolList = initToolList(props);
+  const teamList = initTeamList(props);
 
   const firstAgent = agentList[0];
   const firstTool = toolList[0];
+  const firstTeam = teamList[0];
 
-  if (!firstAgent || !firstTool) {
+  if (!firstAgent || !firstTool || !firstTeam) {
     throw new Error("Agent or Tool is not found");
   }
 
@@ -105,6 +129,14 @@ export const initApplicationData = async (props: {
     agentToolId: cuid(),
     agentId: firstAgent.agentId,
     toolId: firstTool.toolId,
+    createdAt: createdAt.toISOString(),
+    updatedAt: createdAt.toISOString(),
+  });
+  await getDrizzle().insert(teamTable).values(teamList);
+  await getDrizzle().insert(teamAgentTable).values({
+    teamAgentId: cuid(),
+    teamId: firstTeam.teamId,
+    agentId: firstAgent.agentId,
     createdAt: createdAt.toISOString(),
     updatedAt: createdAt.toISOString(),
   });

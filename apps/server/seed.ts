@@ -71,6 +71,7 @@ export async function main() {
   const userId = "io56027z7qwd25mzq6upq947";
   const threadId = "cwh5pv4nxuh3xlhnlouz95q7";
   const llmId = "edbp71ci4hwucgons4wvqpam";
+  const teamId = "cwh5pv4nxuh3xlhnlouz95q8";
 
   await db.insert(orgTable).values({
     orgId,
