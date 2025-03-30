@@ -1,26 +1,17 @@
 import { Box, Button, Group, Paper, Stack, Text } from "@mantine/core";
+import type { TeamDto } from "@meside/shared/api/team.schema";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useParams } from "next/navigation";
+import { getTeamList } from "../../queries/team";
 import { Logo } from "../brand/logo";
-
-// Demo data for channels (to be moved to a data file later)
-const CHANNELS = [
-  {
-    id: "database",
-    name: "Database team",
-  },
-  {
-    id: "jira",
-    name: "Jira team",
-  },
-  {
-    id: "support",
-    name: "Support team",
-  },
-];
 
 export function ChannelSidebar() {
   const params = useParams();
   const channelId = params.channelId as string;
+
+  const { data } = useQuery(getTeamList({}));
+  const teams = data?.teams || [];
 
   return (
     <Box
@@ -43,11 +34,13 @@ export function ChannelSidebar() {
 
         {/* Channel list */}
         <Stack gap="xs">
-          {CHANNELS.map((channel) => (
+          {teams.map((team: TeamDto) => (
             <Button
-              key={channel.id}
-              variant={channel.id === channelId ? "light" : "subtle"}
-              color={channel.id === channelId ? "blue" : "gray"}
+              key={team.teamId}
+              component={Link}
+              href={`/channel/${team.teamId}`}
+              variant={team.teamId === channelId ? "light" : "subtle"}
+              color={team.teamId === channelId ? "blue" : "gray"}
               fullWidth
               justify="start"
               radius="md"
@@ -62,7 +55,7 @@ export function ChannelSidebar() {
                 </Box>
               }
             >
-              {channel.name}
+              {team.name}
             </Button>
           ))}
         </Stack>
