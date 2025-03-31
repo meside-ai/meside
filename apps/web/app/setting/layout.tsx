@@ -8,6 +8,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { queryClient } from "../../utils/query-client";
+import AuthGuard from "../component/auth-guard";
 
 const sidebarItems = [
   {
@@ -35,31 +36,33 @@ export default function SettingLayout({
   const pathname = usePathname();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools />
-      <Notifications />
-      <AppShell navbar={{ width: 300, breakpoint: "sm" }} padding="md">
-        <AppShell.Navbar p="md">
-          <AppShell.Section grow>
-            {sidebarItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                style={{ textDecoration: "none" }}
-              >
-                <NavLink
-                  label={item.title}
-                  leftSection={<item.icon size="1.2rem" stroke={1.5} />}
-                  active={pathname === item.href}
-                  variant="filled"
-                />
-              </Link>
-            ))}
-          </AppShell.Section>
-        </AppShell.Navbar>
+    <AuthGuard>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools />
+        <Notifications />
+        <AppShell navbar={{ width: 300, breakpoint: "sm" }} padding="md">
+          <AppShell.Navbar p="md">
+            <AppShell.Section grow>
+              {sidebarItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  style={{ textDecoration: "none" }}
+                >
+                  <NavLink
+                    label={item.title}
+                    leftSection={<item.icon size="1.2rem" stroke={1.5} />}
+                    active={pathname === item.href}
+                    variant="filled"
+                  />
+                </Link>
+              ))}
+            </AppShell.Section>
+          </AppShell.Navbar>
 
-        <AppShell.Main>{children}</AppShell.Main>
-      </AppShell>
-    </QueryClientProvider>
+          <AppShell.Main>{children}</AppShell.Main>
+        </AppShell>
+      </QueryClientProvider>
+    </AuthGuard>
   );
 }
