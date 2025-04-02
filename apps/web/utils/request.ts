@@ -4,7 +4,6 @@ export const getOptions = () => {
       url: Parameters<typeof fetch>[0],
       options: Parameters<typeof fetch>[1],
     ) => {
-      console.log("url", url);
       const response = await fetch(url, options);
       if (response.status >= 200 && response.status < 400) {
         return response;
@@ -38,7 +37,6 @@ export const createPost = <PostRequest, PostResponse>(
   const fetch = defaultOptions.fetch;
 
   return async (request: PostRequest): Promise<PostResponse> => {
-    console.log("request", request, JSON.stringify(request));
     const response = await fetch(`${baseUrl}${url}`, {
       method: "POST",
       headers: {

@@ -12,12 +12,12 @@ import {
   orgListRoute,
   orgUpdateRoute,
 } from "@meside/shared/api/org.schema";
-import { createPost } from "@meside/shared/request/index";
 import type {
   UseMutationOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
 import type { QueryClientError } from "../utils/query-client";
+import { createPost } from "../utils/request";
 
 export const getOrgList = (
   params: OrgListRequest,
