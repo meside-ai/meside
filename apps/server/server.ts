@@ -9,7 +9,6 @@ import { teamApi } from "./api/team";
 import { threadApi } from "./api/thread";
 import { authMiddleware } from "./middleware/auth";
 import { createErrorHandler } from "./utils/error-handler";
-
 const app = new Hono();
 
 app.use("*", otel());

@@ -13,14 +13,15 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../db/db";
 import { orgTable } from "../db/schema/org";
 import { getOrgDtos } from "../mappers/org";
-import { getAuthOrUnauthorized } from "../utils/auth";
+import { authGuardMiddleware } from "../middleware/guard";
 import { cuid } from "../utils/cuid";
 import { firstOrNotCreated, firstOrNull } from "../utils/toolkit";
 
 export const orgApi = new OpenAPIHono();
 
+orgApi.use("*", authGuardMiddleware);
+
 orgApi.openapi(orgListRoute, async (c) => {
-  const auth = getAuthOrUnauthorized(c);
   const orgs = await getDrizzle()
     .select()
     .from(orgTable)
@@ -33,7 +34,6 @@ orgApi.openapi(orgListRoute, async (c) => {
 
 orgApi.openapi(orgDetailRoute, async (c) => {
   const { orgId } = c.req.valid("json");
-  const auth = getAuthOrUnauthorized(c);
 
   const org = firstOrNull(
     await getDrizzle()
@@ -54,7 +54,6 @@ orgApi.openapi(orgDetailRoute, async (c) => {
 
 orgApi.openapi(orgCreateRoute, async (c) => {
   const body = orgCreateRequestSchema.parse(await c.req.json());
-  const auth = getAuthOrUnauthorized(c);
   const orgId = cuid();
 
   const orgs = await getDrizzle()
@@ -73,8 +72,6 @@ orgApi.openapi(orgCreateRoute, async (c) => {
 
 orgApi.openapi(orgUpdateRoute, async (c) => {
   const body = orgUpdateRequestSchema.parse(await c.req.json());
-  const auth = getAuthOrUnauthorized(c);
-
   const updateValues: Partial<typeof orgTable.$inferInsert> = {};
 
   if (body.name) {

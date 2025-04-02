@@ -19,6 +19,7 @@ import { agentTable } from "../db/schema/agent";
 import { teamTable } from "../db/schema/team";
 import { teamAgentTable } from "../db/schema/team-agent";
 import { getTeamDtos } from "../mappers/team";
+import { authGuardMiddleware, orgGuardMiddleware } from "../middleware/guard";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { cuid } from "../utils/cuid";
 import {
@@ -28,6 +29,8 @@ import {
 } from "../utils/toolkit";
 
 export const teamApi = new OpenAPIHono();
+
+teamApi.use("*", authGuardMiddleware).use("*", orgGuardMiddleware);
 
 teamApi.openapi(teamListRoute, async (c) => {
   const auth = getAuthOrUnauthorized(c);

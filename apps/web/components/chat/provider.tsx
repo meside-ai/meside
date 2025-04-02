@@ -9,7 +9,6 @@ export const ThreadProvider = ({ children }: { children: React.ReactNode }) => {
   const params = useParams();
   const currentThreadId =
     typeof params?.thread_id === "string" ? params.thread_id : null;
-  console.log("currentThreadId", currentThreadId, params);
 
   const setThreadId = useCallback(
     (threadId: string | null) => {

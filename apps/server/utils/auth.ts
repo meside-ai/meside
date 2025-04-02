@@ -8,10 +8,19 @@ export type AuthUser = {
 };
 
 export const getAuth = (c: Context): AuthUser | null => {
+  const auth = c.get("auth");
+  if (!auth) {
+    return null;
+  }
+  const org = c.get("org");
+  if (!org) {
+    return null;
+  }
+
   return {
-    userId: "io56027z7qwd25mzq6upq947",
-    orgId: "hkwgx29khaflgmm5c8ipp79r",
-    name: "John Doe",
+    userId: auth.userId,
+    orgId: org.orgId,
+    name: auth.name,
   };
 };
 

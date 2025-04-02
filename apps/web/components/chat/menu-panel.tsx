@@ -30,7 +30,7 @@ export const MenuPanel = () => {
         <StartPanel />
       </Box>
       <Box flex={1} style={{ overflow: "hidden" }}>
-        <ThreadPanel />
+        {/* <ThreadPanel /> */}
       </Box>
       <Box mb="md">
         <MyProfile />

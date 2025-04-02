@@ -48,7 +48,6 @@ export const warehouseMcpToolSets = [
       const catalogs = await warehouseService.getCatalogs(
         payload.warehouseName,
       );
-      console.log("catalogs", catalogs);
       return {
         content: [
           {
