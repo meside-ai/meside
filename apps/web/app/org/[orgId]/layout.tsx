@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { MyAvatar } from "../../../components/avatar/my-avatar";
 import { Logo } from "../../../components/brand/logo";
 import { getMe } from "../../../queries/auth";
 import classes from "./layout.module.css";
@@ -111,7 +112,7 @@ export default function OrgLayout({ children }: OrgLayoutProps) {
           }}
           mb="md"
         >
-          <MyProfile />
+          <MyAvatar />
         </Box>
       </Box>
       {children}
