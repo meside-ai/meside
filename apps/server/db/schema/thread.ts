@@ -15,6 +15,7 @@ export const threadStatusEnum = pgEnum("status", ["idle", "active", "closed"]);
 
 export const threadTable = pgTable("thread", {
   threadId: primaryKeyCuid("thread_id"),
+  teamId: foreignCuid("team_id"),
   versionId: varchar("version_id", { length: 128 }).notNull(),
   activeVersion: boolean("active_version").notNull().default(false),
   ownerId: foreignCuid("owner_id").notNull(),

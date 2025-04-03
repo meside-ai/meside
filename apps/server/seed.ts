@@ -87,6 +87,7 @@ export async function main() {
 
   await db.insert(threadTable).values({
     threadId,
+    teamId,
     versionId: threadId,
     ownerId: userId,
     orgId,
@@ -101,6 +102,7 @@ export async function main() {
 
   await db.insert(threadTable).values({
     threadId: cuid(),
+    teamId,
     versionId: threadId,
     activeVersion: true,
     ownerId: userId,
@@ -116,6 +118,7 @@ export async function main() {
 
   await db.insert(threadTable).values({
     threadId: cuid(),
+    teamId,
     versionId: threadId,
     ownerId: userId,
     orgId,
@@ -142,6 +145,7 @@ export async function main() {
     orgId,
     toolUrl,
     llmId,
+    teamId,
   });
 }
 

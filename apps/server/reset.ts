@@ -4,6 +4,7 @@ import { agentTable } from "./db/schema/agent";
 import { agentToolTable } from "./db/schema/agent-tool";
 import { llmTable } from "./db/schema/llm";
 import { orgTable } from "./db/schema/org";
+import { teamTable } from "./db/schema/team";
 import { threadTable } from "./db/schema/thread";
 import { toolTable } from "./db/schema/tool";
 import { usageTable } from "./db/schema/usage";
@@ -19,6 +20,7 @@ export async function resetDb() {
     threadTable,
     llmTable,
     toolTable,
+    teamTable,
     agentTable,
     agentToolTable,
   });

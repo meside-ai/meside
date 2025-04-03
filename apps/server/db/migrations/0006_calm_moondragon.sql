@@ -1,0 +1,1 @@
+ALTER TABLE "thread" ADD COLUMN "team_id" varchar(128);

@@ -14,6 +14,8 @@ import {
 import { IconChevronRight } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { NewThreadInput } from "../../../../../components/thread/new-thread-input";
 import { getThreadList } from "../../../../../queries/thread";
 
 export default function ChannelPage() {
@@ -21,8 +23,13 @@ export default function ChannelPage() {
 }
 
 function ChannelContent() {
-  const { data, isLoading } = useQuery(getThreadList({}));
+  const { orgId, channelId: teamId } = useParams<{
+    orgId: string;
+    channelId: string;
+  }>();
+  const { data, isLoading } = useQuery(getThreadList({ teamId }));
   const threads = data?.threads || [];
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -61,6 +68,15 @@ function ChannelContent() {
             </Text>
           )}
         </Stack>
+
+        <Box p="md">
+          <NewThreadInput
+            teamId={teamId}
+            onSubmit={(threadId) => {
+              router.push(`/org/${orgId}/thread/${threadId}`);
+            }}
+          />
+        </Box>
       </Container>
     </Box>
   );

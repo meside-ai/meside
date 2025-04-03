@@ -27,11 +27,16 @@ export const EditThreadInput = ({ setIsEditing }: EditThreadInputProps) => {
           if (!data?.thread) {
             return;
           }
+          const teamId = data.thread.teamId;
+          if (!teamId) {
+            return;
+          }
           const json = await createNewThread({
             versionId: data.thread.versionId,
             systemPrompt: data.thread.systemPrompt,
             userPrompt: userInput,
             parentThreadId: data.thread.threadId,
+            teamId,
           });
           setThreadId(json.thread.threadId);
         }}

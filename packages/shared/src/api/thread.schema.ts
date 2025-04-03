@@ -20,6 +20,7 @@ export const threadDtoSchema = z.object({
   deletedAt: z.string().nullable(),
   owner: userDtoSchema.optional(),
   siblingIds: z.array(z.string()).optional(),
+  teamId: z.string().optional(),
 });
 
 export type ThreadDto = z.infer<typeof threadDtoSchema>;
@@ -27,6 +28,7 @@ export type ThreadDto = z.infer<typeof threadDtoSchema>;
 // questionList
 export const threadListRequestSchema = z.object({
   parentThreadId: z.string().optional().nullable(),
+  teamId: z.string().optional(),
 });
 
 export const threadListResponseSchema = z.object({
@@ -103,6 +105,7 @@ export const threadCreateRequestSchema = z.object({
   systemPrompt: z.string(),
   userPrompt: z.string(),
   parentThreadId: z.string().nullable(),
+  teamId: z.string(),
 });
 
 export const threadCreateResponseSchema = z.object({

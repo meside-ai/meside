@@ -9,12 +9,13 @@ import { cuid } from "../utils/cuid";
 const initTeamList = (props: {
   ownerId: string;
   orgId: string;
+  teamId: string;
 }): TeamEntity[] => {
   const createdAt = new Date();
 
   return [
     {
-      teamId: cuid(),
+      teamId: props.teamId,
       name: "Database Team",
       description: "Database Team",
       ownerId: props.ownerId,
@@ -109,6 +110,7 @@ export const initApplicationData = async (props: {
   orgId: string;
   toolUrl: string;
   llmId: string;
+  teamId: string;
 }) => {
   const createdAt = new Date();
   const agentList = initAgentList(props);

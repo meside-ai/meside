@@ -4,9 +4,11 @@ import { getThreadCreate } from "../../queries/thread";
 import { ThreadInput } from "./thread-input";
 
 export const NewThreadInput = ({
-  setThreadId,
+  teamId,
+  onSubmit,
 }: {
-  setThreadId: (threadId: string) => void;
+  teamId: string;
+  onSubmit: (threadId: string) => void;
 }) => {
   const { mutateAsync: createNewThread, isPending } = useMutation(
     getThreadCreate(),
@@ -16,12 +18,13 @@ export const NewThreadInput = ({
       <ThreadInput
         handleSubmit={async (userInput) => {
           const json = await createNewThread({
+            teamId,
             versionId: null,
             systemPrompt: "",
             userPrompt: userInput,
             parentThreadId: null,
           });
-          setThreadId(json.thread.threadId);
+          onSubmit(json.thread.threadId);
         }}
         placeholder="Create a new thread"
         loading={isPending}

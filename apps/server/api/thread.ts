@@ -48,6 +48,10 @@ threadApi.openapi(threadListRoute, async (c) => {
     filter.push(isNull(threadTable.parentThreadId));
   }
 
+  if (body.teamId) {
+    filter.push(eq(threadTable.teamId, body.teamId));
+  }
+
   const threads = await getDrizzle()
     .select()
     .from(threadTable)
@@ -133,6 +137,7 @@ threadApi.openapi(threadCreateRoute, async (c) => {
         .insert(threadTable)
         .values({
           threadId,
+          teamId: body.teamId,
           versionId: body.versionId ?? threadId,
           activeVersion: true,
           shortName: body.shortName ?? undefined,

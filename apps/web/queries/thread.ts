@@ -27,13 +27,14 @@ import { createPost } from "../utils/request";
 
 export const getThreadList = ({
   parentThreadId,
+  teamId,
 }: ThreadListRequest): UseQueryOptions<ThreadListResponse> => ({
   enabled: true,
   queryKey: [getThreadList.name, parentThreadId],
   queryFn: async () => {
     const json = await createPost<ThreadListRequest, ThreadListResponse>(
       `/meside/server/thread${threadListRoute.path}`,
-    )({ parentThreadId });
+    )({ parentThreadId, teamId });
     return json;
   },
 });
