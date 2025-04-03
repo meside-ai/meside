@@ -1,8 +1,7 @@
 import type { Message } from "@ai-sdk/ui-utils";
-import type { ThreadDto } from "@meside/shared/api/thread.schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../db/db";
-import { threadTable } from "../db/schema/thread";
+import { type ThreadEntity, threadTable } from "../db/schema/thread";
 import { firstOrNotFound } from "../utils/toolkit";
 
 export const appendThreadMessages = async (
@@ -42,7 +41,9 @@ export const appendThreadMessages = async (
     .where(eq(threadTable.threadId, threadId));
 };
 
-export const getThreadDetail = async (threadId: string): Promise<ThreadDto> => {
+export const getThreadDetail = async (
+  threadId: string,
+): Promise<ThreadEntity> => {
   const threads = await getDrizzle()
     .select()
     .from(threadTable)
