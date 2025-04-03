@@ -1,6 +1,7 @@
 import { getDrizzle } from "../db/db";
 import { type AgentEntity, agentTable } from "../db/schema/agent";
 import { agentToolTable } from "../db/schema/agent-tool";
+import { orgUserTable } from "../db/schema/org-user";
 import { type TeamEntity, teamTable } from "../db/schema/team";
 import { teamAgentTable } from "../db/schema/team-agent";
 import { type ToolEntity, toolTable } from "../db/schema/tool";
@@ -139,6 +140,13 @@ export const initApplicationData = async (props: {
     teamAgentId: cuid(),
     teamId: firstTeam.teamId,
     agentId: firstAgent.agentId,
+    createdAt: createdAt.toISOString(),
+    updatedAt: createdAt.toISOString(),
+  });
+  await getDrizzle().insert(orgUserTable).values({
+    orgUserId: cuid(),
+    orgId: props.orgId,
+    userId: props.ownerId,
     createdAt: createdAt.toISOString(),
     updatedAt: createdAt.toISOString(),
   });
