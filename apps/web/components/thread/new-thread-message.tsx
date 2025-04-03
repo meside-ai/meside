@@ -151,7 +151,7 @@ export const NewThreadMessage = ({
             <Textarea
               variant="unstyled"
               value={input}
-              placeholder={"Let AI agents help you."}
+              placeholder="Talking with AI teams"
               onChange={handleInputChange}
             />
             <Group justify="flex-end" gap="xs">
