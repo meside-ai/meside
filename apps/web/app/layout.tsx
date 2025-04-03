@@ -7,6 +7,7 @@ import {
   MantineProvider,
   mantineHtmlProps,
 } from "@mantine/core";
+import ErrorHandlerInitializer from "./component/error-handler-initializer";
 import { Notification } from "./component/notification";
 import QueryProvider from "./component/query-provider";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
         <QueryProvider>
           <MantineProvider theme={getTheme()}>
             <Notification />
+            <ErrorHandlerInitializer />
             {children}
           </MantineProvider>
         </QueryProvider>

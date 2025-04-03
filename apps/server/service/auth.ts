@@ -63,7 +63,7 @@ export async function loginWithCredentials(
   const user = firstOrNotFound(users, `User ${email} not found`);
 
   if (!user.passwordHash) {
-    throw new Error("Invalid credentials");
+    throw new Error("No password found for user");
   }
 
   // Verify password using SubtleCrypto
@@ -79,7 +79,7 @@ export async function loginWithCredentials(
   const computedHash = Buffer.from(hashBuffer).toString("hex");
 
   if (computedHash !== hash) {
-    throw new Error("Invalid credentials");
+    throw new Error("Password is incorrect");
   }
 
   const { token, refreshToken } = await generateTokens(user);

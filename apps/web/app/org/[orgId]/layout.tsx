@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, Box, Tooltip, UnstyledButton } from "@mantine/core";
-import { IconHome2 } from "@tabler/icons-react";
+import { IconHome2, IconSettings } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -16,9 +16,8 @@ interface OrgLayoutProps {
 }
 
 const mainLinksMockdata = [
-  { icon: IconHome2, label: "Teams" },
-  // { icon: IconDeviceDesktopAnalytics, label: "Analytics" },
-  // { icon: IconSettings, label: "Settings" },
+  { icon: IconHome2, label: "Teams", href: "teams" },
+  { icon: IconSettings, label: "Settings", href: "settings" },
 ];
 
 export default function OrgLayout({ children }: OrgLayoutProps) {
