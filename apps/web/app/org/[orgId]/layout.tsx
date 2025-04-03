@@ -3,9 +3,9 @@
 import { Avatar, Box, Tooltip, UnstyledButton } from "@mantine/core";
 import { IconHome2, IconSettings } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { MyAvatar } from "../../../components/avatar/my-avatar";
 import { Logo } from "../../../components/brand/logo";
 import { getMe } from "../../../queries/auth";
@@ -15,40 +15,51 @@ interface OrgLayoutProps {
   children: ReactNode;
 }
 
-const mainLinksMockdata = [
-  { icon: IconHome2, label: "Teams", href: "teams" },
-  { icon: IconSettings, label: "Settings", href: "settings" },
-];
-
 export default function OrgLayout({ children }: OrgLayoutProps) {
   const navigate = useRouter();
   const [active, setActive] = useState("Teams");
+  const { orgId } = useParams();
 
-  const mainLinks = mainLinksMockdata.map((link) => (
-    <Tooltip
-      label={link.label}
-      position="right"
-      withArrow
-      transitionProps={{ duration: 0 }}
-      key={link.label}
-    >
-      <UnstyledButton
-        className={classes.link}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 32,
-          height: 32,
-          borderRadius: "var(--mantine-radius-md)",
-        }}
-        onClick={() => setActive(link.label)}
-        data-active={link.label === active || undefined}
-      >
-        <link.icon size={22} stroke={1.5} />
-      </UnstyledButton>
-    </Tooltip>
-  ));
+  const mainLinksMockdata = useMemo(
+    () => [
+      { icon: IconHome2, label: "Teams", href: `/org/${orgId}/channel` },
+      { icon: IconSettings, label: "Settings", href: `/org/${orgId}/setting` },
+    ],
+    [orgId],
+  );
+
+  const mainLinks = useMemo(
+    () =>
+      mainLinksMockdata.map((link) => (
+        <Tooltip
+          label={link.label}
+          position="right"
+          withArrow
+          transitionProps={{ duration: 0 }}
+          key={link.label}
+        >
+          <UnstyledButton
+            className={classes.link}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 32,
+              height: 32,
+              borderRadius: "var(--mantine-radius-md)",
+            }}
+            onClick={() => {
+              setActive(link.label);
+              navigate.push(link.href);
+            }}
+            data-active={link.label === active || undefined}
+          >
+            <link.icon size={22} stroke={1.5} />
+          </UnstyledButton>
+        </Tooltip>
+      )),
+    [active, mainLinksMockdata, navigate],
+  );
 
   return (
     <Box

@@ -80,9 +80,10 @@ export async function main() {
 
   await db.insert(userTable).values({
     userId,
-    name: "John Doe",
-    email: "john.doe@example.com",
-    passwordHash: "",
+    name: "Admin",
+    email: "admin@meside.com",
+    passwordHash:
+      "4053f524e9e06d5b8f553ab467797afd33601c95c83e90a1f577a9d7691a0e6c.1de7f38311a94d69b4670175565c0ea9",
   });
 
   await db.insert(threadTable).values({

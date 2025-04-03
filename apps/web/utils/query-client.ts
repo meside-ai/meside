@@ -1,7 +1,7 @@
 import { notifications } from "@mantine/notifications";
 import { QueryClient } from "@tanstack/react-query";
 
-export type QueryClientError = { error: string };
+export type QueryClientError = Error;
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -11,10 +11,6 @@ export const queryClient = new QueryClient({
 
         if (error instanceof Error) {
           message = error.message;
-        }
-
-        if ("error" in error) {
-          message = (error as QueryClientError).error;
         }
 
         notifications.show({

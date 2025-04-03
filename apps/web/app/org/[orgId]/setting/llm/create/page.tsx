@@ -2,8 +2,8 @@
 
 import { Box } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
-import { getLlmCreate, getLlmList } from "../../../../queries/llm";
-import { queryClient } from "../../../../utils/query-client";
+import { getLlmCreate, getLlmList } from "../../../../../../queries/llm";
+import { queryClient } from "../../../../../../utils/query-client";
 import { Form } from "../form";
 
 export default function LlmSettingPage() {

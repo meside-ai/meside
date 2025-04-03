@@ -7,8 +7,8 @@ import {
   getLlmDetail,
   getLlmList,
   getLlmUpdate,
-} from "../../../../queries/llm";
-import { queryClient } from "../../../../utils/query-client";
+} from "../../../../../../queries/llm";
+import { queryClient } from "../../../../../../utils/query-client";
 import { Form } from "../form";
 
 export default function WarehouseSettingPage() {

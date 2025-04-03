@@ -1,9 +1,9 @@
 "use client";
 
-import { AppShellMain, Box, Button, NavLink } from "@mantine/core";
+import { Box, Button, NavLink } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { getLlmList } from "../../../queries/llm";
+import { getLlmList } from "../../../../../queries/llm";
 
 export default function LlmLayout({ children }: { children: React.ReactNode }) {
   const { data } = useQuery(getLlmList({}));
@@ -17,20 +17,20 @@ export default function LlmLayout({ children }: { children: React.ReactNode }) {
             <NavLink
               key={llm.llmId}
               component={Link}
-              href={`/setting/llm/${llm.llmId}`}
+              href={`${llm.llmId}`}
               label={llm.name}
               variant="filled"
             />
           ))}
         </Box>
         <Box>
-          <Button component={Link} href="/setting/llm/create">
+          <Button component={Link} href="llm/create">
             Add model
           </Button>
         </Box>
       </Box>
 
-      <AppShellMain>{children}</AppShellMain>
+      <Box>{children}</Box>
     </Box>
   );
 }

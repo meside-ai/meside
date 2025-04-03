@@ -124,6 +124,11 @@ export default function LoginPage() {
                 {error}
               </Text>
             )}
+            {loginMutation.error && (
+              <Text c="red" size="sm" ta="center">
+                {loginMutation.error.message}
+              </Text>
+            )}
 
             <TextInput
               required
