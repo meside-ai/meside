@@ -3,9 +3,9 @@
 import { Avatar, Box, Tooltip, UnstyledButton } from "@mantine/core";
 import { IconHome2, IconSettings } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { MyAvatar } from "../../../components/avatar/my-avatar";
 import { Logo } from "../../../components/brand/logo";
 import { getMe } from "../../../queries/auth";
@@ -17,10 +17,10 @@ interface OrgLayoutProps {
 
 export default function OrgLayout({ children }: OrgLayoutProps) {
   const navigate = useRouter();
-  const [active, setActive] = useState("Teams");
   const { orgId } = useParams();
+  const pathname = usePathname();
 
-  const mainLinksMockdata = useMemo(
+  const mainLinksData = useMemo(
     () => [
       { icon: IconHome2, label: "Teams", href: `/org/${orgId}/channel` },
       { icon: IconSettings, label: "Settings", href: `/org/${orgId}/setting` },
@@ -28,9 +28,11 @@ export default function OrgLayout({ children }: OrgLayoutProps) {
     [orgId],
   );
 
+  console.log("pathname", pathname, mainLinksData);
+
   const mainLinks = useMemo(
     () =>
-      mainLinksMockdata.map((link) => (
+      mainLinksData.map((link) => (
         <Tooltip
           label={link.label}
           position="right"
@@ -49,16 +51,15 @@ export default function OrgLayout({ children }: OrgLayoutProps) {
               borderRadius: "var(--mantine-radius-md)",
             }}
             onClick={() => {
-              setActive(link.label);
               navigate.push(link.href);
             }}
-            data-active={link.label === active || undefined}
+            data-active={pathname.startsWith(link.href)}
           >
             <link.icon size={22} stroke={1.5} />
           </UnstyledButton>
         </Tooltip>
       )),
-    [active, mainLinksMockdata, navigate],
+    [mainLinksData, navigate, pathname],
   );
 
   return (
@@ -90,7 +91,7 @@ export default function OrgLayout({ children }: OrgLayoutProps) {
             alignItems: "center",
           }}
         >
-          <Box>
+          <Box pb={6}>
             <UnstyledButton
               onClick={() => {
                 navigate.push("/");

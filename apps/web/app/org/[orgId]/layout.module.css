@@ -7,7 +7,7 @@
     color: light-dark(var(--mantine-color-dark), var(--mantine-color-light));
   }
 
-  &[data-active] {
+  &[data-active="true"] {
     &,
     &:hover {
       border-left-color: var(--mantine-color-brown-filled);

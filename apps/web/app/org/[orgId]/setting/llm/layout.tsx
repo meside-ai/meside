@@ -17,7 +17,7 @@ export default function LlmLayout({ children }: { children: React.ReactNode }) {
             <NavLink
               key={llm.llmId}
               component={Link}
-              href={`${llm.llmId}`}
+              href={`llm/${llm.llmId}`}
               label={llm.name}
               variant="filled"
             />

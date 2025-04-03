@@ -1,13 +1,14 @@
 "use client";
 
-import { Box, Group, UnstyledButton } from "@mantine/core";
+import { Box } from "@mantine/core";
 import type { TeamDto } from "@meside/shared/api/team.schema";
 import { IconDatabase } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import type { ReactNode } from "react";
-import { Logo } from "../../../../components/brand/logo";
+import { AppShellWrapper } from "../../../../components/appshell/appshell-wrapper";
+import { SidebarBrand } from "../../../../components/appshell/sidebar-brand";
+import { SidebarMenuButton } from "../../../../components/appshell/sidebar-menu-button";
 import { getTeamList } from "../../../../queries/team";
 
 interface ChannelLayoutProps {
@@ -15,30 +16,6 @@ interface ChannelLayoutProps {
 }
 
 export default function ChannelLayout({ children }: ChannelLayoutProps) {
-  return (
-    <Box
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "row",
-        overflow: "hidden",
-      }}
-    >
-      <ChannelSidebar />
-      <Box
-        style={{
-          flex: 1,
-          overflow: "hidden",
-        }}
-      >
-        {children}
-      </Box>
-    </Box>
-  );
-}
-
-function ChannelSidebar() {
   const params = useParams();
   const orgId = params.orgId as string;
   const channelId = params.channelId as string;
@@ -46,44 +23,30 @@ function ChannelSidebar() {
   const { data } = useQuery(getTeamList({}));
   const teams = data?.teams || [];
 
+  const sidebarItems = teams.map((team: TeamDto) => ({
+    href: `/org/${orgId}/channel/${team.teamId}`,
+    title: team.name,
+    icon: IconDatabase,
+  }));
+
   return (
-    <Box
-      style={{
-        width: 250,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: 10,
-        borderRight: "1px solid #e0e0e0",
-      }}
+    <AppShellWrapper
+      sidebar={
+        <Box>
+          <SidebarBrand />
+          {sidebarItems.map((item) => (
+            <SidebarMenuButton
+              key={item.href}
+              href={item.href}
+              active={item.href === `/org/${orgId}/channel/${channelId}`}
+              title={item.title}
+              icon={<item.icon size={16} />}
+            />
+          ))}
+        </Box>
+      }
     >
-      <Box px="md">
-        <Logo />
-      </Box>
-      {teams.map((team: TeamDto) => (
-        <UnstyledButton
-          key={team.teamId}
-          component={Link}
-          href={`/org/${orgId}/channel/${team.teamId}`}
-          px="md"
-          py="xs"
-          style={{
-            backgroundColor:
-              team.teamId === channelId
-                ? "var(--mantine-color-brown-2)"
-                : "transparent",
-            color:
-              team.teamId === channelId
-                ? "var(--mantine-color-brown-9)"
-                : "gray",
-          }}
-        >
-          <Group>
-            <IconDatabase size={14} />
-            {team.name}
-          </Group>
-        </UnstyledButton>
-      ))}
-    </Box>
+      {children}
+    </AppShellWrapper>
   );
 }

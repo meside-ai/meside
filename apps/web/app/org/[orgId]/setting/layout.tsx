@@ -1,11 +1,12 @@
 "use client";
 
-import { Box, NavLink } from "@mantine/core";
-import { IconSettings } from "@tabler/icons-react";
-import Link from "next/link";
+import { Box } from "@mantine/core";
+import { IconDatabase, IconRobot, IconSitemap } from "@tabler/icons-react";
 import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
-import AuthGuard from "../../../component/auth-guard";
+import { AppShellWrapper } from "../../../../components/appshell/appshell-wrapper";
+import { SidebarBrand } from "../../../../components/appshell/sidebar-brand";
+import { SidebarMenuButton } from "../../../../components/appshell/sidebar-menu-button";
 
 export default function SettingLayout({
   children,
@@ -18,43 +19,42 @@ export default function SettingLayout({
   const sidebarItems = useMemo(
     () => [
       {
-        title: "Profile",
+        title: "Organization",
         href: `/org/${orgId}/setting`,
-        icon: IconSettings,
+        icon: IconSitemap,
       },
       {
         title: "AI Providers",
         href: `/org/${orgId}/setting/llm`,
-        icon: IconSettings,
+        icon: IconRobot,
       },
       {
         title: "Warehouses",
         href: `/org/${orgId}/setting/warehouse`,
-        icon: IconSettings,
+        icon: IconDatabase,
       },
     ],
     [orgId],
   );
 
   return (
-    <AuthGuard>
-      <Box>
-        {sidebarItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            style={{ textDecoration: "none" }}
-          >
-            <NavLink
-              label={item.title}
-              leftSection={<item.icon size="1.2rem" stroke={1.5} />}
+    <AppShellWrapper
+      sidebar={
+        <Box>
+          <SidebarBrand />
+          {sidebarItems.map((item) => (
+            <SidebarMenuButton
+              key={item.href}
+              href={item.href}
               active={pathname === item.href}
-              variant="filled"
+              title={item.title}
+              icon={<item.icon size={16} />}
             />
-          </Link>
-        ))}
-      </Box>
-      <Box>{children}</Box>
-    </AuthGuard>
+          ))}
+        </Box>
+      }
+    >
+      {children}
+    </AppShellWrapper>
   );
 }
