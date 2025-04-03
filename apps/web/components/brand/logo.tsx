@@ -14,7 +14,6 @@ export const Logo = ({
         fontStyle: "normal",
         color: "#000",
         letterSpacing: "0px",
-        textAlign: "center",
         fontSize: fontSize,
         padding: 0,
         margin: 0,
