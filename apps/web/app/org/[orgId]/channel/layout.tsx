@@ -26,7 +26,14 @@ export default function ChannelLayout({ children }: ChannelLayoutProps) {
       }}
     >
       <ChannelSidebar />
-      {children}
+      <Box
+        style={{
+          flex: 1,
+          overflow: "hidden",
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 }
