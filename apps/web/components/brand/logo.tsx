@@ -1,6 +1,9 @@
 import { Title } from "@mantine/core";
 
-export const Logo = () => {
+export const Logo = ({
+  fontSize = 24,
+  icon = false,
+}: { fontSize?: number; icon?: boolean }) => {
   return (
     <Title
       order={1}
@@ -13,9 +16,12 @@ export const Logo = () => {
         color: "#000",
         letterSpacing: "0px",
         textAlign: "center",
+        fontSize: fontSize,
+        padding: 0,
+        margin: 0,
       }}
     >
-      meside
+      {icon ? "m" : "meside"}
     </Title>
   );
 };

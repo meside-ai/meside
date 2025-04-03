@@ -78,13 +78,13 @@ export const getRefreshToken = (): UseMutationOptions<
   },
 });
 
-export const getMe = ({ token }: MeRequest): UseQueryOptions<MeResponse> => ({
-  enabled: !!token,
-  queryKey: [getMe.name, token],
+// biome-ignore lint/correctness/noEmptyPattern: <explanation>
+export const getMe = ({}: MeRequest): UseQueryOptions<MeResponse> => ({
+  queryKey: [getMe.name],
   queryFn: async () => {
     const json = await createPost<MeRequest, MeResponse>(
       `/meside/server/auth${meRoute.path}`,
-    )({ token });
+    )({});
     return json;
   },
 });

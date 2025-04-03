@@ -1,11 +1,16 @@
+---
+description: 
+globs: apps/web/**/*.*
+alwaysApply: false
+---
 # Web Application Rules
 
 ## Overview
 This is a Next.js web application that uses:
 - React 19
 - Next.js 15 with App Router
-- Mantine UI framework
-- TanStack React Query for data fetching
+- Mantine UI framework v7
+- TanStack React Query for data fetching v5
 - TypeScript
 
 ## Project Structure

@@ -150,9 +150,7 @@ export const refreshTokenRoute = createRoute({
 });
 
 // Get Current User
-export const meRequestSchema = z.object({
-  token: z.string(),
-});
+export const meRequestSchema = z.object({});
 
 export const meResponseSchema = z.object({
   user: userDtoSchema,
