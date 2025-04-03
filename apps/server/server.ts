@@ -7,8 +7,10 @@ import { llmApi } from "./api/llm";
 import { orgApi } from "./api/org";
 import { teamApi } from "./api/team";
 import { threadApi } from "./api/thread";
+import { toolApi } from "./api/tool";
 import { authMiddleware } from "./middleware/auth";
 import { createErrorHandler } from "./utils/error-handler";
+
 const app = new Hono();
 
 app.use("*", otel());
@@ -21,6 +23,7 @@ app.route("/meside/server/thread", threadApi);
 app.route("/meside/server/llm", llmApi);
 app.route("/meside/server/chat", chatApi);
 app.route("/meside/server/team", teamApi);
+app.route("/meside/server/tool", toolApi);
 
 export default {
   ...app,

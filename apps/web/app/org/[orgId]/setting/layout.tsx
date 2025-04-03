@@ -1,7 +1,12 @@
 "use client";
 
 import { Box } from "@mantine/core";
-import { IconDatabase, IconRobot, IconSitemap } from "@tabler/icons-react";
+import {
+  IconDatabase,
+  IconRobot,
+  IconSitemap,
+  IconTool,
+} from "@tabler/icons-react";
 import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { AppShellWrapper } from "../../../../components/appshell/appshell-wrapper";
@@ -27,6 +32,11 @@ export default function SettingLayout({
         title: "AI Providers",
         href: `/org/${orgId}/setting/llm`,
         icon: IconRobot,
+      },
+      {
+        title: "Tools",
+        href: `/org/${orgId}/setting/tool`,
+        icon: IconTool,
       },
       {
         title: "Warehouses",
