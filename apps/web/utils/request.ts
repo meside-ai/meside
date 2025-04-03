@@ -25,10 +25,11 @@ const refreshAuthToken = async (): Promise<string | null> => {
       setAuthTokens(data.token, data.refreshToken);
       return data.token;
     }
-    return null;
+    throw new Error("Failed to refresh token");
   } catch (error) {
     console.error("Failed to refresh token:", error);
-    return null;
+    window.location.href = "/login";
+    throw error;
   }
 };
 
