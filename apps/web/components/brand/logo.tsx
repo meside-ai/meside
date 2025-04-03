@@ -7,9 +7,8 @@ export const Logo = ({
   return (
     <Title
       order={1}
-      mb="md"
       style={{
-        fontFamily: "Assistant",
+        fontFamily: "var(--font-assistant)",
         fontOpticalSizing: "auto",
         fontWeight: 600,
         fontStyle: "normal",
@@ -21,7 +20,7 @@ export const Logo = ({
         margin: 0,
       }}
     >
-      {icon ? "m" : "meside"}
+      {icon ? "M" : "meside"}
     </Title>
   );
 };

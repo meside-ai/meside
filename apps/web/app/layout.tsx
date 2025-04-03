@@ -10,13 +10,9 @@ import {
 import { Notification } from "./component/notification";
 import QueryProvider from "./component/query-provider";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
+const assistantFont = localFont({
+  src: "./fonts/Assistant-VariableFont_wght.ttf",
+  variable: "--font-assistant",
 });
 
 export const metadata: Metadata = {
@@ -34,7 +30,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${assistantFont.variable}`}>
         <QueryProvider>
           <MantineProvider theme={getTheme()}>
             <Notification />
