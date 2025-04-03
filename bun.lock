@@ -45,7 +45,11 @@
         "@opentelemetry/sdk-node": "^0.200.0",
         "@opentelemetry/sdk-trace-node": "^2.0.0",
         "ai": "^4.2.0",
+        "date-fns": "^4.1.0",
+        "google-auth-library": "^9.6.3",
         "hono": "^4.7.5",
+        "jose": "^6.0.10",
+        "zod": "^3.24.2",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -1227,6 +1231,8 @@
     "isbinaryfile": ["isbinaryfile@4.0.10", "", {}, "sha512-iHrqe5shvBUcFbmZq9zOQHBoeOhZJu6RQGrDpBgenUm/Am+F3JM2MgQj+rK3Z601fzrL5gLZWtAPH2OBaSVcyw=="],
 
     "isexe": ["isexe@3.1.1", "", {}, "sha512-LpB/54B+/2J5hqQ7imZHfdU31OlgQqx7ZicVlkm9kzg9/w8GKLEcFfJl/t7DCEDueOyBAD6zCCwTO6Fzs0NoEQ=="],
+
+    "jose": ["jose@6.0.10", "", {}, "sha512-skIAxZqcMkOrSwjJvplIPYrlXGpxTPnro2/QWTDCxAdWQrSTV5/KqspMWmi5WAx5+ULswASJiZ0a+1B/Lxt9cw=="],
 
     "joycon": ["joycon@3.1.1", "", {}, "sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw=="],
 

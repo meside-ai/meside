@@ -1,0 +1,18 @@
+.link {
+  &:hover {
+    background-color: light-dark(
+      var(--mantine-color-gray-1),
+      var(--mantine-color-dark-5)
+    );
+    color: light-dark(var(--mantine-color-dark), var(--mantine-color-light));
+  }
+
+  &[data-active="true"] {
+    &,
+    &:hover {
+      border-left-color: var(--mantine-color-brown-filled);
+      background-color: var(--mantine-color-brown-filled);
+      color: var(--mantine-color-white);
+    }
+  }
+}

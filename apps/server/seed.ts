@@ -71,6 +71,7 @@ export async function main() {
   const userId = "io56027z7qwd25mzq6upq947";
   const threadId = "cwh5pv4nxuh3xlhnlouz95q7";
   const llmId = "edbp71ci4hwucgons4wvqpam";
+  const teamId = "cwh5pv4nxuh3xlhnlouz95q8";
 
   await db.insert(orgTable).values({
     orgId,
@@ -79,13 +80,15 @@ export async function main() {
 
   await db.insert(userTable).values({
     userId,
-    name: "John Doe",
-    email: "john.doe@example.com",
-    password: "password",
+    name: "Admin",
+    email: "admin@meside.com",
+    passwordHash:
+      "4053f524e9e06d5b8f553ab467797afd33601c95c83e90a1f577a9d7691a0e6c.1de7f38311a94d69b4670175565c0ea9",
   });
 
   await db.insert(threadTable).values({
     threadId,
+    teamId,
     versionId: threadId,
     ownerId: userId,
     orgId,
@@ -100,6 +103,7 @@ export async function main() {
 
   await db.insert(threadTable).values({
     threadId: cuid(),
+    teamId,
     versionId: threadId,
     activeVersion: true,
     ownerId: userId,
@@ -115,6 +119,7 @@ export async function main() {
 
   await db.insert(threadTable).values({
     threadId: cuid(),
+    teamId,
     versionId: threadId,
     ownerId: userId,
     orgId,
@@ -141,6 +146,7 @@ export async function main() {
     orgId,
     toolUrl,
     llmId,
+    teamId,
   });
 }
 

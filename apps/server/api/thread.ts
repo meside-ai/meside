@@ -18,6 +18,7 @@ import { z } from "zod";
 import { getDrizzle } from "../db/db";
 import { type ThreadEntity, threadTable } from "../db/schema/thread";
 import { getThreadDtos } from "../mappers/thread";
+import { authGuardMiddleware, orgGuardMiddleware } from "../middleware/guard";
 import { getLlmModel } from "../service/ai";
 import { getActiveLlm } from "../service/llm";
 import { appendThreadMessages } from "../service/thread";
@@ -28,7 +29,10 @@ import {
   firstOrNotFound,
   firstOrNull,
 } from "../utils/toolkit";
+
 export const threadApi = new OpenAPIHono();
+
+threadApi.use("*", authGuardMiddleware).use("*", orgGuardMiddleware);
 
 threadApi.openapi(threadListRoute, async (c) => {
   const body = c.req.valid("json");
@@ -42,6 +46,10 @@ threadApi.openapi(threadListRoute, async (c) => {
     filter.push(eq(threadTable.parentThreadId, body.parentThreadId));
   } else if (body.parentThreadId === null) {
     filter.push(isNull(threadTable.parentThreadId));
+  }
+
+  if (body.teamId) {
+    filter.push(eq(threadTable.teamId, body.teamId));
   }
 
   const threads = await getDrizzle()
@@ -129,6 +137,7 @@ threadApi.openapi(threadCreateRoute, async (c) => {
         .insert(threadTable)
         .values({
           threadId,
+          teamId: body.teamId,
           versionId: body.versionId ?? threadId,
           activeVersion: true,
           shortName: body.shortName ?? undefined,

@@ -4,12 +4,14 @@ import { useMounted } from "@mantine/hooks";
 import { IconArrowUp } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { nanoid } from "nanoid";
+import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   getThreadAppendMessage,
   getThreadList,
   getThreadName,
 } from "../../queries/thread";
+import { getAuthToken } from "../../utils/auth-storage";
 import { ThreadRender } from "./thread-render";
 
 export const NewThreadMessage = ({
@@ -19,6 +21,8 @@ export const NewThreadMessage = ({
   threadId: string;
   threadMessages: Message[];
 }) => {
+  const params = useParams();
+  const orgId = params.orgId as string;
   const queryClient = useQueryClient();
   const [error, setError] = useState<Error | null>(null);
 
@@ -36,6 +40,18 @@ export const NewThreadMessage = ({
     },
   });
 
+  const headers = useMemo<Record<string, string>>(() => {
+    const defaultHeaders: Record<string, string> = {};
+    const token = getAuthToken();
+    if (token) {
+      defaultHeaders.Authorization = `Bearer ${token}`;
+    }
+    if (orgId) {
+      defaultHeaders["X-Org-Id"] = orgId;
+    }
+    return defaultHeaders;
+  }, [orgId]);
+
   const {
     messages,
     setMessages,
@@ -47,6 +63,7 @@ export const NewThreadMessage = ({
     reload,
   } = useChat({
     api,
+    headers,
     body: {
       threadId,
     },
@@ -134,7 +151,7 @@ export const NewThreadMessage = ({
             <Textarea
               variant="unstyled"
               value={input}
-              placeholder={"Let AI agents help you."}
+              placeholder="Talking with AI teams"
               onChange={handleInputChange}
             />
             <Group justify="flex-end" gap="xs">

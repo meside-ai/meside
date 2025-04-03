@@ -5,6 +5,7 @@ export const getUserDtos = async (users: UserEntity[]): Promise<UserDto[]> => {
   return users.map((user) => ({
     userId: user.userId,
     name: user.name,
+    email: user.email,
     avatar: user.avatar,
   }));
 };

@@ -1,7 +1,6 @@
 import type { ToolInvocationUIPart, UIMessage } from "@ai-sdk/ui-utils";
 import {
   ActionIcon,
-  Avatar,
   Box,
   Button,
   Group,
@@ -21,6 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 import { getThreadDetail } from "../../queries/thread";
+import { MyAvatar } from "../avatar/my-avatar";
 import { useThreadContext } from "../chat/context";
 import { AssistantHeader } from "./assistant-header";
 import { EditThreadInput } from "./edit-thread-input";
@@ -79,7 +79,7 @@ const UserMessageRender = ({ message }: { message: UIMessage }) => {
       {!isEditing && (
         <Box display="flex" style={{ justifyContent: "flex-end" }}>
           <Box style={{ order: 2 }} ml="lg">
-            <Avatar>CW</Avatar>
+            <MyAvatar />
           </Box>
           <Box
             style={{

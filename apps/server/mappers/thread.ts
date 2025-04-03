@@ -48,6 +48,7 @@ export const getThreadDtos = async (
 
     return {
       threadId: thread.threadId,
+      teamId: thread.teamId,
       versionId: thread.versionId,
       activeVersion: thread.activeVersion,
       ownerId: thread.ownerId,

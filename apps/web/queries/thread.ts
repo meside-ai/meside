@@ -18,22 +18,23 @@ import {
   threadNameRoute,
   threadUpdateRoute,
 } from "@meside/shared/api/thread.schema";
-import { createPost } from "@meside/shared/request/index";
 import type {
   UseMutationOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
 import type { QueryClientError } from "../utils/query-client";
+import { createPost } from "../utils/request";
 
 export const getThreadList = ({
   parentThreadId,
+  teamId,
 }: ThreadListRequest): UseQueryOptions<ThreadListResponse> => ({
   enabled: true,
   queryKey: [getThreadList.name, parentThreadId],
   queryFn: async () => {
     const json = await createPost<ThreadListRequest, ThreadListResponse>(
       `/meside/server/thread${threadListRoute.path}`,
-    )({ parentThreadId });
+    )({ parentThreadId, teamId });
     return json;
   },
 });

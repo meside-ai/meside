@@ -1,0 +1,55 @@
+---
+description: 
+globs: apps/web/**/*.*
+alwaysApply: false
+---
+# Web Application Rules
+
+## Overview
+This is a Next.js web application that uses:
+- React 19
+- Next.js 15 with App Router
+- Mantine UI framework v7
+- TanStack React Query for data fetching v5
+- TypeScript
+
+## Project Structure
+- `/app`: Next.js App Router structure
+  - `/layout.tsx`: Root layout with Mantine provider and font setup
+  - `/page.tsx`: Root page that redirects to /chat
+  - `/chat`: Main chat functionality
+  - `/component`: App-level shared components
+- `/components`: Reusable React components
+  - `/thread`: Thread-related components
+  - `/chat`: Chat-related components 
+  - `/message-input`: Input components for messages
+  - `/preview`: Preview-related components
+- `/queries`: API query functions using TanStack Query
+- `/utils`: Utility functions
+- `/public`: Static assets
+
+## Coding Guidelines
+1. Use "use client" directive at the top of any client components
+2. Use TypeScript for all files with proper type definitions
+3. Follow Mantine component patterns for UI elements
+4. Use React Query hooks for data fetching
+5. Keep components focused on specific functionality
+6. Use the shared API schemas from @meside/shared for type consistency
+7. Use kebab-case for folders and files, dont use PascalCase for folders and files
+
+## State Management
+- Use React Query for server state
+- Use React Context for shared state within feature areas
+- Use local component state for UI-specific state
+
+## Styling
+- Use Mantine's styling system for consistent UI
+
+## API Communication
+- API endpoints are defined in @meside/shared/api/ schemas
+- Use the utility functions in the queries directory for API calls
+- Follow the pattern of separating query definition and usage
+
+## Route Structure
+- Main application entry: /chat
+- Thread-specific views: /chat/[thread_id] 

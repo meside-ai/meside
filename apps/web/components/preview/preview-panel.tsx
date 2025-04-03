@@ -1,4 +1,4 @@
-import { Box, Text } from "@mantine/core";
+import { Box } from "@mantine/core";
 import { usePreviewContext } from "./preview-context";
 import { PreviewIframe } from "./preview-iframe";
 
@@ -16,11 +16,6 @@ export const PreviewPanel = () => {
       py="sm"
     >
       {preview?.type === "preview" && <PreviewIframe url={preview.value} />}
-      {!preview && (
-        <Box>
-          <Text>No preview</Text>
-        </Box>
-      )}
     </Box>
   );
 };

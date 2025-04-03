@@ -11,11 +11,15 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
 import { getLlmDtos } from "../mappers/llm";
+import { authGuardMiddleware } from "../middleware/guard";
+import { orgGuardMiddleware } from "../middleware/guard";
 import { getAuthOrUnauthorized } from "../utils/auth";
 import { cuid } from "../utils/cuid";
 import { firstOrNotCreated, firstOrNull } from "../utils/toolkit";
 
 export const llmApi = new OpenAPIHono();
+
+llmApi.use("*", authGuardMiddleware).use("*", orgGuardMiddleware);
 
 llmApi.openapi(llmListRoute, async (c) => {
   const llms = await getDrizzle()

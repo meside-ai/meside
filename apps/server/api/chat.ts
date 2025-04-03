@@ -13,6 +13,8 @@ import { Hono } from "hono";
 import { stream } from "hono/streaming";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
+import { authGuardMiddleware } from "../middleware/guard";
+import { orgGuardMiddleware } from "../middleware/guard";
 import { getAgentDetailByName, getAgentList } from "../service/agent";
 import { getLlmModel } from "../service/ai";
 import { getActiveLlm } from "../service/llm";
@@ -23,6 +25,8 @@ import { firstOrNotFound } from "../utils/toolkit";
 const logger = getLogger("chat");
 
 export const chatApi = new Hono();
+
+chatApi.use("*", authGuardMiddleware).use("*", orgGuardMiddleware);
 
 chatApi.post("/stream", async (c) => {
   // TODO: use hono validate

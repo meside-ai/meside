@@ -6,7 +6,8 @@ import { primaryKeyCuid, useTimestamp } from "../utils";
 export const userTable = pgTable("user", {
   userId: primaryKeyCuid("user_id"),
   name: text("name").notNull(),
-  password: text("password"),
+  passwordHash: text("password_hash"),
+  googleId: text("google_id").unique(),
   email: text("email"),
   avatar: text("avatar"),
   ...useTimestamp(),
