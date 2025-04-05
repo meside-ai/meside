@@ -1,13 +1,13 @@
 import { addDays } from "date-fns";
 import { eq } from "drizzle-orm";
 import { OAuth2Client } from "google-auth-library";
+import { SignJWT, jwtVerify } from "jose";
 import { environment } from "../configs/environment";
 import { getDrizzle } from "../db/db";
 import { sessionTable } from "../db/schema/session";
 import { type UserEntity, userTable } from "../db/schema/user";
 import { cuid } from "../utils/cuid";
 import { firstOrNotCreated, firstOrNotFound } from "../utils/toolkit";
-
 const JWT_SECRET = new TextEncoder().encode(environment.JWT_SECRET);
 const GOOGLE_CLIENT_ID = environment.GOOGLE_CLIENT_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -196,8 +196,7 @@ async function generateTokens(user: { userId: string }): Promise<{
   token: string;
   refreshToken: string;
 }> {
-  const jose = await import("jose");
-  const jwt = await new jose.SignJWT({ userId: user.userId })
+  const jwt = await new SignJWT({ userId: user.userId })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("1h")
@@ -230,7 +229,6 @@ export const getUserById = async (userId: string): Promise<UserEntity> => {
 export const verifyToken = async (
   token: string,
 ): Promise<{ userId: string }> => {
-  const jose = await import("jose");
-  const { payload } = await jose.jwtVerify(token, JWT_SECRET);
+  const { payload } = await jwtVerify(token, JWT_SECRET);
   return payload as { userId: string };
 };
