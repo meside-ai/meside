@@ -9,10 +9,10 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useThreadContext } from "../../../../components/chat/context";
-import { ThreadProvider } from "../../../../components/chat/provider";
 import { PreviewPanel } from "../../../../components/preview/preview-panel";
 import { PreviewProvider } from "../../../../components/preview/preview-provider";
+import { useThreadContext } from "../../../../components/thread-context/context";
+import { ThreadProvider } from "../../../../components/thread-context/provider";
 import { getTeamDetail } from "../../../../queries/team";
 import { getThreadDetail, getThreadList } from "../../../../queries/thread";
 

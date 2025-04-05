@@ -21,7 +21,7 @@ import { useMemo, useState } from "react";
 import { z } from "zod";
 import { getThreadDetail } from "../../queries/thread";
 import { MyAvatar } from "../avatar/my-avatar";
-import { useThreadContext } from "../chat/context";
+import { useThreadContext } from "../thread-context/context";
 import { AssistantHeader } from "./assistant-header";
 import { EditThreadInput } from "./edit-thread-input";
 import { MarkdownPart } from "./markdown-part";
