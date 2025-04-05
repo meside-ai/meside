@@ -1,0 +1,52 @@
+import { ActionIcon, Loader } from "@mantine/core";
+
+import { Group } from "@mantine/core";
+
+import { Textarea } from "@mantine/core";
+
+import { Paper } from "@mantine/core";
+import { IconArrowUp } from "@tabler/icons-react";
+import { nanoid } from "nanoid";
+import { useChatContext } from "../chat-context/context";
+
+export const MessageInput = () => {
+  const { chat, isLoading, error, setError, appendThreadMessage, threadId } =
+    useChatContext();
+  const { messages, addToolResult, handleSubmit, input, handleInputChange } =
+    chat;
+
+  return (
+    <Paper withBorder p="md" radius="lg">
+      <form
+        onSubmit={async (event) => {
+          event.preventDefault();
+          setError(null);
+          await appendThreadMessage({
+            threadId,
+            messages: [
+              {
+                id: `msg-${nanoid()}`,
+                content: input,
+                role: "user",
+                parts: [{ type: "text", text: input }],
+              },
+            ],
+          });
+          handleSubmit(event);
+        }}
+      >
+        <Textarea
+          variant="unstyled"
+          value={input}
+          placeholder="Talking with AI teams"
+          onChange={handleInputChange}
+        />
+        <Group justify="flex-end" gap="xs">
+          <ActionIcon type="submit" size="xs">
+            {isLoading ? <Loader type="dots" /> : <IconArrowUp />}
+          </ActionIcon>
+        </Group>
+      </form>
+    </Paper>
+  );
+};

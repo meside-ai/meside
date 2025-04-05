@@ -5,7 +5,6 @@ import {
   Button,
   Group,
   Loader,
-  ScrollArea,
   Text,
   Textarea,
 } from "@mantine/core";
@@ -39,31 +38,27 @@ export const ThreadRender = ({
   error?: Error;
 }) => {
   return (
-    <Box style={{ height: "100%", overflow: "auto" }}>
-      <ScrollArea scrollbars="y">
-        <Box p="md">
-          {messages.map((message) => (
-            <Box key={message.id}>
-              {message.role === "user" ? (
-                <UserMessageRender key={message.id} message={message} />
-              ) : (
-                <AssistantMessageRender
-                  key={message.id}
-                  message={message}
-                  addToolResult={addToolResult}
-                />
-              )}
-            </Box>
-          ))}
-          {error && <Text>{error?.message ?? "unknown error"}</Text>}
-          {loading && (
-            <Box>
-              <Loader type="dots" />
-            </Box>
+    <>
+      {messages.map((message) => (
+        <Box key={message.id}>
+          {message.role === "user" ? (
+            <UserMessageRender key={message.id} message={message} />
+          ) : (
+            <AssistantMessageRender
+              key={message.id}
+              message={message}
+              addToolResult={addToolResult}
+            />
           )}
         </Box>
-      </ScrollArea>
-    </Box>
+      ))}
+      {error && <Text>{error?.message ?? "unknown error"}</Text>}
+      {loading && (
+        <Box>
+          <Loader type="dots" />
+        </Box>
+      )}
+    </>
   );
 };
 
