@@ -121,8 +121,9 @@ export const MessageInput = ({
             }
             messageInputSubmitEvent.dispatch();
           }}
+          disabled={loading}
         >
-          {loading ? <Loader type="dots" /> : <IconArrowUp />}
+          {loading ? <Loader type="dots" size="xs" /> : <IconArrowUp />}
         </Button>
       </Group>
     </Box>
