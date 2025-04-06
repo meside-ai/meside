@@ -18,7 +18,7 @@ const { data, error } = environmentSchema.safeParse(process.env);
 
 if (error) {
   console.error("Invalid environment:", error);
-  process.exit(1);
+  throw new Error("Invalid environment configuration");
 }
 
 export const environment = data;
