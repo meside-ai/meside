@@ -18,7 +18,6 @@ import {
 } from "@tiptap/react";
 import "./message-input.css";
 import { ActionIcon, Box } from "@mantine/core";
-import type { EditorJSONContent } from "@meside/shared/editor/editor-json-to-markdown";
 import {
   IconArrowUp,
   IconColumnInsertLeft,
@@ -33,21 +32,22 @@ import {
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useRef } from "react";
 import { messageInputSubmitEvent } from "./message-input-submit-event";
+import { jsonToMarkdown } from "./message-markdown";
 import { createMentionSuggestionOptions } from "./message-suggestion-options";
 
 export type MessageInputProps = {
   state?: {
     warehouseId?: string;
   };
-  initialJSONContent?: EditorJSONContent;
-  submit: (jsonContent: EditorJSONContent) => void;
+  initialValue?: string;
+  submit: (text: string) => void;
   loading?: boolean;
   placeholder?: string;
 };
 
 export const MessageInput = ({
   state,
-  initialJSONContent,
+  initialValue,
   submit,
   loading,
 }: MessageInputProps) => {
@@ -101,7 +101,7 @@ export const MessageInput = ({
       TableCell,
       EnterSubmit,
     ],
-    content: initialJSONContent,
+    content: convertTextToEditorContent(initialValue ?? ""),
   });
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export const MessageInput = ({
         return;
       }
       editor?.commands.clearContent(true);
-      submit(json);
+      submit(jsonToMarkdown(json));
     });
 
     return () => {
@@ -229,3 +229,10 @@ const EnterSubmit = Extension.create({
     };
   },
 });
+
+const convertTextToEditorContent = (text: string) => {
+  return {
+    type: "doc",
+    content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+  };
+};

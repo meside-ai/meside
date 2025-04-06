@@ -10,6 +10,9 @@ export type EditThreadInputProps = {
   setIsEditing: (isEditing: boolean) => void;
 };
 
+/**
+ * @deprecated
+ */
 export const EditThreadInput = ({ setIsEditing }: EditThreadInputProps) => {
   const { threadId, setThreadId } = useThreadContext();
   const { mutateAsync: createNewThread } = useMutation(getThreadCreate());

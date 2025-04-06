@@ -16,8 +16,8 @@ import { IconChevronRight } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { NewThreadInput } from "../../../../../components/thread/new-thread-input";
 import { getThreadList } from "../../../../../queries/thread";
+import { MessageInput } from "./message-input";
 
 export default function ChannelPage() {
   return <ChannelContent />;
@@ -80,7 +80,7 @@ function ChannelContent() {
       </Box>
       <Box>
         <Container size="sm">
-          <NewThreadInput
+          <MessageInput
             teamId={teamId}
             onSubmit={(threadId) => {
               router.push(`/org/${orgId}/thread/${threadId}`);
