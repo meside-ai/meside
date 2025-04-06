@@ -6,6 +6,7 @@ import {
   Container,
   Group,
   Paper,
+  ScrollArea,
   Skeleton,
   Stack,
   Text,
@@ -42,42 +43,51 @@ function ChannelContent() {
   }
 
   return (
-    <Box flex={1} h="100%" style={{ overflow: "auto" }}>
-      <Container py="xs">
-        <Stack gap="xs">
-          {threads.map((thread) => (
-            <Paper key={thread.threadId} p="md" radius="md" withBorder>
-              <Stack gap="md">
-                <Group justify="space-between">
-                  <Title order={6}>{thread.shortName}</Title>
-                  <Button
-                    component={Link}
-                    href={`/org/${thread.orgId}/thread/${thread.threadId}`}
-                    variant="subtle"
-                    rightSection={<IconChevronRight size={16} />}
-                  >
-                    Review details
-                  </Button>
-                </Group>
-              </Stack>
-            </Paper>
-          ))}
-          {threads.length === 0 && (
-            <Text ta="center" fs="italic" c="dimmed">
-              No threads available
-            </Text>
-          )}
-        </Stack>
-
-        <Box p="md">
+    <Box
+      flex={1}
+      h="100%"
+      style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}
+    >
+      <Box flex={1} style={{ overflow: "hidden" }}>
+        <ScrollArea h="100%">
+          <Container size="sm">
+            <Stack gap="xs">
+              {threads.map((thread) => (
+                <Paper key={thread.threadId} p="md" radius="md" withBorder>
+                  <Stack gap="md">
+                    <Group justify="space-between">
+                      <Title order={6}>{thread.shortName}</Title>
+                      <Button
+                        component={Link}
+                        href={`/org/${thread.orgId}/thread/${thread.threadId}`}
+                        variant="subtle"
+                        rightSection={<IconChevronRight size={16} />}
+                      >
+                        Review details
+                      </Button>
+                    </Group>
+                  </Stack>
+                </Paper>
+              ))}
+              {threads.length === 0 && (
+                <Text ta="center" fs="italic" c="dimmed">
+                  No threads available
+                </Text>
+              )}
+            </Stack>
+          </Container>
+        </ScrollArea>
+      </Box>
+      <Box>
+        <Container size="sm">
           <NewThreadInput
             teamId={teamId}
             onSubmit={(threadId) => {
               router.push(`/org/${orgId}/thread/${threadId}`);
             }}
           />
-        </Box>
-      </Container>
+        </Container>
+      </Box>
     </Box>
   );
 }
