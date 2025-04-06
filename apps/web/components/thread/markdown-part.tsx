@@ -25,8 +25,13 @@ export const MarkdownPart = ({ part }: { part: TextUIPart }) => {
                 onClick={() => {
                   setActivePreviewItem(composePreviewLink(href));
                 }}
+                style={{
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                }}
               >
-                Click to preview
+                {getClipText(href)}
               </Button>
             );
           }
@@ -84,4 +89,11 @@ export const MarkdownPart = ({ part }: { part: TextUIPart }) => {
 
 const urlTransform = (url: string): string | null | undefined => {
   return defaultUrlTransform(url);
+};
+
+const getClipText = (text: string) => {
+  // start with 10 chars, end with 10 chars, and show ... in the middle
+  const start = text.slice(0, 20);
+  const end = text.slice(-20);
+  return `${start}...${end}`;
 };

@@ -28,6 +28,7 @@ const MessageInputWithTiptap = () => {
 
   const onSubmit = async (input: string) => {
     setError(null);
+    setInput(input);
     await appendThreadMessage({
       threadId,
       messages: [
@@ -39,11 +40,8 @@ const MessageInputWithTiptap = () => {
         },
       ],
     });
-    setInput(input);
     handleSubmit({});
   };
-
-  console.log(input);
 
   return (
     <Paper withBorder p="md" radius="lg">
