@@ -5,10 +5,6 @@ import HardBreak from "@tiptap/extension-hard-break";
 import History from "@tiptap/extension-history";
 import Mention from "@tiptap/extension-mention";
 import Paragraph from "@tiptap/extension-paragraph";
-import Table from "@tiptap/extension-table";
-import TableCell from "@tiptap/extension-table-cell";
-import TableHeader from "@tiptap/extension-table-header";
-import TableRow from "@tiptap/extension-table-row";
 import Text from "@tiptap/extension-text";
 import {
   EditorContent,
@@ -17,18 +13,8 @@ import {
   useEditor,
 } from "@tiptap/react";
 import "./message-input.css";
-import { ActionIcon, Box } from "@mantine/core";
-import {
-  IconArrowUp,
-  IconColumnInsertLeft,
-  IconColumnInsertRight,
-  IconColumnRemove,
-  IconRowInsertBottom,
-  IconRowInsertTop,
-  IconRowRemove,
-  IconTableMinus,
-  IconTablePlus,
-} from "@tabler/icons-react";
+import { Box } from "@mantine/core";
+import { IconArrowUp } from "@tabler/icons-react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useRef } from "react";
 import { messageInputSubmitEvent } from "./message-input-submit-event";
@@ -93,12 +79,6 @@ export const MessageInput = ({
         suggestion: createMentionSuggestionOptions(stateRef),
       }),
       Gapcursor,
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
       EnterSubmit,
     ],
     content: convertTextToEditorContent(initialValue ?? ""),
@@ -128,68 +108,6 @@ export const MessageInput = ({
 
   return (
     <Box>
-      <Box mb="md">
-        <ActionIcon.Group>
-          <ActionIcon
-            variant="light"
-            size="xs"
-            onClick={() =>
-              editor.chain().focus().insertTable({ rows: 1, cols: 5 }).run()
-            }
-          >
-            <IconTablePlus />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            size="xs"
-            onClick={() => editor.chain().focus().addColumnBefore().run()}
-          >
-            <IconColumnInsertLeft />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            size="xs"
-            onClick={() => editor.chain().focus().addColumnAfter().run()}
-          >
-            <IconColumnInsertRight />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            size="xs"
-            onClick={() => editor.chain().focus().deleteColumn().run()}
-          >
-            <IconColumnRemove />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            size="xs"
-            onClick={() => editor.chain().focus().addRowBefore().run()}
-          >
-            <IconRowInsertTop />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            size="xs"
-            onClick={() => editor.chain().focus().addRowAfter().run()}
-          >
-            <IconRowInsertBottom />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            size="xs"
-            onClick={() => editor.chain().focus().deleteRow().run()}
-          >
-            <IconRowRemove />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            size="xs"
-            onClick={() => editor.chain().focus().deleteTable().run()}
-          >
-            <IconTableMinus />
-          </ActionIcon>
-        </ActionIcon.Group>
-      </Box>
       <EditorContent editor={editor} />
       <Group justify="space-between">
         <MantineText size="xs" c="dimmed">
@@ -218,14 +136,6 @@ const EnterSubmit = Extension.create({
         messageInputSubmitEvent.dispatch();
         return true;
       },
-      // "Mod-Enter": () => {
-      //   messageInputSubmitEvent.dispatch();
-      //   return true;
-      // },
-      // "Shift-Enter": () => {
-      //   messageInputSubmitEvent.dispatch();
-      //   return true;
-      // },
     };
   },
 });
