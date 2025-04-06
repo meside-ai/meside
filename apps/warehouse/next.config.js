@@ -23,6 +23,7 @@ const nextConfig = {
     return config;
   },
   serverExternalPackages: ["oracledb"],
+  output: "standalone",
 };
 
 export default nextConfig;

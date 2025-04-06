@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --watch server.ts",
-    "build": "echo 'Add build script here'",
+    "build": "bun build server.ts --outdir ./build --target bun",
     "test": "echo 'Add test script here'",
     "check-types": "tsc --noEmit",
     "generate": "drizzle-kit generate",

@@ -1,15 +1,14 @@
-import { warehouseService } from "../../../services/warehouse";
-import { TableVirtualView } from "./table-virtual-view";
-import "./page.module.css";
 import { Box } from "@mantine/core";
+import { warehouseService } from "../../../services/warehouse";
 import { SqlCodeBlock } from "./sql-code-block";
+import { TableVirtualView } from "./table-virtual-view";
 
-export default async function WarehouseQueryPage({
-  params,
-}: {
-  params: { query_id: string };
-}) {
-  const queryId = params.query_id;
+type PageProps = {
+  params: Promise<{ query_id: string }>;
+};
+
+export default async function WarehouseQueryPage({ params }: PageProps) {
+  const { query_id: queryId } = await params;
   const query = await warehouseService.getQuery(queryId);
   const result = await warehouseService.runQueryByWarehouseId(
     query.warehouseId,
@@ -22,7 +21,8 @@ export default async function WarehouseQueryPage({
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
-        height: "100%",
+        width: "100vw",
+        height: "100vh",
       }}
     >
       <Box>

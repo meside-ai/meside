@@ -1,25 +1,9 @@
-FROM oven/bun:1 AS base
-
+FROM oven/bun:1
 WORKDIR /app
 
-# Install dependencies
-COPY package.json ./
-RUN bun install
+COPY ./build .
 
-# Copy source code
-COPY . .
+ENV NODE_ENV=production
+EXPOSE 3000
 
-# Environment variables
-ENV NODE_ENV production
-
-# Build if needed
-RUN bun run build
-
-# Create a non-root user
-RUN addgroup --system --gid 1001 bunjs
-RUN adduser --system --uid 1001 bunapp
-USER bunapp
-
-EXPOSE 3001
-
-CMD ["bun", "start"] 
+CMD ["bun", "run", "server.js"]
