@@ -4,6 +4,7 @@ import { Group } from "@mantine/core";
 
 import { Textarea } from "@mantine/core";
 
+import type { Message } from "@ai-sdk/react";
 import { Paper } from "@mantine/core";
 import { IconArrowUp } from "@tabler/icons-react";
 import { nanoid } from "nanoid";
@@ -15,32 +16,24 @@ export const MessageInput = () => {
 };
 
 const MessageInputWithTiptap = () => {
-  const { chat, isLoading, error, setError, appendThreadMessage, threadId } =
+  const { chat, isLoading, setError, appendThreadMessage, threadId } =
     useChatContext();
-  const {
-    messages,
-    addToolResult,
-    handleSubmit,
-    input,
-    setInput,
-    handleInputChange,
-  } = chat;
+  const { input, reload, setMessages } = chat;
 
   const onSubmit = async (input: string) => {
     setError(null);
-    setInput(input);
+    const message: Message = {
+      id: `msg-${nanoid()}`,
+      content: input,
+      role: "user",
+      parts: [{ type: "text", text: input }],
+    };
     await appendThreadMessage({
       threadId,
-      messages: [
-        {
-          id: `msg-${nanoid()}`,
-          content: input,
-          role: "user",
-          parts: [{ type: "text", text: input }],
-        },
-      ],
+      messages: [message],
     });
-    handleSubmit({});
+    setMessages((prev) => [...prev, message]);
+    reload();
   };
 
   return (
