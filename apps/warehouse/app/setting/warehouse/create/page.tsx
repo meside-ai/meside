@@ -9,8 +9,6 @@ import {
 import { queryClient } from "../../../../utils/query-client";
 import { Form } from "../form";
 
-export const dynamic = "force-static";
-
 export default function WarehouseSettingPage() {
   const { mutateAsync: createWarehouse } = useMutation({
     ...getWarehouseCreate(),
