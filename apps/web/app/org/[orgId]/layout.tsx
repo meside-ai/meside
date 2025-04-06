@@ -28,8 +28,6 @@ export default function OrgLayout({ children }: OrgLayoutProps) {
     [orgId],
   );
 
-  console.log("pathname", pathname, mainLinksData);
-
   const mainLinks = useMemo(
     () =>
       mainLinksData.map((link) => (
