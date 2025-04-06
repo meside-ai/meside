@@ -4,10 +4,10 @@ import { PREVIEW_URL_PREFIX } from "@meside/shared/constant/index";
 import BaseMarkdown, { defaultUrlTransform } from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import remarkGfm from "remark-gfm";
-import { usePreviewContext } from "../preview/preview-context";
+import { composePreviewLink, useChatContext } from "../chat-context/context";
 
 export const MarkdownPart = ({ part }: { part: TextUIPart }) => {
-  const { openPreview } = usePreviewContext();
+  const { setActivePreviewItem } = useChatContext();
 
   return (
     <BaseMarkdown
@@ -23,11 +23,7 @@ export const MarkdownPart = ({ part }: { part: TextUIPart }) => {
                 size="xs"
                 radius="lg"
                 onClick={() => {
-                  openPreview({
-                    name: "Preview",
-                    type: "preview",
-                    value: href,
-                  });
+                  setActivePreviewItem(composePreviewLink(href));
                 }}
               >
                 Click to preview

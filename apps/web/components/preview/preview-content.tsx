@@ -1,5 +1,5 @@
+import type { PreviewItem } from "../chat-context/context";
 import { PreviewIframe } from "./preview-iframe";
-import type { PreviewItem } from "./preview-type";
 
 export const PreviewContent = ({ item }: { item: PreviewItem }) => {
   switch (item.type) {

@@ -10,7 +10,7 @@ import { getThreadName } from "../../queries/thread";
 import { getThreadAppendMessage } from "../../queries/thread";
 import { getThreadList } from "../../queries/thread";
 import { getAuthToken } from "../../utils/auth-storage";
-import { ChatContext } from "./context";
+import { ChatContext, type PreviewItem } from "./context";
 
 export const ChatProvider = ({
   threadId,
@@ -104,6 +104,9 @@ export const ChatProvider = ({
     }
   }, [messages, reload]);
 
+  const [activePreviewItem, setActivePreviewItem] =
+    useState<PreviewItem | null>(null);
+
   return (
     <ChatContext.Provider
       value={{
@@ -113,6 +116,8 @@ export const ChatProvider = ({
         threadId,
         appendThreadMessage,
         setError,
+        activePreviewItem,
+        setActivePreviewItem,
       }}
     >
       {children}

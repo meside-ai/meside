@@ -1,13 +1,13 @@
 import { Box } from "@mantine/core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { extractMarkdownLinks } from "../../utils/markdown";
-import { useChatContext } from "../chat-context/context";
+import { composePreviewLink, useChatContext } from "../chat-context/context";
+import type { PreviewItem } from "../chat-context/context";
 import { PreviewContent } from "./preview-content";
 import { PreviewSlider } from "./preview-slider";
-import type { PreviewItem } from "./preview-type";
 
 export const PreviewPanel = () => {
-  const { chat } = useChatContext();
+  const { chat, activePreviewItem, setActivePreviewItem } = useChatContext();
   const { messages } = chat;
 
   const previewItems = useMemo<PreviewItem[]>(() => {
@@ -17,12 +17,9 @@ export const PreviewPanel = () => {
         if (part.type === "text") {
           const links = extractMarkdownLinks(part.text);
           for (const link of links) {
-            if (!previews.some((p) => p.text === link)) {
-              previews.push({
-                type: "link",
-                text: link,
-                id: `${message.id}-${link}`,
-              });
+            const previewItem = composePreviewLink(link);
+            if (!previews.some((p) => p.id === previewItem.id)) {
+              previews.push(previewItem);
             }
           }
         }
@@ -31,9 +28,7 @@ export const PreviewPanel = () => {
     return previews;
   }, [messages]);
 
-  const [activePreviewItem, setActivePreviewItem] =
-    useState<PreviewItem | null>(null);
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (activePreviewItem === null) {
       const lastPreviewItem = previewItems[previewItems.length - 1];

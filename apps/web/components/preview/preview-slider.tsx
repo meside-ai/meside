@@ -1,7 +1,7 @@
 import { ActionIcon, Box, Slider } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useCallback, useMemo } from "react";
-import type { PreviewItem } from "./preview-type";
+import type { PreviewItem } from "../chat-context/context";
 
 export const PreviewSlider = ({
   value,
