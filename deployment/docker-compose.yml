@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3"
 name: meside-prod
 
 services:
@@ -27,7 +27,7 @@ services:
 
   jaeger:
     image: jaegertracing/jaeger:latest
-    container_name: jaeger
+    container_name: meside-jaeger-prod
     environment:
       - LOG_LEVEL=debug
     networks:
@@ -70,23 +70,10 @@ services:
       - warehouse
     networks:
       - meside-network
+    environment:
+      - SERVER_DOMAIN=http://server:3000/
     ports:
       - "${WEB_PORT:-3000}:3000"
-
-  nginx:
-    image: nginx:alpine
-    container_name: meside-nginx-prod
-    restart: always
-    depends_on:
-      - web
-      - server
-      - warehouse
-    ports:
-      - "${WEB_PORT:-80}:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    networks:
-      - meside-network
 
 networks:
   meside-network:
