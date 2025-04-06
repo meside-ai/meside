@@ -16,7 +16,7 @@ import {
   IconSettingsSpark,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { z } from "zod";
 import { getThreadDetail } from "../../queries/thread";
 import { MyAvatar } from "../avatar/my-avatar";
@@ -85,10 +85,15 @@ const UserMessageRender = ({ message }: { message: UIMessage }) => {
           >
             {message.parts.map((part, i) => {
               switch (part.type) {
-                case "text":
-                  return (
-                    <MarkdownPart key={`${message.id}-${i}`} part={part} />
-                  );
+                case "text": {
+                  const p: ReactNode[] = [];
+                  for (const line of part.text.split("\n")) {
+                    p.push(
+                      <Text key={`${message.id}-${i}-${line}`}>{line}</Text>,
+                    );
+                  }
+                  return p;
+                }
               }
             })}
           </Box>

@@ -50,7 +50,7 @@ function ChannelContent() {
     >
       <Box flex={1} style={{ overflow: "hidden" }}>
         <ScrollArea h="100%">
-          <Container size="sm">
+          <Container size="sm" py="md">
             <Stack gap="xs">
               {threads.map((thread) => (
                 <Paper key={thread.threadId} p="md" radius="md" withBorder>
@@ -79,7 +79,7 @@ function ChannelContent() {
         </ScrollArea>
       </Box>
       <Box>
-        <Container size="sm">
+        <Container size="sm" pb="sm">
           <MessageInput
             teamId={teamId}
             onSubmit={(threadId) => {
