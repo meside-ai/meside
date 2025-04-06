@@ -1,3 +1,5 @@
+import { PreviewPanel } from "../preview/preview-panel";
+
 import { ThreadHeader } from "./thread-header";
 
 import { Box, ScrollArea } from "@mantine/core";
@@ -48,7 +50,7 @@ export const ThreadLayout = ({ thread }: { thread: ThreadDto }) => {
             overflow: "hidden",
           }}
         >
-          previews
+          <PreviewPanel />
         </Box>
       </Box>
     </ChatProvider>
