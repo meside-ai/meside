@@ -2,6 +2,9 @@ import { Box, Button, Group, Loader, Textarea } from "@mantine/core";
 import { IconArrowUp } from "@tabler/icons-react";
 import { type ReactNode, useCallback, useState } from "react";
 
+/**
+ * @deprecated
+ */
 export const ThreadInput = ({
   handleSubmit,
   defaultValue = "",

@@ -1,7 +1,12 @@
 "use client";
 
-import { Thread } from "../../../../../components/thread";
+import { ThreadProvider } from "../../../../../components/thread-context/provider";
+import { ThreadLoad } from "../../../../../components/thread/thread-load";
 
 export default function ChatPage({ params }: { params: { threadId: string } }) {
-  return <Thread />;
+  return (
+    <ThreadProvider>
+      <ThreadLoad />
+    </ThreadProvider>
+  );
 }

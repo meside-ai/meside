@@ -66,5 +66,5 @@ export function setupErrorHandlers() {
     event.preventDefault();
   });
 
-  console.log("Global error handlers set up");
+  console.error("Global error handlers set up");
 }

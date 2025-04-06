@@ -1,10 +1,10 @@
 import { Box, Skeleton } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { getThreadDetail } from "../../queries/thread";
-import { useThreadContext } from "../chat/context";
-import { NewThreadMessage } from "./new-thread-message";
+import { useThreadContext } from "../thread-context/context";
+import { ThreadLayout } from "./thread-layout";
 
-export const Thread = () => {
+export const ThreadLoad = () => {
   const { threadId } = useThreadContext();
 
   const { data, isLoading } = useQuery(
@@ -25,10 +25,5 @@ export const Thread = () => {
     return <Box>No thread data</Box>;
   }
 
-  return (
-    <NewThreadMessage
-      threadId={data?.thread.threadId}
-      threadMessages={data?.thread.messages ?? []}
-    />
-  );
+  return <ThreadLayout thread={data.thread} />;
 };

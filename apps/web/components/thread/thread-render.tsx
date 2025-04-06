@@ -5,7 +5,6 @@ import {
   Button,
   Group,
   Loader,
-  ScrollArea,
   Text,
   Textarea,
 } from "@mantine/core";
@@ -17,11 +16,11 @@ import {
   IconSettingsSpark,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { z } from "zod";
 import { getThreadDetail } from "../../queries/thread";
 import { MyAvatar } from "../avatar/my-avatar";
-import { useThreadContext } from "../chat/context";
+import { useThreadContext } from "../thread-context/context";
 import { AssistantHeader } from "./assistant-header";
 import { EditThreadInput } from "./edit-thread-input";
 import { MarkdownPart } from "./markdown-part";
@@ -39,31 +38,27 @@ export const ThreadRender = ({
   error?: Error;
 }) => {
   return (
-    <Box style={{ height: "100%", overflow: "auto" }}>
-      <ScrollArea scrollbars="y">
-        <Box p="md">
-          {messages.map((message) => (
-            <Box key={message.id}>
-              {message.role === "user" ? (
-                <UserMessageRender key={message.id} message={message} />
-              ) : (
-                <AssistantMessageRender
-                  key={message.id}
-                  message={message}
-                  addToolResult={addToolResult}
-                />
-              )}
-            </Box>
-          ))}
-          {error && <Text>{error?.message ?? "unknown error"}</Text>}
-          {loading && (
-            <Box>
-              <Loader type="dots" />
-            </Box>
+    <>
+      {messages.map((message) => (
+        <Box key={message.id}>
+          {message.role === "user" ? (
+            <UserMessageRender key={message.id} message={message} />
+          ) : (
+            <AssistantMessageRender
+              key={message.id}
+              message={message}
+              addToolResult={addToolResult}
+            />
           )}
         </Box>
-      </ScrollArea>
-    </Box>
+      ))}
+      {error && <Text>{error?.message ?? "unknown error"}</Text>}
+      {loading && (
+        <Box>
+          <Loader type="dots" />
+        </Box>
+      )}
+    </>
   );
 };
 
@@ -90,10 +85,15 @@ const UserMessageRender = ({ message }: { message: UIMessage }) => {
           >
             {message.parts.map((part, i) => {
               switch (part.type) {
-                case "text":
-                  return (
-                    <MarkdownPart key={`${message.id}-${i}`} part={part} />
-                  );
+                case "text": {
+                  const p: ReactNode[] = [];
+                  for (const line of part.text.split("\n")) {
+                    p.push(
+                      <Text key={`${message.id}-${i}-${line}`}>{line}</Text>,
+                    );
+                  }
+                  return p;
+                }
               }
             })}
           </Box>

@@ -2,7 +2,7 @@ import { Button, Loader, Paper } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getThreadCreate, getThreadDetail } from "../../queries/thread";
-import { useThreadContext } from "../chat/context";
+import { useThreadContext } from "../thread-context/context";
 import { ThreadInput } from "./thread-input";
 
 export type EditThreadInputProps = {
@@ -10,6 +10,9 @@ export type EditThreadInputProps = {
   setIsEditing: (isEditing: boolean) => void;
 };
 
+/**
+ * @deprecated
+ */
 export const EditThreadInput = ({ setIsEditing }: EditThreadInputProps) => {
   const { threadId, setThreadId } = useThreadContext();
   const { mutateAsync: createNewThread } = useMutation(getThreadCreate());
