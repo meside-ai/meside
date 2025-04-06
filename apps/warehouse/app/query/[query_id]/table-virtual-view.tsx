@@ -60,6 +60,7 @@ export const TableVirtualView = ({ rows, columns }: TableVirtualViewProps) => {
       suppressHeaderMenuButton: true,
       suppressHeaderContextMenu: true,
       resizable: true,
+      copyable: true,
     };
   }, []);
 
@@ -75,6 +76,9 @@ export const TableVirtualView = ({ rows, columns }: TableVirtualViewProps) => {
         enableCellSpan={true}
         onGridReady={onGridReady}
         theme={agGridDarkTheme}
+        cellSelection={true}
+        enableCellTextSelection={true}
+        clipboardDelimiter="\t"
       />
     </div>
   );
