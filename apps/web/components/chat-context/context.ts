@@ -24,6 +24,7 @@ export type ChatContextType = {
   setError: (error: Error | null) => void;
   activePreviewItem: PreviewItem | null;
   setActivePreviewItem: (item: PreviewItem | null) => void;
+  scrollToBottom: () => void;
 };
 
 export const ChatContext = createContext<ChatContextType | null>(null);

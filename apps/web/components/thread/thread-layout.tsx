@@ -4,13 +4,28 @@ import { ThreadHeader } from "./thread-header";
 
 import { Box, ScrollArea } from "@mantine/core";
 import type { ThreadDto } from "@meside/shared/api/thread.schema";
+import { useCallback, useRef } from "react";
 import { ChatProvider } from "../chat-context/provider";
 import { MessageInput } from "./message-input";
 import { ThreadMessage } from "./thread-message";
 
 export const ThreadLayout = ({ thread }: { thread: ThreadDto }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
   return (
-    <ChatProvider threadId={thread.threadId} threadMessages={thread.messages}>
+    <ChatProvider
+      threadId={thread.threadId}
+      threadMessages={thread.messages}
+      scrollToBottom={scrollToBottom}
+    >
       <Box
         display="flex"
         style={{
@@ -33,7 +48,7 @@ export const ThreadLayout = ({ thread }: { thread: ThreadDto }) => {
             <ThreadHeader />
           </Box>
           <Box style={{ flex: 1, flexShrink: 1, overflow: "hidden" }}>
-            <ScrollArea h="100%" scrollbars="y">
+            <ScrollArea h="100%" scrollbars="y" ref={scrollRef}>
               <Box p="md">
                 <ThreadMessage />
               </Box>

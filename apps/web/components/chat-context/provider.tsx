@@ -16,10 +16,12 @@ export const ChatProvider = ({
   threadId,
   threadMessages,
   children,
+  scrollToBottom,
 }: {
   threadId: string;
   threadMessages: Message[];
   children: React.ReactNode;
+  scrollToBottom: () => void;
 }) => {
   const params = useParams();
   const orgId = params.orgId as string;
@@ -118,6 +120,7 @@ export const ChatProvider = ({
         setError,
         activePreviewItem,
         setActivePreviewItem,
+        scrollToBottom,
       }}
     >
       {children}

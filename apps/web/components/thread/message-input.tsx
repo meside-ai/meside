@@ -16,8 +16,14 @@ export const MessageInput = () => {
 };
 
 const MessageInputWithTiptap = () => {
-  const { chat, isLoading, setError, appendThreadMessage, threadId } =
-    useChatContext();
+  const {
+    chat,
+    isLoading,
+    setError,
+    appendThreadMessage,
+    threadId,
+    scrollToBottom,
+  } = useChatContext();
   const { input, reload, setMessages } = chat;
 
   const onSubmit = async (input: string) => {
@@ -32,6 +38,9 @@ const MessageInputWithTiptap = () => {
       threadId,
       messages: [message],
     });
+    setTimeout(() => {
+      scrollToBottom();
+    }, 1000);
     setMessages((prev) => [...prev, message]);
     reload();
   };
