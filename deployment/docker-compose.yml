@@ -58,6 +58,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://meside:meside@db:5432/meside
       - REDIS_URL=redis://redis:6379
+      - SERVER_DOMAIN=http://server:3000/
+      - ASSET_PREFIX=http://warehouse:3000/
     networks:
       - meside-network
 
@@ -72,8 +74,9 @@ services:
       - meside-network
     environment:
       - SERVER_DOMAIN=http://server:3000/
+      - ASSET_PREFIX=http://127.0.0.1:3000/
     ports:
-      - "${WEB_PORT:-3000}:3000"
+      - "80:3000"
 
 networks:
   meside-network:

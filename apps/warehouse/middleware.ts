@@ -12,18 +12,6 @@ export function middleware(req: NextRequest) {
   }
 
   if (req.nextUrl.pathname.startsWith("/_next/static/")) {
-    const destination = new URL(environment.ASSET_PREFIX ?? req.url);
-    const url = req.nextUrl.clone();
-    url.host = destination.host;
-    url.port = destination.port;
-    url.protocol = destination.protocol;
-    console.log(
-      "rewrite",
-      req.nextUrl.pathname,
-      req.url,
-      environment.ASSET_PREFIX,
-      url.toString(),
-    );
-    return NextResponse.rewrite(url);
+    return NextResponse.rewrite(new URL(environment.ASSET_PREFIX ?? req.url));
   }
 }

@@ -8,6 +8,7 @@ import { orgApi } from "./api/org";
 import { teamApi } from "./api/team";
 import { threadApi } from "./api/thread";
 import { toolApi } from "./api/tool";
+import { environment } from "./configs/environment";
 import { authMiddleware } from "./middleware/auth";
 import { createErrorHandler } from "./utils/error-handler";
 
@@ -27,6 +28,6 @@ app.route("/meside/server/tool", toolApi);
 
 export default {
   ...app,
-  port: 3003,
-  idleTimeout: 30,
+  port: environment.PORT,
+  idleTimeout: environment.IDLE_TIMEOUT,
 };
