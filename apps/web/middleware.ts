@@ -17,13 +17,6 @@ export function middleware(req: NextRequest) {
     url.host = destination.host;
     url.port = destination.port;
     url.protocol = destination.protocol;
-    console.log(
-      "rewrite",
-      req.nextUrl.pathname,
-      req.url,
-      environment.ASSET_PREFIX,
-      url.toString(),
-    );
     return NextResponse.rewrite(url);
   }
 }

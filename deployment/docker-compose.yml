@@ -74,7 +74,6 @@ services:
       - meside-network
     environment:
       - SERVER_DOMAIN=http://server:3000/
-      - ASSET_PREFIX=http://127.0.0.1:3000/
     ports:
       - "80:3000"
 
