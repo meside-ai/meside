@@ -10,13 +10,4 @@ export function middleware(req: NextRequest) {
     url.protocol = destination.protocol;
     return NextResponse.rewrite(url);
   }
-
-  if (req.nextUrl.pathname.startsWith("/_next/static/")) {
-    const destination = new URL(environment.ASSET_PREFIX ?? req.url);
-    const url = req.nextUrl.clone();
-    url.host = destination.host;
-    url.port = destination.port;
-    url.protocol = destination.protocol;
-    return NextResponse.rewrite(url);
-  }
 }

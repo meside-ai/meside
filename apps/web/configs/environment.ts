@@ -6,12 +6,6 @@ export const environmentSchema = z.object({
     .optional()
     .default("development"),
   SERVER_DOMAIN: z.string().describe("The domain of the server API"),
-  ASSET_PREFIX: z
-    .string()
-    .optional()
-    .describe(
-      "The prefix for the assets, due to CDN usage, @see https://nextjs.org/docs/pages/api-reference/config/next-config-js/assetPrefix",
-    ),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);
