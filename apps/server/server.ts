@@ -10,11 +10,13 @@ import { threadApi } from "./api/thread";
 import { toolApi } from "./api/tool";
 import { environment } from "./configs/environment";
 import { authMiddleware } from "./middleware/auth";
+import { createDbMiddleware } from "./middleware/db";
 import { createErrorHandler } from "./utils/error-handler";
 
 const app = new Hono();
 
 app.use("*", otel());
+app.use("*", createDbMiddleware());
 app.use("*", authMiddleware);
 app.onError(createErrorHandler());
 

@@ -20,6 +20,12 @@ export const environmentSchema = z.object({
     .string()
     .default("http://localhost:4318/v1/traces"),
   OTLP_SERVICE_NAME: z.string().default("meside-server"),
+  AUTO_MIGRATE_DATABASE: z
+    .string()
+    .optional()
+    .default("false")
+    .transform((val) => val === "true")
+    .describe("Whether to migrate the database automatically"),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);
