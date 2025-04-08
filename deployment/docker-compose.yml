@@ -1,10 +1,10 @@
 version: "3"
-name: meside-prod
+name: meside
 
 services:
   db:
     image: postgres:15
-    container_name: meside-db-prod
+    container_name: meside-db
     command: '-c full_page_writes=off -c fsync=off -c synchronous_commit=off'
     restart: always
     environment:
@@ -18,7 +18,7 @@ services:
 
   redis:
     image: redis:latest
-    container_name: meside-redis-prod
+    container_name: meside-redis
     restart: always
     volumes:
       - ./prod/volumes/redis/data:/data
@@ -27,7 +27,7 @@ services:
 
   jaeger:
     image: jaegertracing/jaeger:latest
-    container_name: meside-jaeger-prod
+    container_name: meside-jaeger
     environment:
       - LOG_LEVEL=debug
     networks:
@@ -35,7 +35,7 @@ services:
 
   server:
     image: meside/server:latest
-    container_name: meside-server-prod
+    container_name: meside-server
     restart: always
     depends_on:
       - db
@@ -47,10 +47,21 @@ services:
       - OTLP_TRACE_EXPORTER_URL=http://jaeger:4318/v1/traces
     networks:
       - meside-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.middlewares.server_cors.headers.customResponseHeaders.Access-Control-Allow-Headers=Origin,X-Requested-With,Content-Type,Accept,sessionid,Authorization"
+      - "traefik.http.middlewares.server_cors.headers.customResponseHeaders.Access-Control-Allow-Methods=*"
+      - "traefik.http.middlewares.server_cors.headers.customResponseHeaders.Access-Control-Allow-Origin=*"
+      - "traefik.http.middlewares.server_cors.headers.customresponseheaders.Server=Meside.com"
+      - "traefik.http.middlewares.server_cors.headers.customresponseheaders.X-Powered-By=Meside.com"
+      - "traefik.http.routers.server.middlewares=server_cors"
+      - "traefik.http.routers.server.rule=PathPrefix(`/meside/server`)"
+      - "traefik.http.routers.server.entrypoints=web_internal"
 
   warehouse:
     image: meside/warehouse:latest
-    container_name: meside-warehouse-prod
+    container_name: meside-warehouse
     restart: always
     depends_on:
       - db
@@ -58,24 +69,54 @@ services:
     environment:
       - DATABASE_URL=postgresql://meside:meside@db:5432/meside
       - REDIS_URL=redis://redis:6379
-      - SERVER_DOMAIN=http://server:3000/
-      - ASSET_PREFIX=http://warehouse:3000/
     networks:
       - meside-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.middlewares.warehouse_cors.headers.customResponseHeaders.Access-Control-Allow-Headers=Origin,X-Requested-With,Content-Type,Accept,sessionid,Authorization"
+      - "traefik.http.middlewares.warehouse_cors.headers.customResponseHeaders.Access-Control-Allow-Methods=*"
+      - "traefik.http.middlewares.warehouse_cors.headers.customResponseHeaders.Access-Control-Allow-Origin=*"
+      - "traefik.http.middlewares.warehouse_cors.headers.customresponseheaders.Server=Meside.com"
+      - "traefik.http.middlewares.warehouse_cors.headers.customresponseheaders.X-Powered-By=Meside.com"
+      - "traefik.http.routers.warehouse.middlewares=warehouse_cors"
+      - "traefik.http.routers.warehouse.rule=PathPrefix(`/meside/warehouse`)"
+      - "traefik.http.routers.warehouse.entrypoints=web_internal"
 
   web:
     image: meside/web:latest
-    container_name: meside-web-prod
+    container_name: meside-web
     restart: always
     depends_on:
       - server
       - warehouse
     networks:
       - meside-network
-    environment:
-      - SERVER_DOMAIN=http://server:3000/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.middlewares.web_cors.headers.customresponseheaders.Server=Meside.com"
+      - "traefik.http.middlewares.web_cors.headers.customresponseheaders.X-Powered-By=Meside.com"
+      - "traefik.http.routers.web.middlewares=web_cors"
+      - "traefik.http.routers.web.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.web.entrypoints=web_internal"
+  
+  traefik:
+    image: traefik:v3
+    container_name: meside-traefik
+    restart: always
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web_internal.address=:9000"
     ports:
-      - "80:3000"
+      - "9000:9000"
+      - "8080:8080" # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - meside-network
 
 networks:
   meside-network:
