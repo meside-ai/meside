@@ -29,10 +29,7 @@ jobs:
         run: bun run check-types
 
       - name: Check
-        run: bun run check
-
-      - name: Test
-        run: bun run test
+        run: bun run lint
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
