@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: Docker Build
 
 on:
   push:
@@ -10,64 +10,81 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        app: [web, docs, server, warehouse]
-        include:
-          - app: web
-            context: ./apps/web
-            dockerfile: ./apps/web/Dockerfile
-          - app: docs
-            context: ./apps/docs
-            dockerfile: ./apps/docs/Dockerfile
-          - app: server
-            context: ./apps/server
-            dockerfile: ./apps/server/Dockerfile
-          - app: warehouse
-            context: ./apps/warehouse
-            dockerfile: ./apps/warehouse/Dockerfile
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: Run bun install with lockfile-only
-        working-directory: ${{ matrix.context }}
+      - name: Install dependencies
         run: bun install --lockfile-only
 
+      - name: Build
+        run: bun run build
+
+      - name: Check Types
+        run: bun run check-types
+
+      - name: Check
+        run: bun run check
+
+      - name: Test
+        run: bun run test
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for Docker
-        id: meta
+      - name: Extract metadata for warehouse Docker image
+        id: meta-warehouse
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/meside-${{ matrix.app }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=sha,format=short
+          images: ghcr.io/${{ github.repository }}/warehouse
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+      - name: Build warehouse Docker image
+        uses: docker/build-push-action@v4
         with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max 
+          context: ./apps/warehouse
+          file: ./apps/warehouse/Dockerfile
+          push: true
+          tags: ${{ steps.meta-warehouse.outputs.tags }}
+          labels: ${{ steps.meta-warehouse.outputs.labels }}
+
+      - name: Extract metadata for server Docker image
+        id: meta-server
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/server
+
+      - name: Build server Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./apps/server
+          file: ./apps/server/Dockerfile
+          push: true
+          tags: ${{ steps.meta-server.outputs.tags }}
+          labels: ${{ steps.meta-server.outputs.labels }}
+
+      - name: Extract metadata for web Docker image
+        id: meta-web
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/web
+
+      - name: Build web Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./apps/web
+          file: ./apps/web/Dockerfile
+          push: true
+          tags: ${{ steps.meta-web.outputs.tags }}
+          labels: ${{ steps.meta-web.outputs.labels }}
