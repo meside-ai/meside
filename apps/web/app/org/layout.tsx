@@ -1,6 +1,4 @@
 "use client";
-
-import { Container } from "@mantine/core";
 import type { ReactNode } from "react";
 import AuthGuard from "../component/auth-guard";
 
@@ -9,9 +7,5 @@ interface OrgLayoutProps {
 }
 
 export default function OrgLayout({ children }: OrgLayoutProps) {
-  return (
-    <AuthGuard>
-      <Container>{children}</Container>
-    </AuthGuard>
-  );
+  return <AuthGuard>{children}</AuthGuard>;
 }
