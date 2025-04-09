@@ -4,10 +4,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --port 3001",
-    "build": "next build",
-    "start": "next start",
-    "check-types": "tsc --noEmit"
+    "dev": "bunx next dev --turbopack --port 3001",
+    "build": "bunx next build",
+    "start": "bunx next start",
+    "check-types": "bunx tsc --noEmit"
   },
   "dependencies": {
     "@repo/ui": "*",

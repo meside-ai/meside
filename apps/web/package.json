@@ -4,10 +4,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --port 3000",
-    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
-    "start": "next start",
-    "check-types": "tsc --noEmit"
+    "dev": "bunx next dev --turbopack --port 3000",
+    "build": "NEXT_TELEMETRY_DISABLED=1 bunx next build",
+    "start": "bunx next start",
+    "check-types": "bunx tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/react": "^1.2.2",
