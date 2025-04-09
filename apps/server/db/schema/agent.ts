@@ -15,7 +15,7 @@ export const agentTable = pgTable(
     orgId: foreignCuid("org_id").notNull(),
     ...useTimestamp(),
   },
-  (table) => [uniqueIndex("name_org_unique").on(table.name, table.orgId)],
+  (table) => [uniqueIndex("agent_unique").on(table.name, table.orgId)],
 );
 
 export const agentEntitySchema = createSelectSchema(agentTable);
