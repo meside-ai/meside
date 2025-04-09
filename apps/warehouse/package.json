@@ -18,6 +18,7 @@
     "@google-cloud/bigquery": "^7.9.3",
     "@hono/zod-openapi": "^0.19.2",
     "@hono/zod-validator": "^0.4.3",
+    "@meside/shared": "*",
     "@modelcontextprotocol/sdk": "^1.7.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@repo/ui": "*",
@@ -29,14 +30,14 @@
     "drizzle-zod": "^0.7.0",
     "es-toolkit": "^1.33.0",
     "mysql2": "^3.14.0",
+    "next": "^15.2.5",
     "oracledb": "^6.8.0",
     "pg": "^8.14.1",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "postgres": "^3.4.5",
     "zod": "^3.24.2",
-    "zod-to-json-schema": "^3.24.4",
-    "@meside/shared": "*"
+    "zod-to-json-schema": "^3.24.4"
   },
   "devDependencies": {
     "@repo/typescript-config": "*",
