@@ -9,7 +9,7 @@ import {
   orgUpdateRequestSchema,
   orgUpdateRoute,
 } from "@meside/shared/api/org.schema";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, isNull } from "drizzle-orm";
 import { getDrizzle } from "../db/db";
 import { llmTable } from "../db/schema/llm";
 import { orgTable } from "../db/schema/org";
@@ -26,10 +26,19 @@ export const orgApi = new OpenAPIHono();
 orgApi.use("*", authGuardMiddleware);
 
 orgApi.openapi(orgListRoute, async (c) => {
+  const auth = c.get("auth");
+
+  if (!auth) {
+    throw new UnauthorizedError();
+  }
+
   const orgs = await getDrizzle()
-    .select()
+    .select(getTableColumns(orgTable))
     .from(orgTable)
-    .where(isNull(orgTable.deletedAt))
+    .leftJoin(orgUserTable, eq(orgTable.orgId, orgUserTable.orgId))
+    .where(
+      and(isNull(orgTable.deletedAt), eq(orgUserTable.userId, auth.userId)),
+    )
     .orderBy(desc(orgTable.createdAt));
 
   const orgDtos = await getOrgDtos(orgs);
@@ -84,7 +93,7 @@ orgApi.openapi(orgCreateRoute, async (c) => {
 
     await tx.insert(llmTable).values({
       llmId,
-      name: body.defaultLLmProvider.model,
+      name: `${body.defaultLLmProvider.model}_${cuid()}`,
       provider: body.defaultLLmProvider,
       isDefault: true,
       ownerId: auth.userId,
@@ -114,6 +123,8 @@ orgApi.openapi(orgUpdateRoute, async (c) => {
   if (body.name) {
     updateValues.name = body.name;
   }
+
+  // TODO: check if user is owner of the organization
 
   await getDrizzle()
     .update(orgTable)
