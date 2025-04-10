@@ -137,7 +137,7 @@ export async function inputKey() {
 
   const apiKey = await question("Please enter your API key: ");
 
-  const defaultToolUrl = "http://localhost:3002/meside/warehouse/api/http";
+  const defaultToolUrl = "/meside/warehouse/internal";
   toolUrl = await question(
     `Please enter your tool url: (default: ${defaultToolUrl})`,
   );

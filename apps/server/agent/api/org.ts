@@ -108,7 +108,7 @@ orgApi.openapi(orgCreateRoute, async (c) => {
   await initApplicationData({
     ownerId: auth.userId,
     orgId,
-    toolUrl: "/meside/warehouse/api/http",
+    toolUrl: "/meside/warehouse/internal",
     llmId,
     teamId: cuid(),
   });

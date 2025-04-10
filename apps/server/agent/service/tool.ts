@@ -2,6 +2,7 @@ import { z } from "@hono/zod-openapi";
 import type { ToolDto } from "@meside/shared/api/tool.schema";
 import { type Tool, tool as aiTool, jsonSchema } from "ai";
 import { and, inArray, isNull } from "drizzle-orm";
+import { environment } from "../../configs/environment";
 import { getDrizzle } from "../../db/db";
 import { getToolDtos } from "../mapper/tool";
 import { toolTable } from "../table/tool";
@@ -66,7 +67,16 @@ export const loadHttpTools = async (
   }
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const makeFetch = async (action: string, payload: any) => {
-    const response = await fetch(tool.provider.configs.url, {
+    let url = tool.provider.configs.url;
+    try {
+      // Check if it's a valid absolute URL
+      new URL(url);
+    } catch (e) {
+      // If URL constructor throws, it's not a valid absolute URL
+      url = new URL(url, environment.SERVER_DOMAIN).toString();
+    }
+
+    const response = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
       },

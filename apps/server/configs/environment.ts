@@ -26,6 +26,7 @@ export const environmentSchema = z.object({
     .default("false")
     .transform((val) => val === "true")
     .describe("Whether to migrate the database automatically"),
+  SERVER_DOMAIN: z.string().optional().default("http://localhost:3003/"),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);
