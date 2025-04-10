@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --watch server.ts",
-    "build": "echo 'Add build script here'",
+    "build": "bun build server.ts --outdir ./build --target bun",
     "test": "echo 'Add test script here'",
-    "check-types": "tsc --noEmit",
+    "check-types": "bunx tsc --noEmit",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "seed": "bun run seed.ts",

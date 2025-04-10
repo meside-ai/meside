@@ -1,5 +1,6 @@
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
+import { llmProviderSchema } from "./llm.schema";
 
 // main
 export const orgDtoSchema = z.object({
@@ -85,6 +86,7 @@ export const orgDetailRoute = createRoute({
 // orgCreate
 export const orgCreateRequestSchema = z.object({
   name: z.string(),
+  defaultLLmProvider: llmProviderSchema,
 });
 
 export const orgCreateResponseSchema = z.object({

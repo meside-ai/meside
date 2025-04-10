@@ -9,12 +9,16 @@ import {
   orgUpdateRequestSchema,
   orgUpdateRoute,
 } from "@meside/shared/api/org.schema";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, isNull } from "drizzle-orm";
 import { getDrizzle } from "../db/db";
+import { llmTable } from "../db/schema/llm";
 import { orgTable } from "../db/schema/org";
+import { orgUserTable } from "../db/schema/org-user";
+import { initApplicationData } from "../initial/initial";
 import { getOrgDtos } from "../mappers/org";
 import { authGuardMiddleware } from "../middleware/guard";
 import { cuid } from "../utils/cuid";
+import { UnauthorizedError } from "../utils/error";
 import { firstOrNotCreated, firstOrNull } from "../utils/toolkit";
 
 export const orgApi = new OpenAPIHono();
@@ -22,10 +26,19 @@ export const orgApi = new OpenAPIHono();
 orgApi.use("*", authGuardMiddleware);
 
 orgApi.openapi(orgListRoute, async (c) => {
+  const auth = c.get("auth");
+
+  if (!auth) {
+    throw new UnauthorizedError();
+  }
+
   const orgs = await getDrizzle()
-    .select()
+    .select(getTableColumns(orgTable))
     .from(orgTable)
-    .where(isNull(orgTable.deletedAt))
+    .leftJoin(orgUserTable, eq(orgTable.orgId, orgUserTable.orgId))
+    .where(
+      and(isNull(orgTable.deletedAt), eq(orgUserTable.userId, auth.userId)),
+    )
     .orderBy(desc(orgTable.createdAt));
 
   const orgDtos = await getOrgDtos(orgs);
@@ -55,17 +68,50 @@ orgApi.openapi(orgDetailRoute, async (c) => {
 orgApi.openapi(orgCreateRoute, async (c) => {
   const body = orgCreateRequestSchema.parse(await c.req.json());
   const orgId = cuid();
+  const auth = c.get("auth");
 
-  const orgs = await getDrizzle()
-    .insert(orgTable)
-    .values({
+  if (!auth) {
+    throw new UnauthorizedError();
+  }
+
+  const llmId = cuid();
+
+  const orgs = await getDrizzle().transaction(async (tx) => {
+    const orgs = await tx
+      .insert(orgTable)
+      .values({
+        orgId,
+        name: body.name,
+      })
+      .returning();
+
+    await tx.insert(orgUserTable).values({
+      orgUserId: cuid(),
+      userId: auth.userId,
       orgId,
-      name: body.name,
-    })
-    .returning();
+    });
+
+    await tx.insert(llmTable).values({
+      llmId,
+      name: `${body.defaultLLmProvider.model}_${cuid()}`,
+      provider: body.defaultLLmProvider,
+      isDefault: true,
+      ownerId: auth.userId,
+      orgId,
+    });
+    return orgs;
+  });
 
   const org = firstOrNotCreated(orgs, "Failed to create organization");
   const orgDto = await getOrgDtos([org]);
+
+  await initApplicationData({
+    ownerId: auth.userId,
+    orgId,
+    toolUrl: "/meside/warehouse/api/http",
+    llmId,
+    teamId: cuid(),
+  });
 
   return c.json({ org: orgDto[0] } as OrgCreateResponse);
 });
@@ -77,6 +123,8 @@ orgApi.openapi(orgUpdateRoute, async (c) => {
   if (body.name) {
     updateValues.name = body.name;
   }
+
+  // TODO: check if user is owner of the organization
 
   await getDrizzle()
     .update(orgTable)

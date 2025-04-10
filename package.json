@@ -2,11 +2,11 @@
   "name": "meside",
   "license": "MIT",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "biome check .",
-    "lint:fix": "biome check . --write",
-    "check-types": "turbo run check-types",
+    "build": "bunx turbo run build",
+    "dev": "bunx turbo run dev",
+    "lint": "bunx biome check .",
+    "lint:fix": "bunx biome check . --write",
+    "check-types": "bunx turbo run check-types",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -18,7 +18,8 @@
     "@biomejs/biome": "1.9.4",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
-    "turbo": "^2.4.4",
+    "next": "^15.2.5",
+    "turbo": "^2.5.0",
     "typescript": "5.8.2"
   },
   "engines": {

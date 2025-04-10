@@ -10,7 +10,7 @@ export default function OrgIndexPage() {
 
   useEffect(() => {
     // Redirect to the channel directory
-    router.push(`/${orgId}/channel`);
+    router.push(`/org/${orgId}/channel`);
   }, [orgId, router]);
 
   return null;

@@ -34,7 +34,7 @@ export const authMiddleware = createMiddleware(
         const user = await getUserById(payload.userId);
         c.set("auth", {
           userId: user.userId,
-          name: user.name ?? "",
+          name: user.name,
         });
       } catch (error) {
         logger.error(error);

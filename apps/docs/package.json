@@ -4,14 +4,14 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --port 3001",
-    "build": "next build",
-    "start": "next start",
-    "check-types": "tsc --noEmit"
+    "dev": "bunx next dev --turbopack --port 3001",
+    "build": "bunx next build",
+    "start": "bunx next start",
+    "check-types": "bunx tsc --noEmit"
   },
   "dependencies": {
     "@repo/ui": "*",
-    "next": "^15.2.1",
+    "next": "^15.2.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

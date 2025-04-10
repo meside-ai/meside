@@ -1,6 +1,13 @@
 "use client";
 
-import { Alert, Box, LoadingOverlay } from "@mantine/core";
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  LoadingOverlay,
+  Stack,
+} from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -25,7 +32,16 @@ export default function Page() {
   const org = orgList[0];
 
   if (!org) {
-    return <Alert color="red">No org found</Alert>;
+    return (
+      <Container>
+        <Stack>
+          <Alert color="red">No org found</Alert>
+          <Button component={Link} href="/org/create">
+            Create your first organization
+          </Button>
+        </Stack>
+      </Container>
+    );
   }
 
   if (orgList.length === 1) {

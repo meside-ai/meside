@@ -8,6 +8,9 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { warehouseService } from "../../services/warehouse";
+
+export const dynamic = "force-dynamic";
+
 export default async function SettingLayout({
   children,
 }: {

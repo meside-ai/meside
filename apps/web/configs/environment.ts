@@ -5,15 +5,14 @@ export const environmentSchema = z.object({
     .enum(["production", "development", "test"])
     .optional()
     .default("development"),
-  SERVER_DOMAIN: z.string(),
-  WAREHOUSE_DOMAIN: z.string(),
+  SERVER_DOMAIN: z.string().describe("The domain of the server API"),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);
 
 if (error) {
   console.error("Invalid environment:", error);
-  process.exit(1);
+  throw new Error("Invalid environment configuration");
 }
 
 export const environment = data;
