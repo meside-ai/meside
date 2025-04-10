@@ -14,19 +14,6 @@ services:
       - "${MESIDE_DB_PORT:-25433}:5432"
     volumes:
       - ./dev/volumes/db/data:/var/lib/postgresql/data
-  warehouse:
-    image: postgres:15
-    container_name: warehouse
-    command: '-c full_page_writes=off -c fsync=off -c synchronous_commit=off'
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: chinook
-    ports:
-      - "${MESIDE_WAREHOUSE_PORT:-25435}:5432"
-    volumes:
-      - ./dev/Chinook_PostgreSql.sql:/docker-entrypoint-initdb.d/Chinook_PostgreSql.sql
-      - ./dev/volumes/warehouse/data:/var/lib/postgresql/data
   redis:
     image: redis:latest
     container_name: redis

@@ -1,1 +1,0 @@
-ALTER TABLE "query" ADD COLUMN "fields" jsonb NOT NULL;
