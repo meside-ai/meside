@@ -34,7 +34,7 @@ services:
       - meside-network
 
   server:
-    image: meside/server:latest
+    image: ghcr.io/meside-ai/meside/server:latest
     container_name: meside-server
     restart: always
     depends_on:
@@ -60,7 +60,7 @@ services:
       - "traefik.http.routers.server.entrypoints=web_internal"
 
   warehouse:
-    image: meside/warehouse:latest
+    image: ghcr.io/meside-ai/meside/warehouse:latest
     container_name: meside-warehouse
     restart: always
     depends_on:
@@ -84,7 +84,7 @@ services:
       - "traefik.http.routers.warehouse.entrypoints=web_internal"
 
   web:
-    image: meside/web:latest
+    image: ghcr.io/meside-ai/meside/web:latest
     container_name: meside-web
     restart: always
     depends_on:
