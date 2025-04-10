@@ -8,10 +8,6 @@
     "build": "NEXT_TELEMETRY_DISABLED=1 bunx next build",
     "start": "bunx next start",
     "check-types": "bunx tsc --noEmit",
-    "generate": "drizzle-kit generate",
-    "migrate": "drizzle-kit migrate",
-    "seed": "bun run seed.ts",
-    "reset": "bun run reset.ts",
     "studio": "drizzle-kit studio --port=5183"
   },
   "dependencies": {
