@@ -6,7 +6,11 @@ export const environmentSchema = z.object({
     .optional()
     .default("development"),
   DATABASE_URL: z.string(),
-  SERVER_DOMAIN: z.string().describe("The domain of the server API"),
+  SERVER_DOMAIN: z
+    .string()
+    .optional()
+    .default("http://localhost:3003/")
+    .describe("The domain of the server API"),
   // SEEDING
   SEED_WAREHOUSE_HOST: z.string().optional(),
   SEED_WAREHOUSE_PORT: z
