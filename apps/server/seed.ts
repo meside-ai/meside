@@ -1,11 +1,11 @@
 import { createInterface } from "node:readline";
 import type { LlmProvider } from "@meside/shared/api/llm.schema";
+import { initApplicationData } from "./agent/initial/initial";
+import { llmTable } from "./agent/table/llm";
+import { orgTable } from "./agent/table/org";
+import { threadTable } from "./agent/table/thread";
+import { userTable } from "./agent/table/user";
 import { getDrizzle } from "./db/db";
-import { llmTable } from "./db/schema/llm";
-import { orgTable } from "./db/schema/org";
-import { threadTable } from "./db/schema/thread";
-import { userTable } from "./db/schema/user";
-import { initApplicationData } from "./initial/initial";
 import { cuid } from "./utils/cuid";
 
 async function inputKey() {

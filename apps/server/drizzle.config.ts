@@ -3,7 +3,7 @@ import { environment } from "./configs/environment";
 
 export default defineConfig({
   dialect: "postgresql",
-  schema: "./db/schema",
+  schema: ["./agent/table", "./tools/warehouse/table"],
   out: "./db/migrations",
   dbCredentials: {
     url: environment.DATABASE_URL,

@@ -1,15 +1,15 @@
 import { reset } from "drizzle-seed";
+import { agentTable } from "./agent/table/agent";
+import { agentToolTable } from "./agent/table/agent-tool";
+import { llmTable } from "./agent/table/llm";
+import { orgTable } from "./agent/table/org";
+import { orgUserTable } from "./agent/table/org-user";
+import { teamTable } from "./agent/table/team";
+import { threadTable } from "./agent/table/thread";
+import { toolTable } from "./agent/table/tool";
+import { usageTable } from "./agent/table/usage";
+import { userTable } from "./agent/table/user";
 import { getDrizzle } from "./db/db";
-import { agentTable } from "./db/schema/agent";
-import { agentToolTable } from "./db/schema/agent-tool";
-import { llmTable } from "./db/schema/llm";
-import { orgTable } from "./db/schema/org";
-import { orgUserTable } from "./db/schema/org-user";
-import { teamTable } from "./db/schema/team";
-import { threadTable } from "./db/schema/thread";
-import { toolTable } from "./db/schema/tool";
-import { usageTable } from "./db/schema/usage";
-import { userTable } from "./db/schema/user";
 
 export async function resetDb() {
   const db = getDrizzle();
