@@ -1,5 +1,5 @@
+import type { WarehouseProvider } from "@meside/shared/api/warehouse.schema";
 import type { Warehouse } from "./warehouse.interface";
-import type { WarehouseProvider } from "./warehouse.type";
 import { BigqueryWarehouse } from "./warehouse/bigquery";
 import { MysqlWarehouse } from "./warehouse/mysql";
 import { OracleWarehouse } from "./warehouse/oracle";

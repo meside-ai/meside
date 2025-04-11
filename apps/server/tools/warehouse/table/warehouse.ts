@@ -1,11 +1,11 @@
+import {
+  type WarehouseProvider,
+  warehouseProviderSchema,
+} from "@meside/shared/api/warehouse.schema";
 import { jsonb, pgTable, text, unique } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../../../db/utils";
-import {
-  type WarehouseProvider,
-  warehouseProviderSchema,
-} from "../factory/warehouse.type";
 
 export const warehouseTable = pgTable(
   "warehouse",

@@ -1,3 +1,4 @@
+import type { WarehouseProvider } from "@meside/shared/api/warehouse.schema";
 import { getLogger } from "@meside/shared/logger/index";
 import mysql from "mysql2/promise";
 import { z } from "zod";
@@ -8,7 +9,6 @@ import type {
   WarehouseFactoryCatalog,
   WarehouseFactoryRelation,
 } from "../warehouse.interface";
-import type { WarehouseProvider } from "../warehouse.type";
 
 export class MysqlWarehouse implements Warehouse {
   private logger = getLogger(MysqlWarehouse.name);

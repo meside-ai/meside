@@ -1,4 +1,5 @@
 import { BigQuery } from "@google-cloud/bigquery";
+import type { WarehouseProvider } from "@meside/shared/api/warehouse.schema";
 import { getLogger } from "@meside/shared/logger/index";
 import { cuid } from "../../../../utils/cuid";
 import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
@@ -7,7 +8,6 @@ import type {
   WarehouseFactoryCatalog,
   WarehouseFactoryRelation,
 } from "../warehouse.interface";
-import type { WarehouseProvider } from "../warehouse.type";
 
 export class BigqueryWarehouse implements Warehouse {
   private logger = getLogger("bigquery");

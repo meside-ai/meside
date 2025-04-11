@@ -1,5 +1,5 @@
+import type { WarehouseProvider } from "@meside/shared/api/warehouse.schema";
 import type { WarehouseQueryColumn, WarehouseQueryRow } from "./type";
-import type { WarehouseProvider } from "./warehouse.type";
 
 export type WarehouseFactoryCatalog = {
   schemaName: string;
