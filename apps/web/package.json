@@ -36,6 +36,8 @@
     "@tiptap/starter-kit": "^2.11.5",
     "@tiptap/suggestion": "^2.11.5",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "ag-grid-community": "^33.2.2",
+    "ag-grid-react": "^33.2.2",
     "date-fns": "^4.1.0",
     "immer": "^10.1.1",
     "mantine-form-zod-resolver": "^1.1.0",

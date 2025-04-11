@@ -40,22 +40,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PAT }}
 
-      - name: Extract metadata for warehouse Docker image
-        id: meta-warehouse
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}/warehouse
-
-      - name: Build warehouse Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./apps/warehouse
-          file: ./apps/warehouse/Dockerfile
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta-warehouse.outputs.tags }}
-          labels: ${{ steps.meta-warehouse.outputs.labels }}
-
       - name: Extract metadata for server Docker image
         id: meta-server
         uses: docker/metadata-action@v5

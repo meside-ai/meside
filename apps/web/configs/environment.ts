@@ -5,7 +5,11 @@ export const environmentSchema = z.object({
     .enum(["production", "development", "test"])
     .optional()
     .default("development"),
-  SERVER_DOMAIN: z.string().describe("The domain of the server API"),
+  SERVER_DOMAIN: z
+    .string()
+    .optional()
+    .default("http://localhost:3003/")
+    .describe("The domain of the server API"),
 });
 
 const { data, error } = environmentSchema.safeParse(process.env);

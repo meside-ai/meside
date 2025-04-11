@@ -1,7 +1,7 @@
 import { getLogger } from "@meside/shared/logger/index";
 import type { Context, Next } from "hono";
 import { createMiddleware } from "hono/factory";
-import { getUserById, verifyToken } from "../service/auth";
+import { getUserById, verifyToken } from "../agent/service/auth";
 
 declare module "hono" {
   interface ContextVariableMap {

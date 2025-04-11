@@ -45,43 +45,19 @@ services:
       - REDIS_URL=redis://redis:6379
       - JAEGER_URL=http://jaeger:16686
       - OTLP_TRACE_EXPORTER_URL=http://jaeger:4318/v1/traces
+      - AUTO_MIGRATE_DATABASE=true
     networks:
       - meside-network
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
       - "traefik.http.middlewares.server_cors.headers.customResponseHeaders.Access-Control-Allow-Headers=Origin,X-Requested-With,Content-Type,Accept,sessionid,Authorization"
       - "traefik.http.middlewares.server_cors.headers.customResponseHeaders.Access-Control-Allow-Methods=*"
       - "traefik.http.middlewares.server_cors.headers.customResponseHeaders.Access-Control-Allow-Origin=*"
       - "traefik.http.middlewares.server_cors.headers.customresponseheaders.Server=Meside.com"
       - "traefik.http.middlewares.server_cors.headers.customresponseheaders.X-Powered-By=Meside.com"
       - "traefik.http.routers.server.middlewares=server_cors"
-      - "traefik.http.routers.server.rule=PathPrefix(`/meside/server`)"
+      - "traefik.http.routers.server.rule=PathPrefix(`/meside`)"
       - "traefik.http.routers.server.entrypoints=web_internal"
-
-  warehouse:
-    image: ghcr.io/meside-ai/meside/warehouse:main
-    container_name: meside-warehouse
-    restart: always
-    depends_on:
-      - db
-      - redis
-    environment:
-      - DATABASE_URL=postgresql://meside:meside@db:5432/meside
-      - REDIS_URL=redis://redis:6379
-    networks:
-      - meside-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.middlewares.warehouse_cors.headers.customResponseHeaders.Access-Control-Allow-Headers=Origin,X-Requested-With,Content-Type,Accept,sessionid,Authorization"
-      - "traefik.http.middlewares.warehouse_cors.headers.customResponseHeaders.Access-Control-Allow-Methods=*"
-      - "traefik.http.middlewares.warehouse_cors.headers.customResponseHeaders.Access-Control-Allow-Origin=*"
-      - "traefik.http.middlewares.warehouse_cors.headers.customresponseheaders.Server=Meside.com"
-      - "traefik.http.middlewares.warehouse_cors.headers.customresponseheaders.X-Powered-By=Meside.com"
-      - "traefik.http.routers.warehouse.middlewares=warehouse_cors"
-      - "traefik.http.routers.warehouse.rule=PathPrefix(`/meside/warehouse`)"
-      - "traefik.http.routers.warehouse.entrypoints=web_internal"
 
   web:
     image: ghcr.io/meside-ai/meside/web:main
@@ -89,12 +65,10 @@ services:
     restart: always
     depends_on:
       - server
-      - warehouse
     networks:
       - meside-network
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
       - "traefik.http.middlewares.web_cors.headers.customresponseheaders.Server=Meside.com"
       - "traefik.http.middlewares.web_cors.headers.customresponseheaders.X-Powered-By=Meside.com"
       - "traefik.http.routers.web.middlewares=web_cors"

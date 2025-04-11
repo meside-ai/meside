@@ -71,8 +71,6 @@ Follow the installation and setup instructions in the [README.md](README.md) to 
 4. **Prepare Environments**:
   ```bash
   cp apps/server/default.env apps/server/.env
-  cp apps/web/default.env apps/web/.env
-  cp apps/warehouse/default.env apps/warehouse/.env
   ```
 5. **Database Setup**:  
   ```bash 
@@ -82,9 +80,7 @@ Follow the installation and setup instructions in the [README.md](README.md) to 
 
 6. **Seed**
   ```bash
-  cd apps/server && bun run migrate && bun run seed
-  cd ../warehouse && bun run migrate && bun run seed
-  cd ../..
+  bun run migrate && bun run seed
   ```
 
 7. **Start the server**:  

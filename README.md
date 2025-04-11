@@ -18,6 +18,13 @@ Meside is an open-source, AI-driven MCP Client and Data Warehouse MCP Server. By
 - **Multi-Format Support**: Seamlessly convert between JSON, CSV, YAML, and more.  
 - **Metadata Awareness**: Preserve and enrich data context during transformations.
 
+### Run Meside locally
+
+``` bash
+docker compose -f deployment/docker-compose.yml up
+# Open http://localhost:9000/ in the browser
+```
+
 ### Installation & Setup in development
 Look into [CONTRIBUTING.md](CONTRIBUTING.md).
 

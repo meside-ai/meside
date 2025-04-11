@@ -20,6 +20,10 @@ export const createDbMiddleware = () => {
     const db = getDrizzle();
     c.set("db", db);
 
+    logger.info(
+      `prepare db migration, AUTO_MIGRATE_DATABASE: ${environment.AUTO_MIGRATE_DATABASE}, isMigrated: ${isMigrated}`,
+    );
+
     if (environment.AUTO_MIGRATE_DATABASE && !isMigrated) {
       try {
         logger.info("Migrating database...");

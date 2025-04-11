@@ -1,0 +1,97 @@
+version: "3"
+name: meside
+
+services:
+  db:
+    image: postgres:15
+    container_name: meside-db
+    command: '-c full_page_writes=off -c fsync=off -c synchronous_commit=off'
+    restart: always
+    environment:
+      POSTGRES_USER: meside
+      POSTGRES_PASSWORD: meside
+      POSTGRES_DB: meside
+    volumes:
+      - ./prod/volumes/db/data:/var/lib/postgresql/data
+    networks:
+      - meside-network
+
+  redis:
+    image: redis:latest
+    container_name: meside-redis
+    restart: always
+    volumes:
+      - ./prod/volumes/redis/data:/data
+    networks:
+      - meside-network
+
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    container_name: meside-jaeger
+    environment:
+      - LOG_LEVEL=debug
+    networks:
+      - meside-network
+
+  server:
+    image: meside/server:main
+    container_name: meside-server
+    restart: always
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DATABASE_URL=postgresql://meside:meside@db:5432/meside
+      - REDIS_URL=redis://redis:6379
+      - JAEGER_URL=http://jaeger:16686
+      - OTLP_TRACE_EXPORTER_URL=http://jaeger:4318/v1/traces
+      - AUTO_MIGRATE_DATABASE=true
+    networks:
+      - meside-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.server_cors.headers.customResponseHeaders.Access-Control-Allow-Headers=Origin,X-Requested-With,Content-Type,Accept,sessionid,Authorization"
+      - "traefik.http.middlewares.server_cors.headers.customResponseHeaders.Access-Control-Allow-Methods=*"
+      - "traefik.http.middlewares.server_cors.headers.customResponseHeaders.Access-Control-Allow-Origin=*"
+      - "traefik.http.middlewares.server_cors.headers.customresponseheaders.Server=Meside.com"
+      - "traefik.http.middlewares.server_cors.headers.customresponseheaders.X-Powered-By=Meside.com"
+      - "traefik.http.routers.server.middlewares=server_cors"
+      - "traefik.http.routers.server.rule=PathPrefix(`/meside`)"
+      - "traefik.http.routers.server.entrypoints=web_internal"
+
+  web:
+    image: meside/web:main
+    container_name: meside-web
+    restart: always
+    depends_on:
+      - server
+    networks:
+      - meside-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.web_cors.headers.customresponseheaders.Server=Meside.com"
+      - "traefik.http.middlewares.web_cors.headers.customresponseheaders.X-Powered-By=Meside.com"
+      - "traefik.http.routers.web.middlewares=web_cors"
+      - "traefik.http.routers.web.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.web.entrypoints=web_internal"
+  
+  traefik:
+    image: traefik:v3
+    container_name: meside-traefik
+    restart: always
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web_internal.address=:9000"
+    ports:
+      - "9000:9000"
+      - "8080:8080" # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - meside-network
+
+networks:
+  meside-network:
+    driver: bridge

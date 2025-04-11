@@ -17,6 +17,10 @@
     "dev": {
       "cache": false,
       "persistent": true
-    }
+    },
+    "generate": {},
+    "migrate": {},
+    "reset": {},
+    "seed": {}
   }
 }

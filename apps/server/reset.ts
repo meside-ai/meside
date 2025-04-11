@@ -1,31 +1,9 @@
-import { reset } from "drizzle-seed";
-import { getDrizzle } from "./db/db";
-import { agentTable } from "./db/schema/agent";
-import { agentToolTable } from "./db/schema/agent-tool";
-import { llmTable } from "./db/schema/llm";
-import { orgTable } from "./db/schema/org";
-import { orgUserTable } from "./db/schema/org-user";
-import { teamTable } from "./db/schema/team";
-import { threadTable } from "./db/schema/thread";
-import { toolTable } from "./db/schema/tool";
-import { usageTable } from "./db/schema/usage";
-import { userTable } from "./db/schema/user";
+import { resetAgentDb } from "./agent/seed/reset";
+import { resetWarehouseDb } from "./tools/warehouse/seed/reset";
 
 export async function resetDb() {
-  const db = getDrizzle();
-
-  await reset(db, {
-    orgTable,
-    userTable,
-    usageTable,
-    threadTable,
-    llmTable,
-    toolTable,
-    teamTable,
-    agentTable,
-    agentToolTable,
-    orgUserTable,
-  });
+  await resetAgentDb();
+  await resetWarehouseDb();
 }
 
 resetDb()
