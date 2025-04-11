@@ -47,6 +47,7 @@
   "devDependencies": {
     "@repo/typescript-config": "*",
     "@types/oracledb": "^6.5.4",
-    "@types/pg": "^8.11.11"
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.30.6"
   }
 }
