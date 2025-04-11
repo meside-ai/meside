@@ -7,6 +7,7 @@ export async function seedWarehouseDb() {
   const db = getDrizzle();
 
   const orgId = "hkwgx29khaflgmm5c8ipp79r";
+  const ownerId = "io56027z7qwd25mzq6upq947";
   const warehouseId = "zhl0ec34cda00wgufqsqe80d";
 
   await db.insert(warehouseTable).values({
@@ -20,6 +21,8 @@ export async function seedWarehouseDb() {
       username: "postgres",
       password: "postgres",
     },
+    ownerId,
+    orgId,
   });
 
   await db.insert(catalogTable).values([
