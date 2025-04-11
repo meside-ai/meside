@@ -1,12 +1,12 @@
+import type {
+  WarehouseQueryColumn,
+  WarehouseQueryRow,
+} from "@meside/shared/api/warehouse.schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../../../db/db";
 import { cuid } from "../../../utils/cuid";
 import { firstOrNotCreated, firstOrNotFound } from "../../../utils/toolkit";
 import { WarehouseFactory } from "../factory/warehouse";
-import type {
-  WarehouseQueryColumn,
-  WarehouseQueryRow,
-} from "../factory/warehouse.type";
 import { catalogTable } from "../table/catalog";
 import { labelTable } from "../table/label";
 import { queryTable } from "../table/query";
@@ -179,7 +179,7 @@ class WarehouseService {
     );
     const result = await warehouseInstance.query(warehouse.provider, sql);
     const query = await this.createQuery(warehouse, sql, result.fields);
-    const queryUrl = `https://p.meside.com/meside/warehouse/query/${query.queryId}`;
+    const queryUrl = `https://p.meside.com/tool/warehouse/${query.queryId}`;
 
     return {
       ...result,

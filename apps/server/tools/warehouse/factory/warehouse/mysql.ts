@@ -1,9 +1,12 @@
 import type { WarehouseProvider } from "@meside/shared/api/warehouse.schema";
+import type {
+  WarehouseQueryColumn,
+  WarehouseQueryRow,
+} from "@meside/shared/api/warehouse.schema";
 import { getLogger } from "@meside/shared/logger/index";
 import mysql from "mysql2/promise";
 import { z } from "zod";
 import { cuid } from "../../../../utils/cuid";
-import type { WarehouseQueryColumn, WarehouseQueryRow } from "../type";
 import type {
   Warehouse,
   WarehouseFactoryCatalog,

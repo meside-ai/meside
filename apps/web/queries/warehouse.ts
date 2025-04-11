@@ -3,12 +3,18 @@ import {
   type WarehouseCreateResponse,
   type WarehouseDetailRequest,
   type WarehouseDetailResponse,
+  type WarehouseExecuteQueryRequest,
+  type WarehouseExecuteQueryResponse,
+  type WarehouseGetQueryRequest,
+  type WarehouseGetQueryResponse,
   type WarehouseListRequest,
   type WarehouseListResponse,
   type WarehouseUpdateRequest,
   type WarehouseUpdateResponse,
   warehouseCreateRoute,
   warehouseDetailRoute,
+  warehouseExecuteQueryRoute,
+  warehouseGetQueryRoute,
   warehouseListRoute,
   warehouseUpdateRoute,
 } from "@meside/shared/api/warehouse.schema";
@@ -74,6 +80,36 @@ export const getWarehouseUpdate = (): UseMutationOptions<
       WarehouseUpdateRequest,
       WarehouseUpdateResponse
     >(`/meside/warehouse/warehouse${warehouseUpdateRoute.path}`)(body);
+    return json;
+  },
+});
+
+export const getWarehouseQuery = (
+  queryId: string,
+): UseQueryOptions<WarehouseGetQueryResponse> => ({
+  enabled: !!queryId,
+  queryKey: [getWarehouseQuery.name, queryId],
+  queryFn: async () => {
+    const json = await createPost<
+      WarehouseGetQueryRequest,
+      WarehouseGetQueryResponse
+    >(`/meside/warehouse/warehouse${warehouseGetQueryRoute.path}`)({ queryId });
+    return json;
+  },
+});
+
+export const getWarehouseExecuteQuery = (
+  queryId: string,
+): UseQueryOptions<WarehouseExecuteQueryResponse> => ({
+  enabled: !!queryId,
+  queryKey: [getWarehouseExecuteQuery.name, queryId],
+  queryFn: async () => {
+    const json = await createPost<
+      WarehouseExecuteQueryRequest,
+      WarehouseExecuteQueryResponse
+    >(`/meside/warehouse/warehouse${warehouseExecuteQueryRoute.path}`)({
+      queryId,
+    });
     return json;
   },
 });

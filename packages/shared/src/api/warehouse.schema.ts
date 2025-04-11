@@ -2,6 +2,29 @@ import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
 import { userDtoSchema } from "./user.schema";
 
+export const warehouseQueryColumnSchema = z.object({
+  tableName: z.string(),
+  columnName: z.string(),
+  columnType: z.enum(["string", "number", "boolean", "date", "timestamp"]),
+  description: z.string(),
+});
+
+export type WarehouseQueryColumn = z.infer<typeof warehouseQueryColumnSchema>;
+
+export const warehouseQueryRowSchema = z.record(
+  z.string(),
+  z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.null(),
+    z.record(z.string(), z.any()),
+    z.array(z.any()),
+  ]),
+);
+
+export type WarehouseQueryRow = z.infer<typeof warehouseQueryRowSchema>;
+
 export const warehouseProviderSchema = z.union([
   z.object({
     type: z.literal("postgresql"),
@@ -202,6 +225,87 @@ export const warehouseUpdateRoute = createRoute({
         },
       },
       description: "Update the warehouse",
+    },
+  },
+});
+
+// warehouseGetQuery
+export const warehouseGetQueryRequestSchema = z.object({
+  queryId: z.string(),
+});
+
+export const warehouseGetQueryResponseSchema = z.object({
+  sql: z.string(),
+});
+
+export type WarehouseGetQueryRequest = z.infer<
+  typeof warehouseGetQueryRequestSchema
+>;
+export type WarehouseGetQueryResponse = z.infer<
+  typeof warehouseGetQueryResponseSchema
+>;
+
+export const warehouseGetQueryRoute = createRoute({
+  method: "post",
+  path: "/get-query",
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: warehouseGetQueryRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: warehouseGetQueryResponseSchema,
+        },
+      },
+      description: "Get the warehouse query",
+    },
+  },
+});
+
+// warehouseExecuteQuery
+export const warehouseExecuteQueryRequestSchema = z.object({
+  queryId: z.string(),
+});
+
+export const warehouseExecuteQueryResponseSchema = z.object({
+  rows: z.array(warehouseQueryRowSchema),
+  fields: z.array(warehouseQueryColumnSchema),
+});
+
+export type WarehouseExecuteQueryRequest = z.infer<
+  typeof warehouseExecuteQueryRequestSchema
+>;
+export type WarehouseExecuteQueryResponse = z.infer<
+  typeof warehouseExecuteQueryResponseSchema
+>;
+
+export const warehouseExecuteQueryRoute = createRoute({
+  method: "post",
+  path: "/execute-query",
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: warehouseExecuteQueryRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: warehouseExecuteQueryResponseSchema,
+        },
+      },
+      description: "Execute the warehouse query",
     },
   },
 });

@@ -4,25 +4,27 @@ import {
   warehouseCreateRequestSchema,
   warehouseCreateRoute,
   warehouseDetailRoute,
+  warehouseExecuteQueryRequestSchema,
+  warehouseExecuteQueryRoute,
+  warehouseGetQueryRequestSchema,
+  warehouseGetQueryRoute,
   warehouseListRoute,
   warehouseUpdateRequestSchema,
   warehouseUpdateRoute,
 } from "@meside/shared/api/warehouse.schema";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../../../db/db";
-import {
-  authGuardMiddleware,
-  orgGuardMiddleware,
-} from "../../../middleware/guard";
+import { authGuardMiddleware } from "../../../middleware/guard";
 import { getAuthOrUnauthorized } from "../../../utils/auth";
 import { cuid } from "../../../utils/cuid";
 import { firstOrNotCreated, firstOrNull } from "../../../utils/toolkit";
 import { getWarehouseDtos } from "../mapper/warehouse";
+import { warehouseService } from "../service/warehouse";
 import { warehouseTable } from "../table/warehouse";
 
 export const warehouseApi = new OpenAPIHono();
 
-warehouseApi.use("*", authGuardMiddleware).use("*", orgGuardMiddleware);
+warehouseApi.use("*", authGuardMiddleware);
 
 warehouseApi.openapi(warehouseListRoute, async (c) => {
   const auth = getAuthOrUnauthorized(c);
@@ -122,4 +124,20 @@ warehouseApi.openapi(warehouseUpdateRoute, async (c) => {
   }
 
   return c.json({});
+});
+
+warehouseApi.openapi(warehouseGetQueryRoute, async (c) => {
+  const body = warehouseGetQueryRequestSchema.parse(await c.req.json());
+  const query = await warehouseService.getQuery(body.queryId);
+  return c.json({ sql: query.sql });
+});
+
+warehouseApi.openapi(warehouseExecuteQueryRoute, async (c) => {
+  const body = warehouseExecuteQueryRequestSchema.parse(await c.req.json());
+  const result = await warehouseService.getQuery(body.queryId);
+  const query = await warehouseService.runQueryByWarehouseId(
+    result.warehouseId,
+    result.sql,
+  );
+  return c.json({ rows: query.rows, fields: query.fields });
 });

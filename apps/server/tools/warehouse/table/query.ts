@@ -1,8 +1,8 @@
+import { warehouseQueryColumnSchema } from "@meside/shared/api/warehouse.schema";
 import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import { foreignCuid, primaryKeyCuid, useTimestamp } from "../../../db/utils";
-import { warehouseQueryColumnSchema } from "../factory/warehouse.type";
 
 export const queryTable = pgTable("query", {
   queryId: primaryKeyCuid("query_id"),

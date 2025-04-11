@@ -1,4 +1,8 @@
 import type { WarehouseProvider } from "@meside/shared/api/warehouse.schema";
+import type {
+  WarehouseQueryColumn,
+  WarehouseQueryRow,
+} from "@meside/shared/api/warehouse.schema";
 import { getLogger } from "@meside/shared/logger/index";
 import oracledb from "oracledb";
 import { z } from "zod";
@@ -8,10 +12,6 @@ import type {
   WarehouseFactoryCatalog,
   WarehouseFactoryRelation,
 } from "../warehouse.interface";
-import type {
-  WarehouseQueryColumn,
-  WarehouseQueryRow,
-} from "../warehouse.type";
 
 export class OracleWarehouse implements Warehouse {
   private logger = getLogger(OracleWarehouse.name);
