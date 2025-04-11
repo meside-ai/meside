@@ -19,7 +19,14 @@ export const relationTable = pgTable(
     orgId: foreignCuid("org_id").notNull(),
     ...useTimestamp(),
   },
-  (t) => [unique().on(t.fullName, t.foreignFullName)],
+  (table) => [
+    unique().on(
+      table.orgId,
+      table.warehouseId,
+      table.fullName,
+      table.foreignFullName,
+    ),
+  ],
 );
 
 export const relationEntitySchema = createSelectSchema(relationTable);

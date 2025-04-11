@@ -1,18 +1,24 @@
-import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text, unique } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
-import { primaryKeyCuid, useTimestamp } from "../../../db/utils";
+import { foreignCuid, primaryKeyCuid, useTimestamp } from "../../../db/utils";
 import {
   type WarehouseProvider,
   warehouseProviderSchema,
 } from "../factory/warehouse.type";
 
-export const warehouseTable = pgTable("warehouse", {
-  warehouseId: primaryKeyCuid("warehouse_id"),
-  name: text("name").notNull(),
-  provider: jsonb("provider").notNull().$type<WarehouseProvider>(),
-  ...useTimestamp(),
-});
+export const warehouseTable = pgTable(
+  "warehouse",
+  {
+    warehouseId: primaryKeyCuid("warehouse_id"),
+    name: text("name").notNull(),
+    provider: jsonb("provider").notNull().$type<WarehouseProvider>(),
+    ownerId: foreignCuid("owner_id").notNull(),
+    orgId: foreignCuid("org_id").notNull(),
+    ...useTimestamp(),
+  },
+  (table) => [unique().on(table.orgId, table.name)],
+);
 
 export const warehouseEntitySchema = createSelectSchema(warehouseTable, {
   provider: warehouseProviderSchema,

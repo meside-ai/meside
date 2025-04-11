@@ -9,6 +9,8 @@ export const queryTable = pgTable("query", {
   warehouseId: foreignCuid("warehouse_id").notNull(),
   sql: text("sql").notNull(),
   fields: jsonb("fields").notNull(),
+  orgId: foreignCuid("org_id").notNull(),
+  ownerId: foreignCuid("owner_id").notNull(),
   ...useTimestamp(),
 });
 

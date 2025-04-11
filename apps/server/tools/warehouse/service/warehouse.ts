@@ -208,6 +208,8 @@ class WarehouseService {
     sql: string,
     fields: WarehouseQueryColumn[],
   ): Promise<{ queryId: string }> {
+    const ownerId = "1"; // TODO: get ownerId from session
+    const orgId = "1"; // TODO: get orgId from session
     const query = await getDrizzle()
       .insert(queryTable)
       .values({
@@ -215,6 +217,8 @@ class WarehouseService {
         warehouseId: warehouse.warehouseId,
         sql,
         fields,
+        ownerId,
+        orgId,
       })
       .returning({
         queryId: queryTable.queryId,
