@@ -16,10 +16,11 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.0",
+    "@google-cloud/bigquery": "^7.9.3",
     "@hono/otel": "^0.1.0",
     "@hono/zod-openapi": "^0.19.2",
     "@meside/shared": "*",
-    "@modelcontextprotocol/sdk": "^1.7.0",
+    "@modelcontextprotocol/sdk": "^1.9.0",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/auto-instrumentations-node": "^0.57.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.200.0",
@@ -32,9 +33,15 @@
     "google-auth-library": "^9.6.3",
     "hono": "^4.7.5",
     "jose": "^6.0.10",
+    "mysql2": "^3.14.0",
+    "oracledb": "^6.8.0",
+    "pg": "^8.14.1",
+    "postgres": "^3.4.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@repo/typescript-config": "*"
+    "@repo/typescript-config": "*",
+    "@types/oracledb": "^6.5.4",
+    "@types/pg": "^8.11.11"
   }
 }
