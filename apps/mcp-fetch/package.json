@@ -1,0 +1,21 @@
+{
+  "name": "mcp-fetch",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --watch server.ts",
+    "build": "echo 'Add build script here'",
+    "test": "echo 'Add test script here'",
+    "lint": "echo 'Add lint script here'"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@types/content-type": "^1.1.8",
+    "@types/express": "^5.0.1"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "content-type": "^1.0.5",
+    "express": "^5.1.0"
+  }
+}
