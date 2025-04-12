@@ -1,11 +1,11 @@
 "use client";
 
 import { Container, Paper, Stack, Title } from "@mantine/core";
+import JsonSchemaForm from "@meside/rjsf/src/index";
 import {
   type OrgCreateRequest,
   orgCreateRequestSchema,
 } from "@meside/shared/api/org.schema";
-import JsonSchemaForm from "@rjsf/core";
 import type { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useMutation } from "@tanstack/react-query";

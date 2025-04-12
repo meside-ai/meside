@@ -1,7 +1,7 @@
 "use client";
 
+import JsonSchemaForm from "@meside/rjsf/src/index";
 import { llmProviderSchema } from "@meside/shared/api/llm.schema";
-import JsonSchemaForm from "@rjsf/core";
 import type { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { z } from "zod";
@@ -24,8 +24,9 @@ export function Form({
   initialData?: FormData;
   onSubmit: (data: FormData) => void;
 }) {
+  console.log("zzz", jsonSchema);
   return (
-    <JsonSchemaForm<FormData>
+    <JsonSchemaForm
       schema={jsonSchema}
       validator={validator}
       formData={initialData}

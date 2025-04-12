@@ -17,6 +17,7 @@
     "@mantine/hooks": "^7.17.2",
     "@mantine/modals": "^7.17.2",
     "@mantine/notifications": "^7.17.2",
+    "@meside/rjsf": "*",
     "@meside/shared": "*",
     "@repo/ui": "*",
     "@rjsf/core": "^5.24.8",

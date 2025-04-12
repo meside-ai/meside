@@ -1,7 +1,7 @@
 "use client";
 
+import JsonSchemaForm from "@meside/rjsf/src/index";
 import { warehouseProviderSchema } from "@meside/shared/api/warehouse.schema";
-import JsonSchemaForm from "@rjsf/core";
 import type { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { z } from "zod";
@@ -24,7 +24,7 @@ export function Form({
   onSubmit: (data: FormData) => void;
 }) {
   return (
-    <JsonSchemaForm<FormData>
+    <JsonSchemaForm
       schema={jsonSchema}
       validator={validator}
       formData={initialData}
