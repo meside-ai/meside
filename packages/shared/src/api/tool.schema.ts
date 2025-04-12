@@ -1,12 +1,22 @@
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
 
-export const toolProviderSchema = z.object({
-  provider: z.literal("http"),
-  configs: z.object({
-    url: z.string(),
+export const toolProviderSchema = z.union([
+  z.object({
+    provider: z.literal("http"),
+    configs: z.object({
+      url: z.string(),
+    }),
   }),
-});
+  z.object({
+    provider: z.literal("stdio"),
+    configs: z.object({
+      command: z.string(),
+      args: z.array(z.string()),
+      env: z.record(z.string(), z.string()),
+    }),
+  }),
+]);
 
 export type ToolProvider = z.infer<typeof toolProviderSchema>;
 
