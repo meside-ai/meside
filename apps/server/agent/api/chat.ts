@@ -3,6 +3,7 @@ import { getLogger } from "@meside/shared/logger/index";
 import {
   type LanguageModelV1,
   type Message,
+  type Tool,
   createDataStream,
   formatDataStreamPart,
   generateObject,
@@ -19,7 +20,12 @@ import { firstOrNotFound } from "../../utils/toolkit";
 import { getAgentDetailByName, getAgentList } from "../service/agent";
 import { getLlmModel } from "../service/ai";
 import { getActiveLlm } from "../service/llm";
-import { getTools, loadTools } from "../service/tool";
+import {
+  type MCPClient,
+  closeMcpClients,
+  getTools,
+  loadTools,
+} from "../service/tool";
 import { llmTable } from "../table/llm";
 
 const logger = getLogger("chat");
@@ -84,7 +90,7 @@ chatApi.post("/stream", async (c) => {
         orgId: auth.orgId,
       });
       const agent = await getAgent(agentName);
-      const tools = await loadAllTools(agent.toolIds);
+      const { tools, mcpClients } = await loadToolInstances(agent.toolIds);
       const agentOptions = await getAgentOptions(agent);
 
       const aiStream = streamText({
@@ -92,6 +98,9 @@ chatApi.post("/stream", async (c) => {
         messages,
         tools,
         experimental_telemetry: { isEnabled: true },
+        onFinish: async () => {
+          await closeMcpClients(mcpClients);
+        },
       });
       aiStream.mergeIntoDataStream(dataStreamWriter);
     },
@@ -118,6 +127,11 @@ const getAgentNameByRouterWorkflow = async (
   },
 ): Promise<string> => {
   const agentList = await getAgentList();
+  const firstAgent = firstOrNotFound(agentList, "No agents found");
+
+  if (agentList.length === 1) {
+    return firstAgent.name;
+  }
 
   const agentTextList = agentList.map((agent) => {
     return [
@@ -193,8 +207,13 @@ const getAgentOptions = async (
   };
 };
 
-const loadAllTools = async (toolIds: string[]) => {
+const loadToolInstances = async (
+  toolIds: string[],
+): Promise<{
+  tools: Record<string, Tool>;
+  mcpClients: MCPClient[];
+}> => {
   const toolDtos = await getTools(toolIds);
-  const tools = await loadTools(toolDtos);
-  return tools;
+  const toolInstances = await loadTools(toolDtos);
+  return toolInstances;
 };
