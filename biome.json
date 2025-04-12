@@ -7,7 +7,14 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["node_modules", "dist", "build", ".next", ".turbo"]
+    "ignore": [
+      "node_modules",
+      "dist",
+      "build",
+      ".next",
+      ".turbo",
+      "packages/rjsf/src"
+    ]
   },
   "formatter": {
     "enabled": true,
