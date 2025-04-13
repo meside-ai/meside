@@ -2,6 +2,7 @@
 
 import { Container, Paper, Stack, Title } from "@mantine/core";
 import JsonSchemaForm from "@meside/rjsf/src/index";
+import { llmProviderSchema } from "@meside/shared/api/llm.schema";
 import {
   type OrgCreateRequest,
   orgCreateRequestSchema,
@@ -42,6 +43,24 @@ export default function OrgCreatePage() {
               handleSubmit(formData as OrgCreateRequest)
             }
             disabled={createMutation.isPending}
+            uiSchema={{
+              defaultLLmProvider: {
+                "ui:widget": "radio",
+                "ui:options": {
+                  enumOptions: llmProviderSchema.options.map(
+                    (option, index) => ({
+                      value: index,
+                      label: option.shape.provider.value,
+                    }),
+                  ),
+                },
+                anyOf: llmProviderSchema.options.map(() => ({
+                  provider: {
+                    "ui:widget": "hidden",
+                  },
+                })),
+              },
+            }}
           />
           {createMutation.isError && (
             <div className="text-red-500">

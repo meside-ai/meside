@@ -1,13 +1,17 @@
 "use client";
 
-import { Avatar, type AvatarProps } from "@mantine/core";
+import { Avatar, type AvatarProps, Menu, Text } from "@mantine/core";
+import { IconLogout } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { getMe } from "../../queries/auth";
+import { clearAuthTokens } from "../../utils/auth-storage";
 
 export type MyAvatarProps = Omit<AvatarProps, "children">;
 
 export function MyAvatar(props: MyAvatarProps) {
+  const router = useRouter();
   const { data, isLoading } = useQuery(getMe({}));
 
   const initials = useMemo(() => {
@@ -33,8 +37,27 @@ export function MyAvatar(props: MyAvatarProps) {
   }
 
   return (
-    <Avatar src={data?.user.avatar || undefined} {...props}>
-      {initials}
-    </Avatar>
+    <Menu shadow="md" width={200}>
+      <Menu.Target>
+        <Avatar src={data?.user.avatar || undefined} {...props}>
+          {initials}
+        </Avatar>
+      </Menu.Target>
+
+      <Menu.Dropdown>
+        <Menu.Label>
+          <Text>{data?.user.name}</Text>
+        </Menu.Label>
+        <Menu.Item
+          leftSection={<IconLogout size={14} />}
+          onClick={() => {
+            clearAuthTokens();
+            router.push("/login");
+          }}
+        >
+          Logout
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 }

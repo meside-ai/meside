@@ -2,7 +2,6 @@
 
 import {
   Box,
-  Button,
   Container,
   Group,
   Paper,
@@ -11,9 +10,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { IconChevronRight } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { getThreadList } from "../../../../../queries/thread";
 import {
@@ -51,18 +48,20 @@ function ChannelContent() {
         <Container size="sm" py="md">
           <Stack gap="xs">
             {threads.map((thread) => (
-              <Paper key={thread.threadId} p="md">
+              <Paper
+                key={thread.threadId}
+                p="md"
+                onClick={() => {
+                  router.push(`/org/${orgId}/thread/${thread.threadId}`);
+                }}
+                withBorder
+                style={{
+                  cursor: "pointer",
+                }}
+              >
                 <Stack gap="md">
                   <Group justify="space-between">
                     <Title order={6}>{thread.shortName}</Title>
-                    <Button
-                      component={Link}
-                      href={`/org/${thread.orgId}/thread/${thread.threadId}`}
-                      variant="subtle"
-                      rightSection={<IconChevronRight size={16} />}
-                    >
-                      Review details
-                    </Button>
                   </Group>
                 </Stack>
               </Paper>
