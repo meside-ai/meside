@@ -80,6 +80,7 @@ function DateElement<
   const id = rootId + "_" + type;
   const { SelectWidget } = registry.widgets;
   return (
+    // @ts-ignore
     <SelectWidget
       schema={{ type: "integer" } as S}
       id={id}

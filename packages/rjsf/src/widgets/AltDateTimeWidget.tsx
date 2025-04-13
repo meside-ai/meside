@@ -18,6 +18,7 @@ function AltDateTimeWidget<
   F extends FormContextType = any,
 >({ time = true, ...props }: WidgetProps<T, S, F>) {
   const { AltDateWidget } = props.registry.widgets;
+  // @ts-ignore
   return <AltDateWidget time={time} {...props} />;
 }
 
