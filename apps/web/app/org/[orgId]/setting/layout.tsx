@@ -3,9 +3,9 @@
 import { Box } from "@mantine/core";
 import {
   IconDatabase,
-  IconRobot,
+  IconGrain,
+  IconPick,
   IconSitemap,
-  IconTool,
 } from "@tabler/icons-react";
 import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
@@ -29,14 +29,14 @@ export default function SettingLayout({
         icon: IconSitemap,
       },
       {
-        title: "AI Providers",
+        title: "AI Models",
         href: `/org/${orgId}/setting/llm`,
-        icon: IconRobot,
+        icon: IconGrain,
       },
       {
         title: "Tools",
         href: `/org/${orgId}/setting/tool`,
-        icon: IconTool,
+        icon: IconPick,
       },
       {
         title: "Warehouses",
