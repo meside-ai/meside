@@ -36,7 +36,7 @@ export function Form({
           "ui:options": {
             enumOptions: llmProviderSchema.options.map((option, index) => ({
               value: index,
-              label: option.shape.provider.description,
+              label: option.shape.provider.value,
             })),
           },
           anyOf: llmProviderSchema.options.map(() => ({

@@ -4,17 +4,17 @@ import { userDtoSchema } from "./user.schema";
 
 export const llmProviderSchema = z.union([
   z.object({
-    provider: z.literal("openai").describe("OpenAI"),
+    provider: z.literal("openai"),
     apiKey: z.string(),
     model: z.enum(["gpt-4o"]),
   }),
   z.object({
-    provider: z.literal("deepseek").describe("DeepSeek"),
+    provider: z.literal("deepseek"),
     apiKey: z.string(),
     model: z.enum(["deepseek-chat"]),
   }),
   z.object({
-    provider: z.literal("openaiCompatible").describe("OpenAI Compatible"),
+    provider: z.literal("openaiCompatible"),
     apiKey: z.string(),
     baseUrl: z.string(),
     model: z.string(),
