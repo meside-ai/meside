@@ -3,15 +3,14 @@
 import { Avatar, type AvatarProps, Menu, Text } from "@mantine/core";
 import { IconLogout } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { useSignout } from "../../app/hooks/signout";
 import { getMe } from "../../queries/auth";
-import { clearAuthTokens } from "../../utils/auth-storage";
 
 export type MyAvatarProps = Omit<AvatarProps, "children">;
 
 export function MyAvatar(props: MyAvatarProps) {
-  const router = useRouter();
+  const { signout } = useSignout();
   const { data, isLoading } = useQuery(getMe({}));
 
   const initials = useMemo(() => {
@@ -51,8 +50,7 @@ export function MyAvatar(props: MyAvatarProps) {
         <Menu.Item
           leftSection={<IconLogout size={14} />}
           onClick={() => {
-            clearAuthTokens();
-            router.push("/login");
+            signout();
           }}
         >
           Logout
