@@ -24,13 +24,28 @@ export function Form({
   initialData?: FormData;
   onSubmit: (data: FormData) => void;
 }) {
-  console.log("zzz", jsonSchema);
   return (
     <JsonSchemaForm
       schema={jsonSchema}
       validator={validator}
       formData={initialData}
       onSubmit={({ formData }) => onSubmit(formData as FormData)}
+      uiSchema={{
+        provider: {
+          "ui:widget": "radio",
+          "ui:options": {
+            enumOptions: llmProviderSchema.options.map((option, index) => ({
+              value: index,
+              label: option.shape.provider.description,
+            })),
+          },
+          anyOf: llmProviderSchema.options.map(() => ({
+            provider: {
+              "ui:widget": "hidden",
+            },
+          })),
+        },
+      }}
     />
   );
 }

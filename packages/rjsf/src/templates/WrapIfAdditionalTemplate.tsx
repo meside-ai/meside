@@ -46,9 +46,15 @@ export default function WrapIfAdditionalTemplate<
 
   if (!additional) {
     return (
-      <div className={`${classNames ?? ""} armt-template-wia`} style={style}>
+      <Box
+        className={`${classNames ?? ""} armt-template-wia`}
+        style={{
+          ...style,
+          marginBottom: 8,
+        }}
+      >
         {children}
-      </div>
+      </Box>
     );
   }
 

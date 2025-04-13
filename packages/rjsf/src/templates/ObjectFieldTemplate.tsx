@@ -72,11 +72,13 @@ export default function ObjectFieldTemplate<
   return (
     <Fieldset
       id={idSchema.$id}
-      legend={legendNode}
       style={{
         width: "100%",
+        margin: 0,
+        padding: 0,
       }}
       className={`armt-template-objectfield ${classNames ?? ""}`}
+      variant="unstyled"
     >
       <Box className="armt-template-objectfield-item">
         {properties.map(
