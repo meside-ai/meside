@@ -1,10 +1,10 @@
-import { type FormProps, withTheme } from "@rjsf/core";
+import Form, { type FormProps, withTheme } from "@rjsf/core";
 import type {
   FormContextType,
   RJSFSchema,
   StrictRJSFSchema,
 } from "@rjsf/utils";
-import type { ComponentType } from "react";
+import { useRef, type ComponentType } from "react";
 import { generateTheme } from "./theme";
 
 export function generateForm<
@@ -18,3 +18,8 @@ export function generateForm<
 }
 
 export default generateForm();
+
+export function useFormRef<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(props?: FormProps<T, S, F>) {
+  const ref = useRef<Form<T, S, F>>((props as any) ?? null);
+  return ref;
+}

@@ -2,13 +2,14 @@
 
 import {
   Alert,
-  Box,
   Button,
   Container,
   Divider,
+  Group,
   Stack,
   Text,
 } from "@mantine/core";
+import { useFormRef } from "@meside/rjsf/src/Form";
 import JsonSchemaForm from "@meside/rjsf/src/index";
 import { llmProviderSchema } from "@meside/shared/api/llm.schema";
 import {
@@ -49,6 +50,8 @@ export default function OrgCreatePage() {
       },
     });
   };
+
+  const formRef = useFormRef();
 
   return (
     <Container size="xs" py="xl">
@@ -93,13 +96,24 @@ export default function OrgCreatePage() {
                 },
               })),
             },
+            "ui:submitButtonOptions": {
+              norender: true,
+            },
           }}
-        />
-        <Box>
-          <Button variant="transparent" onClick={signout} m={0} p={0}>
-            Sign out
-          </Button>
-        </Box>
+        >
+          <Group>
+            <Button
+              type="submit"
+              loading={createMutation.isPending}
+              onClick={() => formRef.current?.submit()}
+            >
+              Create Organization
+            </Button>
+            <Button variant="transparent" onClick={signout}>
+              It's not this account? Sign out
+            </Button>
+          </Group>
+        </JsonSchemaForm>
       </Stack>
     </Container>
   );
