@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import { getToolCreate, getToolList } from "../../../../../../queries/tool";
 import { queryClient } from "../../../../../../utils/query-client";
@@ -15,12 +15,15 @@ export default function ToolCreatePage() {
   });
 
   return (
-    <Box>
+    <Container pt="xl">
+      <Title order={2} mb="md">
+        New Tool
+      </Title>
       <Form
         onSubmit={async (data) => {
           await createTool(data);
         }}
       />
-    </Box>
+    </Container>
   );
 }
