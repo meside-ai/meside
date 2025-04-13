@@ -15,7 +15,7 @@ export default function LlmSettingPage() {
   });
 
   return (
-    <Container pt="xl">
+    <Container py="xl">
       <Title order={2} mb="md">
         New AI model
       </Title>

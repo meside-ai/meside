@@ -17,8 +17,8 @@ const assistantFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Meside Analysis",
-  description: "Meside AI Agent and MCP for Data Analysis",
+  title: "Meside AI",
+  description: "Meside AI Agent and MCP tools",
 };
 
 export default function RootLayout({

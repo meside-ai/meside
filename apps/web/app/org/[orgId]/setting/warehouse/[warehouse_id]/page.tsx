@@ -25,7 +25,7 @@ export default function WarehouseDetailPage() {
   });
 
   return (
-    <Container pt="xl">
+    <Container py="xl">
       <Title order={2} mb="md">
         Edit Warehouse
       </Title>

@@ -18,7 +18,7 @@ export default function WarehouseCreatePage() {
   });
 
   return (
-    <Container pt="xl">
+    <Container py="xl">
       <Title order={2} mb="md">
         New Warehouse
       </Title>

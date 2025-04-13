@@ -23,7 +23,7 @@ export default function WarehouseSettingPage() {
   });
 
   return (
-    <Container pt="xl">
+    <Container py="xl">
       <Title order={2} mb="md">
         Edit AI model
       </Title>

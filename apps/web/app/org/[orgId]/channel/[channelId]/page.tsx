@@ -6,7 +6,6 @@ import {
   Container,
   Group,
   Paper,
-  ScrollArea,
   Skeleton,
   Stack,
   Text,
@@ -17,6 +16,10 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { getThreadList } from "../../../../../queries/thread";
+import {
+  MENUBAR_WIDTH,
+  SIDEBAR_WIDTH,
+} from "../../../../sidebar-width.constant";
 import { MessageInput } from "./message-input";
 
 export default function ChannelPage() {
@@ -43,42 +46,47 @@ function ChannelContent() {
   }
 
   return (
-    <Box
-      flex={1}
-      h="100%"
-      style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}
-    >
+    <Box style={{ position: "relative" }}>
       <Box flex={1} style={{ overflow: "hidden" }}>
-        <ScrollArea h="100%">
-          <Container size="sm" py="md">
-            <Stack gap="xs">
-              {threads.map((thread) => (
-                <Paper key={thread.threadId} p="md" radius="md" withBorder>
-                  <Stack gap="md">
-                    <Group justify="space-between">
-                      <Title order={6}>{thread.shortName}</Title>
-                      <Button
-                        component={Link}
-                        href={`/org/${thread.orgId}/thread/${thread.threadId}`}
-                        variant="subtle"
-                        rightSection={<IconChevronRight size={16} />}
-                      >
-                        Review details
-                      </Button>
-                    </Group>
-                  </Stack>
-                </Paper>
-              ))}
-              {threads.length === 0 && (
-                <Text ta="center" fs="italic" c="dimmed">
-                  No threads available
-                </Text>
-              )}
-            </Stack>
-          </Container>
-        </ScrollArea>
+        <Container size="sm" py="md">
+          <Stack gap="xs">
+            {threads.map((thread) => (
+              <Paper key={thread.threadId} p="md">
+                <Stack gap="md">
+                  <Group justify="space-between">
+                    <Title order={6}>{thread.shortName}</Title>
+                    <Button
+                      component={Link}
+                      href={`/org/${thread.orgId}/thread/${thread.threadId}`}
+                      variant="subtle"
+                      rightSection={<IconChevronRight size={16} />}
+                    >
+                      Review details
+                    </Button>
+                  </Group>
+                </Stack>
+              </Paper>
+            ))}
+            {threads.length === 0 && (
+              <Text ta="center" fs="italic" c="dimmed">
+                No threads available
+              </Text>
+            )}
+          </Stack>
+          <Box
+            style={{
+              height: 200,
+            }}
+          />
+        </Container>
       </Box>
-      <Box>
+      <Box
+        style={{
+          position: "fixed",
+          width: `calc(100vw - ${SIDEBAR_WIDTH + MENUBAR_WIDTH}px)`,
+          bottom: 0,
+        }}
+      >
         <Container size="sm" pb="sm">
           <MessageInput
             teamId={teamId}

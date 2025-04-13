@@ -15,7 +15,7 @@ export default function ToolCreatePage() {
   });
 
   return (
-    <Container pt="xl">
+    <Container py="xl">
       <Title order={2} mb="md">
         New Tool
       </Title>
