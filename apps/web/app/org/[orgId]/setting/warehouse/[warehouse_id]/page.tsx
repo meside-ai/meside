@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import {
@@ -25,7 +25,10 @@ export default function WarehouseDetailPage() {
   });
 
   return (
-    <Box>
+    <Container pt="xl">
+      <Title order={2} mb="md">
+        Edit Warehouse
+      </Title>
       <Form
         initialData={warehouse ? warehouse : undefined}
         onSubmit={async (data) => {
@@ -36,6 +39,6 @@ export default function WarehouseDetailPage() {
             }));
         }}
       />
-    </Box>
+    </Container>
   );
 }

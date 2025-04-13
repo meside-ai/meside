@@ -29,6 +29,24 @@ export function Form({
       validator={validator}
       formData={initialData}
       onSubmit={({ formData }) => onSubmit(formData as FormData)}
+      uiSchema={{
+        provider: {
+          "ui:widget": "radio",
+          "ui:options": {
+            enumOptions: warehouseProviderSchema.options.map(
+              (option, index) => ({
+                value: index,
+                label: option.shape.type.value,
+              }),
+            ),
+          },
+          anyOf: warehouseProviderSchema.options.map(() => ({
+            provider: {
+              "ui:widget": "hidden",
+            },
+          })),
+        },
+      }}
     />
   );
 }

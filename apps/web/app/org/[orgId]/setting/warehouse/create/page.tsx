@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import {
   getWarehouseCreate,
@@ -18,12 +18,15 @@ export default function WarehouseCreatePage() {
   });
 
   return (
-    <Box>
+    <Container pt="xl">
+      <Title order={2} mb="md">
+        New Warehouse
+      </Title>
       <Form
         onSubmit={async (data) => {
           await createWarehouse(data);
         }}
       />
-    </Box>
+    </Container>
   );
 }
