@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import {
@@ -23,7 +23,10 @@ export default function WarehouseSettingPage() {
   });
 
   return (
-    <Box>
+    <Container py="xl">
+      <Title order={2} mb="md">
+        Edit AI model
+      </Title>
       <Form
         initialData={llm ? llm : undefined}
         onSubmit={async (data) => {
@@ -34,6 +37,6 @@ export default function WarehouseSettingPage() {
             }));
         }}
       />
-    </Box>
+    </Container>
   );
 }

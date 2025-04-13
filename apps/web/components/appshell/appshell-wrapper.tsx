@@ -1,4 +1,5 @@
 import { Box } from "@mantine/core";
+import { MENUBAR_WIDTH, SIDEBAR_WIDTH } from "../../app/sidebar-width.constant";
 
 export function AppShellWrapper({
   sidebar,
@@ -7,17 +8,16 @@ export function AppShellWrapper({
   return (
     <Box
       style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "row",
-        overflow: "hidden",
+        paddingLeft: SIDEBAR_WIDTH + MENUBAR_WIDTH,
       }}
     >
       <Box
         style={{
-          width: 250,
-          height: "100%",
+          position: "fixed",
+          top: 0,
+          left: SIDEBAR_WIDTH,
+          width: MENUBAR_WIDTH,
+          height: "100vh",
           display: "flex",
           flexDirection: "column",
           gap: 10,
@@ -26,14 +26,7 @@ export function AppShellWrapper({
       >
         {sidebar}
       </Box>
-      <Box
-        style={{
-          flex: 1,
-          overflow: "hidden",
-        }}
-      >
-        {children}
-      </Box>
+      {children}
     </Box>
   );
 }

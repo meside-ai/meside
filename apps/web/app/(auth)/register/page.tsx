@@ -90,11 +90,12 @@ export default function RegisterPage() {
   return (
     <Container size={420} my={40}>
       <Paper radius="md" p="xl" withBorder>
-        <Text size="lg" fw={500} ta="center" mb="md">
+        <Text display="none" size="lg" fw={500} ta="center" mb="md">
           Create an account
         </Text>
 
         <Button
+          display="none"
           fullWidth
           variant="default"
           leftSection={
@@ -131,6 +132,7 @@ export default function RegisterPage() {
         </Button>
 
         <Divider
+          display="none"
           label="Or continue with email"
           labelPosition="center"
           my="lg"

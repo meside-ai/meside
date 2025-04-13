@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import { getLlmCreate, getLlmList } from "../../../../../../queries/llm";
 import { queryClient } from "../../../../../../utils/query-client";
@@ -15,12 +15,15 @@ export default function LlmSettingPage() {
   });
 
   return (
-    <Box>
+    <Container py="xl">
+      <Title order={2} mb="md">
+        New AI model
+      </Title>
       <Form
         onSubmit={async (data) => {
           await createLlm(data);
         }}
       />
-    </Box>
+    </Container>
   );
 }
