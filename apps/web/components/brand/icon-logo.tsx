@@ -1,5 +1,5 @@
 import Image from "next/image";
-import logo from "./meside_logo.png";
+import logo from "./meside_logo.webp";
 
 export const IconLogo = ({ width = 24 }: { width?: number }) => {
   return (
