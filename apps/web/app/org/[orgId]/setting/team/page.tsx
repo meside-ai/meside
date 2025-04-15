@@ -12,18 +12,18 @@ import {
 import { IconPencil } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { getWarehouseList } from "../../../../../queries/warehouse";
+import { getTeamList } from "../../../../../queries/team";
 
-export default function WarehouseSettingPage() {
-  const { data, isLoading } = useQuery(getWarehouseList({}));
-  const warehouses = data?.warehouses || [];
+export default function TeamSettingPage() {
+  const { data, isLoading } = useQuery(getTeamList({}));
+  const teams = data?.teams || [];
 
   return (
     <Container pt="xl">
       <Group justify="space-between" align="center" mb="md">
-        <Text fw={700}>Databases</Text>
-        <Button component={Link} href="warehouse/create" size="xs">
-          New Database
+        <Text fw={700}>AI Teams</Text>
+        <Button component={Link} href="team/create" size="xs">
+          New Team
         </Button>
       </Group>
       <Box>
@@ -34,31 +34,31 @@ export default function WarehouseSettingPage() {
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Name</Table.Th>
-                <Table.Th>Provider</Table.Th>
+                <Table.Th>Description</Table.Th>
                 <Table.Th>Last updated</Table.Th>
                 <Table.Th> </Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {warehouses.length === 0 ? (
+              {teams.length === 0 ? (
                 <Table.Tr>
                   <Table.Td colSpan={4}>
-                    <Text ta="center">No warehouses added yet</Text>
+                    <Text ta="center">No teams added yet</Text>
                   </Table.Td>
                 </Table.Tr>
               ) : (
-                warehouses.map((warehouse) => (
-                  <Table.Tr key={warehouse.warehouseId}>
-                    <Table.Td>{warehouse.name}</Table.Td>
-                    <Table.Td>{warehouse.provider.type}</Table.Td>
-                    <Table.Td>{warehouse.updatedAt}</Table.Td>
+                teams.map((team) => (
+                  <Table.Tr key={team.teamId}>
+                    <Table.Td>{team.name}</Table.Td>
+                    <Table.Td>{team.description}</Table.Td>
+                    <Table.Td>{team.updatedAt}</Table.Td>
                     <Table.Td>
                       <Group gap="xs">
                         <ActionIcon
                           variant="white"
                           size="xs"
                           component={Link}
-                          href={`warehouse/${warehouse.warehouseId}`}
+                          href={`team/${team.teamId}`}
                         >
                           <IconPencil size={18} />
                         </ActionIcon>

@@ -1,12 +1,36 @@
 import { createRoute } from "@hono/zod-openapi";
 import { z } from "zod";
 
+export const managerAgentSchema = z.object({
+  llmId: z.string().optional(),
+  instructions: z.string().optional(),
+});
+
+export type ManagerAgent = z.infer<typeof managerAgentSchema>;
+
+export const teamAgentSchema = z.object({
+  llmId: z.string(),
+  toolIds: z.array(z.string()),
+  name: z.string(),
+  description: z.string(),
+  instructions: z.string(),
+});
+
+export type TeamAgent = z.infer<typeof teamAgentSchema>;
+
+export const teamOrchestrationSchema = z.object({
+  type: z.literal("loop"),
+  agents: z.array(teamAgentSchema).min(1),
+});
+
+export type TeamOrchestration = z.infer<typeof teamOrchestrationSchema>;
+
 // main
 export const teamDtoSchema = z.object({
   teamId: z.string(),
   name: z.string(),
   description: z.string(),
-  agentIds: z.array(z.string()),
+  orchestration: teamOrchestrationSchema,
   ownerId: z.string(),
   orgId: z.string(),
   createdAt: z.string(),
@@ -90,6 +114,7 @@ export const teamDetailRoute = createRoute({
 export const teamCreateRequestSchema = z.object({
   name: z.string(),
   description: z.string(),
+  orchestration: teamOrchestrationSchema,
 });
 
 export const teamCreateResponseSchema = z.object({
@@ -128,6 +153,7 @@ export const teamUpdateRequestSchema = z.object({
   teamId: z.string(),
   name: z.string().optional(),
   description: z.string().optional(),
+  orchestration: teamOrchestrationSchema.optional(),
 });
 
 export const teamUpdateResponseSchema = z.object({});
@@ -155,126 +181,6 @@ export const teamUpdateRoute = createRoute({
         },
       },
       description: "Update the team",
-    },
-  },
-});
-
-// teamAgentAssign
-export const teamAgentAssignRequestSchema = z.object({
-  teamId: z.string(),
-  agentIds: z.array(z.string()),
-});
-
-export const teamAgentAssignResponseSchema = z.object({});
-
-export type TeamAgentAssignRequest = z.infer<
-  typeof teamAgentAssignRequestSchema
->;
-export type TeamAgentAssignResponse = z.infer<
-  typeof teamAgentAssignResponseSchema
->;
-
-export const teamAgentAssignRoute = createRoute({
-  method: "post",
-  path: "/agent/assign",
-  request: {
-    body: {
-      content: {
-        "application/json": {
-          schema: teamAgentAssignRequestSchema,
-        },
-      },
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        "application/json": {
-          schema: teamAgentAssignResponseSchema,
-        },
-      },
-      description: "Assign agents to team",
-    },
-  },
-});
-
-// teamAgentUnassign
-export const teamAgentUnassignRequestSchema = z.object({
-  teamId: z.string(),
-  agentIds: z.array(z.string()),
-});
-
-export const teamAgentUnassignResponseSchema = z.object({});
-
-export type TeamAgentUnassignRequest = z.infer<
-  typeof teamAgentUnassignRequestSchema
->;
-export type TeamAgentUnassignResponse = z.infer<
-  typeof teamAgentUnassignResponseSchema
->;
-
-export const teamAgentUnassignRoute = createRoute({
-  method: "post",
-  path: "/agent/unassign",
-  request: {
-    body: {
-      content: {
-        "application/json": {
-          schema: teamAgentUnassignRequestSchema,
-        },
-      },
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        "application/json": {
-          schema: teamAgentUnassignResponseSchema,
-        },
-      },
-      description: "Unassign agents from team",
-    },
-  },
-});
-
-// teamAgentList
-export const teamAgentListRequestSchema = z.object({
-  teamId: z.string(),
-});
-
-export const teamAgentListResponseSchema = z.object({
-  agents: z.array(
-    z.object({
-      agentId: z.string(),
-      name: z.string(),
-      description: z.string(),
-    }),
-  ),
-});
-
-export type TeamAgentListRequest = z.infer<typeof teamAgentListRequestSchema>;
-export type TeamAgentListResponse = z.infer<typeof teamAgentListResponseSchema>;
-
-export const teamAgentListRoute = createRoute({
-  method: "post",
-  path: "/agent/list",
-  request: {
-    body: {
-      content: {
-        "application/json": {
-          schema: teamAgentListRequestSchema,
-        },
-      },
-    },
-  },
-  responses: {
-    200: {
-      content: {
-        "application/json": {
-          schema: teamAgentListResponseSchema,
-        },
-      },
-      description: "List all agents in a team",
     },
   },
 });
