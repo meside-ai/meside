@@ -29,17 +29,22 @@ export default function SettingLayout({
         icon: IconSitemap,
       },
       {
+        title: "AI Teams",
+        href: `/org/${orgId}/setting/team`,
+        icon: IconSitemap,
+      },
+      {
         title: "AI Models",
         href: `/org/${orgId}/setting/llm`,
         icon: IconGrain,
       },
       {
-        title: "Tools",
+        title: "AI Tools",
         href: `/org/${orgId}/setting/tool`,
         icon: IconPick,
       },
       {
-        title: "Warehouses",
+        title: "Databases",
         href: `/org/${orgId}/setting/warehouse`,
         icon: IconDatabase,
       },
