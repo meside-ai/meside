@@ -20,7 +20,7 @@ export default function WarehouseCreatePage() {
   return (
     <Container py="xl">
       <Title order={2} mb="md">
-        New Warehouse
+        New Database
       </Title>
       <Form
         onSubmit={async (data) => {

@@ -21,9 +21,9 @@ export default function WarehouseSettingPage() {
   return (
     <Container pt="xl">
       <Group justify="space-between" align="center" mb="md">
-        <Text fw={700}>Warehouses</Text>
+        <Text fw={700}>Databases</Text>
         <Button component={Link} href="warehouse/create" size="xs">
-          New Warehouse
+          New Database
         </Button>
       </Group>
       <Box>

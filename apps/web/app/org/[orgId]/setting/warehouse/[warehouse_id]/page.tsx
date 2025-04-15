@@ -30,7 +30,7 @@ export default function WarehouseDetailPage() {
   return (
     <Container py="xl">
       <Title order={2} mb="md">
-        Edit Warehouse
+        Edit Database
       </Title>
       <Form
         initialData={warehouse ? warehouse : undefined}

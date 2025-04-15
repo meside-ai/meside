@@ -21,7 +21,7 @@ export default function TeamSettingPage() {
   return (
     <Container pt="xl">
       <Group justify="space-between" align="center" mb="md">
-        <Text fw={700}>Teams</Text>
+        <Text fw={700}>AI Teams</Text>
         <Button component={Link} href="team/create" size="xs">
           New Team
         </Button>

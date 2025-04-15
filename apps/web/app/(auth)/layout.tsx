@@ -1,5 +1,6 @@
 import { Box, Container, Flex } from "@mantine/core";
 import type { ReactNode } from "react";
+import { IconLogo } from "../../components/brand/icon-logo";
 import { Logo } from "../../components/brand/logo";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -11,7 +12,15 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       }}
     >
       <Container size="md" py="xl" h="100%" style={{ flex: 1 }}>
-        <Box ta="center" mb={30}>
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <IconLogo />
           <Logo />
         </Box>
         {children}

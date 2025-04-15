@@ -3,7 +3,7 @@ import { IconHome2, IconSettings } from "@tabler/icons-react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { MyAvatar } from "../../../components/avatar/my-avatar";
-import { Logo } from "../../../components/brand/logo";
+import { IconLogo } from "../../../components/brand/icon-logo";
 import classes from "./layout.module.css";
 
 export default function Sidebar() {
@@ -61,13 +61,13 @@ export default function Sidebar() {
           alignItems: "center",
         }}
       >
-        <Box pb={6}>
+        <Box pb={6} pt={6}>
           <UnstyledButton
             onClick={() => {
               navigate.push("/");
             }}
           >
-            <Logo icon />
+            <IconLogo />
           </UnstyledButton>
         </Box>
         <Box

@@ -21,7 +21,7 @@ export default function ToolSettingPage() {
   return (
     <Container pt="xl">
       <Group justify="space-between" align="center" mb="md">
-        <Text fw={700}>Tools</Text>
+        <Text fw={700}>AI Tools</Text>
         <Button component={Link} href="tool/create" size="xs">
           New Tool
         </Button>
