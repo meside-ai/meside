@@ -2,7 +2,7 @@
 
 import { Container, Title } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   getLlmDetail,
   getLlmList,
@@ -13,12 +13,15 @@ import { Form } from "../form";
 
 export default function WarehouseSettingPage() {
   const { llm_id: llmId } = useParams<{ llm_id: string }>();
+  const router = useRouter();
+  const { orgId } = useParams<{ orgId: string }>();
   const { data } = useQuery(getLlmDetail({ llmId: llmId ?? "" }));
   const llm = data?.llm;
   const { mutateAsync: updateLlm } = useMutation({
     ...getLlmUpdate(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [getLlmList.name] });
+      router.push(`/org/${orgId}/setting/llm`);
     },
   });
 

@@ -5,7 +5,7 @@ import {
   IconDatabase,
   IconGrain,
   IconPick,
-  IconSitemap,
+  IconPlayHandball,
 } from "@tabler/icons-react";
 import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
@@ -24,14 +24,9 @@ export default function SettingLayout({
   const sidebarItems = useMemo(
     () => [
       {
-        title: "Organization",
-        href: `/org/${orgId}/setting`,
-        icon: IconSitemap,
-      },
-      {
         title: "AI Teams",
         href: `/org/${orgId}/setting/team`,
-        icon: IconSitemap,
+        icon: IconPlayHandball,
       },
       {
         title: "AI Models",

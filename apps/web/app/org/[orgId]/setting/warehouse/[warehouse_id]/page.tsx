@@ -2,7 +2,7 @@
 
 import { Container, Title } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   getWarehouseDetail,
   getWarehouseList,
@@ -13,6 +13,8 @@ import { Form } from "../form";
 
 export default function WarehouseDetailPage() {
   const { warehouse_id: warehouseId } = useParams<{ warehouse_id: string }>();
+  const { orgId } = useParams<{ orgId: string }>();
+  const router = useRouter();
   const { data } = useQuery(
     getWarehouseDetail({ warehouseId: warehouseId ?? "" }),
   );
@@ -21,6 +23,7 @@ export default function WarehouseDetailPage() {
     ...getWarehouseUpdate(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [getWarehouseList.name] });
+      router.push(`/org/${orgId}/setting/warehouse`);
     },
   });
 
