@@ -17,11 +17,12 @@ export async function seedAgentDb({
 }) {
   const db = getDrizzle();
 
-  const orgId = "hkwgx29khaflgmm5c8ipp79r";
-  const userId = "io56027z7qwd25mzq6upq947";
-  const threadId = "cwh5pv4nxuh3xlhnlouz95q7";
-  const llmId = "edbp71ci4hwucgons4wvqpam";
-  const teamId = "cwh5pv4nxuh3xlhnlouz95q8";
+  const orgId = "org-x29khaflgmm5c8ipp79r";
+  const userId = "user-027z7qwd25mzq6upq947";
+  const threadId = "thread-4nxuh3xlhnlouz95q7";
+  const llmId = "llm-71ci4hwucgons4wvqpam";
+  const teamId = "team-v4nxuh3xlhnlouz95q8";
+  const toolId = "tool-v4nxuh3xlhnlouz95q9";
 
   await db.insert(orgTable).values({
     orgId,
@@ -97,6 +98,7 @@ export async function seedAgentDb({
     toolUrl,
     llmId,
     teamId,
+    toolId,
   });
 }
 

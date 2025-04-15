@@ -2,10 +2,6 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import {
   type TeamCreateResponse,
   type TeamDetailResponse,
-  teamAgentAssignRoute,
-  teamAgentListRequestSchema,
-  teamAgentListRoute,
-  teamAgentUnassignRoute,
   teamCreateRequestSchema,
   teamCreateRoute,
   teamDetailRoute,
@@ -13,7 +9,7 @@ import {
   teamUpdateRequestSchema,
   teamUpdateRoute,
 } from "@meside/shared/api/team.schema";
-import { and, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDrizzle } from "../../db/db";
 import {
   authGuardMiddleware,
@@ -21,15 +17,9 @@ import {
 } from "../../middleware/guard";
 import { getAuthOrUnauthorized } from "../../utils/auth";
 import { cuid } from "../../utils/cuid";
-import {
-  firstOrNotCreated,
-  firstOrNotFound,
-  firstOrNull,
-} from "../../utils/toolkit";
+import { firstOrNotCreated, firstOrNull } from "../../utils/toolkit";
 import { getTeamDtos } from "../mapper/team";
-import { agentTable } from "../table/agent";
 import { teamTable } from "../table/team";
-import { teamAgentTable } from "../table/team-agent";
 
 export const teamApi = new OpenAPIHono();
 
@@ -82,9 +72,8 @@ teamApi.openapi(teamCreateRoute, async (c) => {
   const teams = await getDrizzle()
     .insert(teamTable)
     .values({
+      ...body,
       teamId,
-      name: body.name,
-      description: body.description,
       ownerId: auth.userId,
       orgId: auth.orgId,
     })
@@ -122,129 +111,4 @@ teamApi.openapi(teamUpdateRoute, async (c) => {
     );
 
   return c.json({});
-});
-
-teamApi.openapi(teamAgentAssignRoute, async (c) => {
-  const { teamId, agentIds } = c.req.valid("json");
-  const auth = getAuthOrUnauthorized(c);
-
-  // Verify team exists and belongs to user's org
-  const team = firstOrNotFound(
-    await getDrizzle()
-      .select()
-      .from(teamTable)
-      .where(
-        and(
-          eq(teamTable.teamId, teamId),
-          eq(teamTable.orgId, auth.orgId),
-          isNull(teamTable.deletedAt),
-        ),
-      )
-      .limit(1),
-    "Team not found",
-  );
-
-  // Get existing team-agent associations
-  const existingTeamAgents = await getDrizzle()
-    .select()
-    .from(teamAgentTable)
-    .where(eq(teamAgentTable.teamId, teamId));
-
-  const existingAgentIds = existingTeamAgents.map((ta) => ta.agentId);
-
-  // Filter out agents that are already assigned
-  const newAgentIds = agentIds.filter((id) => !existingAgentIds.includes(id));
-
-  if (newAgentIds.length > 0) {
-    // Insert new team-agent associations
-    await getDrizzle()
-      .insert(teamAgentTable)
-      .values(
-        newAgentIds.map((agentId) => ({
-          teamAgentId: cuid(),
-          teamId,
-          agentId,
-        })),
-      );
-  }
-
-  return c.json({});
-});
-
-teamApi.openapi(teamAgentUnassignRoute, async (c) => {
-  const { teamId, agentIds } = c.req.valid("json");
-  const auth = getAuthOrUnauthorized(c);
-
-  // Verify team exists and belongs to user's org
-  const team = firstOrNotFound(
-    await getDrizzle()
-      .select()
-      .from(teamTable)
-      .where(
-        and(
-          eq(teamTable.teamId, teamId),
-          eq(teamTable.orgId, auth.orgId),
-          isNull(teamTable.deletedAt),
-        ),
-      )
-      .limit(1),
-    "Team not found",
-  );
-
-  // Remove team-agent associations
-  await getDrizzle()
-    .delete(teamAgentTable)
-    .where(
-      and(
-        eq(teamAgentTable.teamId, teamId),
-        inArray(teamAgentTable.agentId, agentIds),
-      ),
-    );
-
-  return c.json({});
-});
-
-teamApi.openapi(teamAgentListRoute, async (c) => {
-  const { teamId } = teamAgentListRequestSchema.parse(await c.req.json());
-  const auth = getAuthOrUnauthorized(c);
-
-  // Verify team exists and belongs to user's org
-  const team = firstOrNotFound(
-    await getDrizzle()
-      .select()
-      .from(teamTable)
-      .where(
-        and(
-          eq(teamTable.teamId, teamId),
-          eq(teamTable.orgId, auth.orgId),
-          isNull(teamTable.deletedAt),
-        ),
-      )
-      .limit(1),
-    "Team not found",
-  );
-
-  // Get team-agent associations
-  const teamAgents = await getDrizzle()
-    .select({
-      agentId: teamAgentTable.agentId,
-    })
-    .from(teamAgentTable)
-    .where(eq(teamAgentTable.teamId, teamId));
-
-  const agentIds = teamAgents.map((ta) => ta.agentId);
-
-  // Get agent details
-  const agents = await getDrizzle()
-    .select({
-      agentId: agentTable.agentId,
-      name: agentTable.name,
-      description: agentTable.description,
-    })
-    .from(agentTable)
-    .where(
-      and(inArray(agentTable.agentId, agentIds), isNull(agentTable.deletedAt)),
-    );
-
-  return c.json({ agents });
 });

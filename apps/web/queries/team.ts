@@ -1,10 +1,4 @@
 import {
-  type TeamAgentAssignRequest,
-  type TeamAgentAssignResponse,
-  type TeamAgentListRequest,
-  type TeamAgentListResponse,
-  type TeamAgentUnassignRequest,
-  type TeamAgentUnassignResponse,
   type TeamCreateRequest,
   type TeamCreateResponse,
   type TeamDetailRequest,
@@ -13,9 +7,6 @@ import {
   type TeamListResponse,
   type TeamUpdateRequest,
   type TeamUpdateResponse,
-  teamAgentAssignRoute,
-  teamAgentListRoute,
-  teamAgentUnassignRoute,
   teamCreateRoute,
   teamDetailRoute,
   teamListRoute,
@@ -78,49 +69,6 @@ export const getTeamUpdate = (): UseMutationOptions<
     const json = await createPost<TeamUpdateRequest, TeamUpdateResponse>(
       `/meside/server/team${teamUpdateRoute.path}`,
     )(body);
-    return json;
-  },
-});
-
-export const getTeamAgentAssign = (): UseMutationOptions<
-  TeamAgentAssignResponse,
-  QueryClientError,
-  TeamAgentAssignRequest
-> => ({
-  mutationKey: [getTeamAgentAssign.name],
-  mutationFn: async (body) => {
-    const json = await createPost<
-      TeamAgentAssignRequest,
-      TeamAgentAssignResponse
-    >(`/meside/server/team${teamAgentAssignRoute.path}`)(body);
-    return json;
-  },
-});
-
-export const getTeamAgentUnassign = (): UseMutationOptions<
-  TeamAgentUnassignResponse,
-  QueryClientError,
-  TeamAgentUnassignRequest
-> => ({
-  mutationKey: [getTeamAgentUnassign.name],
-  mutationFn: async (body) => {
-    const json = await createPost<
-      TeamAgentUnassignRequest,
-      TeamAgentUnassignResponse
-    >(`/meside/server/team${teamAgentUnassignRoute.path}`)(body);
-    return json;
-  },
-});
-
-export const getTeamAgentList = ({
-  teamId,
-}: TeamAgentListRequest): UseQueryOptions<TeamAgentListResponse> => ({
-  enabled: !!teamId,
-  queryKey: [getTeamAgentList.name, teamId],
-  queryFn: async () => {
-    const json = await createPost<TeamAgentListRequest, TeamAgentListResponse>(
-      `/meside/server/team${teamAgentListRoute.path}`,
-    )({ teamId });
     return json;
   },
 });

@@ -111,6 +111,7 @@ orgApi.openapi(orgCreateRoute, async (c) => {
     toolUrl: "/meside/warehouse/internal",
     llmId,
     teamId: cuid(),
+    toolId: cuid(),
   });
 
   return c.json({ org: orgDto[0] } as OrgCreateResponse);

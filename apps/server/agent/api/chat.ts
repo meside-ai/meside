@@ -1,4 +1,4 @@
-import type { AgentDto } from "@meside/shared/api/agent.schema";
+import type { TeamAgent } from "@meside/shared/api/team.schema";
 import { getLogger } from "@meside/shared/logger/index";
 import {
   type LanguageModelV1,
@@ -6,7 +6,6 @@ import {
   type Tool,
   createDataStream,
   formatDataStreamPart,
-  generateObject,
   streamText,
 } from "ai";
 import { eq } from "drizzle-orm";
@@ -17,9 +16,9 @@ import { authGuardMiddleware } from "../../middleware/guard";
 import { orgGuardMiddleware } from "../../middleware/guard";
 import { getAuthOrUnauthorized } from "../../utils/auth";
 import { firstOrNotFound } from "../../utils/toolkit";
-import { getAgentDetailByName, getAgentList } from "../service/agent";
 import { getLlmModel } from "../service/ai";
-import { getActiveLlm } from "../service/llm";
+import { getAgentInTeam, getTeam, getTeamAgent } from "../service/team";
+import { getThreadDetail } from "../service/thread";
 import {
   type MCPClient,
   closeMcpClients,
@@ -86,10 +85,15 @@ chatApi.post("/stream", async (c) => {
         }) ?? [],
       );
 
-      const agentName = await getAgentNameByRouterWorkflow(messages, {
+      const thread = await getThreadDetail(threadId);
+      if (!thread.teamId) {
+        throw new Error("thread.teamId is required");
+      }
+      const team = await getTeam(thread.teamId);
+      const agentName = await getAgentInTeam(team, messages, {
         orgId: auth.orgId,
       });
-      const agent = await getAgent(agentName);
+      const agent = await getTeamAgent(team, agentName);
       const { tools, mcpClients } = await loadToolInstances(agent.toolIds);
       const agentOptions = await getAgentOptions(agent);
 
@@ -120,64 +124,8 @@ chatApi.post("/stream", async (c) => {
   );
 });
 
-const getAgentNameByRouterWorkflow = async (
-  messages: Message[],
-  context: {
-    orgId: string;
-  },
-): Promise<string> => {
-  const agentList = await getAgentList();
-  const firstAgent = firstOrNotFound(agentList, "No agents found");
-
-  if (agentList.length === 1) {
-    return firstAgent.name;
-  }
-
-  const agentTextList = agentList.map((agent) => {
-    return [
-      `* agent name: ${agent.name}; description: ${agent.description}`,
-    ].join("\n");
-  });
-
-  const systemPrompt = [
-    "You are a router workflow agent, choose the best agent to handle the user request",
-    "# Instructions",
-    "return the agent name in the response",
-    "# Here are the agents:",
-    agentTextList.join("\n"),
-    "# User request",
-    `${JSON.stringify(messages)}`,
-  ].join("\n");
-
-  const routerLlm = await getRouterLlmModel({ orgId: context.orgId });
-
-  const result = await generateObject({
-    model: routerLlm,
-    prompt: systemPrompt,
-    output: "enum",
-    enum: agentList.map((agent) => agent.name),
-    experimental_telemetry: { isEnabled: true },
-  });
-  logger.info("😉 finish get agent name", result);
-
-  const agentName = result.object;
-
-  return agentName;
-};
-
-const getRouterLlmModel = async ({ orgId }: { orgId: string }) => {
-  const activeLlm = await getActiveLlm({ orgId });
-  const llmModel = await getLlmModel(activeLlm);
-  return llmModel;
-};
-
-const getAgent = async (agentName: string) => {
-  const agent = await getAgentDetailByName(agentName);
-  return agent;
-};
-
 const getAgentOptions = async (
-  agent: AgentDto,
+  agent: TeamAgent,
 ): Promise<{
   model: LanguageModelV1;
   system: string;

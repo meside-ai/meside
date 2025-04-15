@@ -6,8 +6,8 @@ import { warehouseTable } from "../table/warehouse";
 export async function seedWarehouseDb() {
   const db = getDrizzle();
 
-  const orgId = "hkwgx29khaflgmm5c8ipp79r";
-  const ownerId = "io56027z7qwd25mzq6upq947";
+  const orgId = "org-x29khaflgmm5c8ipp79r";
+  const ownerId = "user-027z7qwd25mzq6upq947";
   const warehouseId = "zhl0ec34cda00wgufqsqe80d";
 
   await db.insert(warehouseTable).values({
