@@ -10,8 +10,7 @@
     "seed": "cd apps/server && bun run seed",
     "lint": "biome check .",
     "lint:fix": "biome check . --write",
-    "check-types": "turbo run check-types",
-    "prepare": "husky"
+    "check-types": "turbo run check-types"
   },
   "lint-staged": {
     "*": [
