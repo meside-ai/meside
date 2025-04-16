@@ -9,10 +9,7 @@ const logger = getLogger("getDrizzle");
 
 export const getDrizzle = () => {
   if (!drizzleDb) {
-    logger.info(
-      "Creating drizzle client",
-      environment.DATABASE_URL.slice(0, 10),
-    );
+    logger.info("Creating drizzle client", environment.DATABASE_URL);
     const pool = new Pool({
       connectionString: environment.DATABASE_URL,
     });
