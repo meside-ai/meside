@@ -66,10 +66,11 @@ export function Form({
                 "ui:widget": "select",
                 "ui:title": "AI tools",
                 "ui:options": {
-                  enumOptions: toolList?.tools.map((tool) => ({
-                    label: tool.name,
-                    value: tool.toolId,
-                  })),
+                  enumOptions:
+                    toolList?.tools?.map((tool) => ({
+                      label: tool.name,
+                      value: tool.toolId,
+                    })) ?? [],
                 },
               },
             },
@@ -88,10 +89,11 @@ const LlmIdWidget = (props: WidgetProps) => {
     <RadioWidget
       {...props}
       options={{
-        enumOptions: llmList?.llms.map((llm) => ({
-          label: llm.name,
-          value: llm.llmId,
-        })),
+        enumOptions:
+          llmList?.llms?.map((llm) => ({
+            label: llm.name,
+            value: llm.llmId,
+          })) ?? [],
       }}
     />
   );
