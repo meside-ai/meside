@@ -34,16 +34,18 @@ export function Form({
         provider: {
           "ui:widget": "radio",
           "ui:options": {
-            enumOptions: llmProviderSchema.options.map((option, index) => ({
-              value: index,
-              label: option.shape.provider.value,
-            })),
+            enumOptions:
+              llmProviderSchema?.options?.map((option, index) => ({
+                value: index,
+                label: option.shape.provider.value,
+              })) ?? [],
           },
-          anyOf: llmProviderSchema.options.map(() => ({
-            provider: {
-              "ui:widget": "hidden",
-            },
-          })),
+          anyOf:
+            llmProviderSchema?.options?.map(() => ({
+              provider: {
+                "ui:widget": "hidden",
+              },
+            })) ?? [],
         },
       }}
     />

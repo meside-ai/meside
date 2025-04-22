@@ -90,7 +90,7 @@ export async function loginWithCredentials(
       sessionId: cuid(),
       userId: user.userId,
       refreshToken: refreshToken,
-      expiresAt: addDays(new Date(), 7).toISOString(),
+      expiresAt: addDays(new Date(), 14).toISOString(),
     });
 
   return {
@@ -149,7 +149,7 @@ export async function loginWithGoogle(idToken: string): Promise<{
       sessionId: cuid(),
       userId: user.userId,
       refreshToken: refreshToken,
-      expiresAt: addDays(new Date(), 7).toISOString(),
+      expiresAt: addDays(new Date(), 14).toISOString(),
     });
 
   return {
@@ -182,7 +182,7 @@ export async function refreshToken(refreshToken: string): Promise<{
     .update(sessionTable)
     .set({
       refreshToken: newRefreshToken,
-      expiresAt: addDays(new Date(), 7).toISOString(),
+      expiresAt: addDays(new Date(), 14).toISOString(),
     })
     .where(eq(sessionTable.sessionId, session.sessionId));
 
@@ -199,7 +199,7 @@ async function generateTokens(user: { userId: string }): Promise<{
   const jwt = await new SignJWT({ userId: user.userId })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("1h")
+    .setExpirationTime("14d")
     .sign(JWT_SECRET);
 
   const refreshToken = crypto.randomUUID();

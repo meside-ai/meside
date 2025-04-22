@@ -78,23 +78,25 @@ export default function OrgCreatePage() {
             defaultLLmProvider: {
               "ui:widget": "radio",
               "ui:options": {
-                enumOptions: llmProviderSchema.options.map((option, index) => ({
-                  value: index,
-                  label: option.shape.provider.value,
-                })),
+                enumOptions:
+                  llmProviderSchema?.options?.map((option, index) => ({
+                    value: index,
+                    label: option.shape.provider.value,
+                  })) ?? [],
               },
-              anyOf: llmProviderSchema.options.map((option) => ({
-                provider: {
-                  "ui:widget": "hidden",
-                },
-                model: {
-                  "ui:widget":
-                    option.shape.provider.value === "openai" ||
-                    option.shape.provider.value === "deepseek"
-                      ? "radio"
-                      : "text",
-                },
-              })),
+              anyOf:
+                llmProviderSchema?.options?.map((option) => ({
+                  provider: {
+                    "ui:widget": "hidden",
+                  },
+                  model: {
+                    "ui:widget":
+                      option.shape.provider.value === "openai" ||
+                      option.shape.provider.value === "deepseek"
+                        ? "radio"
+                        : "text",
+                  },
+                })) ?? [],
             },
             "ui:submitButtonOptions": {
               norender: true,
