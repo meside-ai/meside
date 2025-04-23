@@ -1,0 +1,19 @@
+name: Deploy Application
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.APP_SSH_HOST }}
+          username: ${{ secrets.APP_SSH_USERNAME }}
+          key: ${{ secrets.APP_SSH_KEY }}
+          script: |
+            cd /root/meside
+            docker compose pull
+            docker compose restart
